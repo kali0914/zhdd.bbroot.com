@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🔐 文本加密解密工具 · 支持TXT</title>
+    <style>
+        /* ===== CSS 变量 & 重置 ===== */
+        :root {
+            --primary: #7c3aed;
+            --primary-light: #a78bfa;
+            --primary-dark: #5b21b6;
+            --bg: #f1f5f9;
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --border: rgba(255, 255, 255, 0.3);
+            --shadow: 0 20px 60px rgba(124, 58, 237, 0.15);
+            --radius: 20px;
+            --text: #1e1b4b;
+            --text-muted: #6b7280;
+            --success: #10b981;
+            --error: #ef4444;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: linear-gradient(145deg, #ede9fe 0%, #ddd6fe 50%, #c4b5fd 100%);
+            background-attachment: fixed;
+        }
+
+        /* ===== 卡片容器 ===== */
+        .container {
+            max-width: 880px;
+            width: 100%;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 40px 36px;
+            transition: var(--transition);
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 24px 18px;
+            }
+        }
+
+        /* ===== 头部 ===== */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+
+        .header-icon {
+            font-size: 40px;
+            line-height: 1;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-badge {
+            margin-left: auto;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary);
+            background: rgba(124, 58, 237, 0.12);
+            padding: 4px 14px;
+            border-radius: 100px;
+            letter-spacing: 0.3px;
+            border: 1px solid rgba(124, 58, 237, 0.15);
+            -webkit-text-fill-color: var(--primary);
+        }
+
+        /* ===== 卡片布局 ===== */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+        }
+
+        @media (max-width: 740px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 16px;
+            padding: 24px 22px 26px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            border-color: rgba(124, 58, 237, 0.2);
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.06);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 18px;
+        }
+
+        .section-title span {
+            font-size: 22px;
+        }
+
+        /* ===== 表单元素 ===== */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group:last-of-type {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            letter-spacing: 0.3px;
+        }
+
+        .input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrap input,
+        .input-wrap textarea {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 15px;
+            font-family: inherit;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.7);
+            transition: var(--transition);
+            color: var(--text);
+            outline: none;
+        }
+
+        .input-wrap input:focus,
+        .input-wrap textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+            background: #fff;
+        }
+
+        .input-wrap input::placeholder,
+        .input-wrap textarea::placeholder {
+            color: #b0b0b0;
+        }
+
+        .input-wrap textarea {
+            min-height: 110px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .input-wrap .toggle-pw {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 8px;
+            transition: var(--transition);
+            color: #9ca3af;
+            line-height: 1;
+        }
+
+        .input-wrap .toggle-pw:hover {
+            color: var(--text);
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        /* ===== 文件上传组件 ===== */
+        .file-upload-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .file-upload-wrap .file-input-hidden {
+            display: none;
+        }
+
+        .file-upload-wrap .file-btn {
+            flex-shrink: 0;
+            padding: 8px 18px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 10px;
+            border: 1.5px dashed #d1d5db;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .file-upload-wrap .file-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(124, 58, 237, 0.05);
+        }
+
+        .file-upload-wrap .file-btn:active {
+            transform: scale(0.97);
+        }
+
+        .file-upload-wrap .file-name {
+            font-size: 14px;
+            color: var(--text-muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+            min-width: 60px;
+        }
+
+        .file-upload-wrap .file-name.has-file {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        /* ===== 按钮 ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 11px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            color: #fff;
+            background: var(--primary);
+            box-shadow: 0 4px 14px rgba(124, 58, 237, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.35);
+            background: var(--primary-dark);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: var(--text);
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        }
+
+        .btn-success {
+            background: var(--success);
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.35);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1.5px solid var(--primary);
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(124, 58, 237, 0.25);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* ===== 按钮组 ===== */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .btn-group .btn:only-child {
+            flex: 1;
+        }
+
+        /* ===== 状态 & 结果 ===== */
+        .status {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 12px;
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status.success {
+            color: var(--success);
+        }
+        .status.error {
+            color: var(--error);
+        }
+
+        .result-box {
+            margin-top: 14px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid #e5e7eb;
+            min-height: 60px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--text);
+            white-space: pre-wrap;
+            word-break: break-word;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .result-box:empty::before {
+            content: '解密后的内容将显示在这里';
+            color: #b0b0b0;
+            font-style: italic;
+        }
+
+        .result-box .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: none;
+        }
+
+        .result-box .copy-btn:hover {
+            background: #fff;
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .result-box:not(:empty) .copy-btn {
+            display: block;
+        }
+
+        /* ===== 下载txt按钮 (独立于结果框) ===== */
+        .download-txt-wrap {
+            margin-top: 12px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .download-txt-wrap .btn {
+            width: auto;
+            padding: 8px 20px;
+            font-size: 14px;
+            background: #e5e7eb;
+            color: var(--text);
+            box-shadow: none;
+        }
+
+        .download-txt-wrap .btn:hover {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(124, 58, 237, 0.25);
+        }
+
+        .download-txt-wrap .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* ===== 滚动条 ===== */
+        .result-box::-webkit-scrollbar {
+            width: 4px;
+        }
+        .result-box::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .result-box::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+
+        /* ===== 加载动画 ===== */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ===== 响应式微调 ===== */
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 22px;
+            }
+            .header-icon {
+                font-size: 32px;
+            }
+            .section {
+                padding: 18px 14px 20px;
+            }
+            .btn {
+                font-size: 14px;
+                padding: 10px 18px;
+            }
+            .input-wrap input,
+            .input-wrap textarea {
+                font-size: 14px;
+                padding: 8px 12px;
+            }
+            .btn-group {
+                flex-direction: column;
+            }
+            .btn-group .btn {
+                flex: unset;
+                width: 100%;
+            }
+            .download-txt-wrap {
+                justify-content: stretch;
+            }
+            .download-txt-wrap .btn {
+                width: 100%;
+            }
+        }
+
+        /* ===== 工具类 ===== */
+        .mt-1 {
+            margin-top: 6px;
+        }
+        .mt-2 {
+            margin-top: 14px;
+        }
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .gap-1 {
+            gap: 6px;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .w-full {
+            width: 100%;
+        }
+        .text-muted {
+            color: var(--text-muted);
+        }
+        .text-sm {
+            font-size: 13px;
+        }
+
+        /* ===== 小提示 ===== */
+        .hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .hint svg {
+            width: 14px;
+            height: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ====== 头部 ====== -->
+        <div class="header">
+            <span class="header-icon">🔐</span>
+            <h1>文本加密解密</h1>
+            <span class="header-badge">AES‑256‑GCM · 支持TXT</span>
+        </div>
+
+        <!-- ====== 双栏布局 ====== -->
+        <div class="grid-2">
+
+            <!-- ============================================================ -->
+            <!-- 加密区 -->
+            <!-- ============================================================ -->
+            <div class="section" id="encryptSection">
+                <div class="section-title">
+                    <span>📝</span> 加密
+                </div>
+
+                <!-- 密码 -->
+                <div class="form-group">
+                    <label class="form-label" for="encPw">🔑 加密密码</label>
+                    <div class="input-wrap">
+                        <input type="password" id="encPw" placeholder="至少 6 位" autocomplete="new-password" />
+                        <button class="toggle-pw" type="button" aria-label="显示/隐藏密码">👁️</button>
+                    </div>
+                </div>
+
+                <!-- 内容 -->
+                <div class="form-group">
+                    <label class="form-label" for="encText">📄 输入内容 (或上传txt)</label>
+                    <div class="input-wrap">
+                        <textarea id="encText" placeholder="在这里输入你想要加密的文字…&#10;也可以点击下方「上传txt文件」自动填入"></textarea>
+                    </div>
+                    <!-- 上传txt -->
+                    <div class="file-upload-wrap" style="margin-top: 8px;">
+                        <label class="file-btn" for="txtFileInput">📂 上传txt文件</label>
+                        <input type="file" id="txtFileInput" class="file-input-hidden" accept=".txt" />
+                        <span class="file-name" id="txtFileName">未选择文件</span>
+                        <button class="file-btn" id="clearTxtBtn" type="button" style="border-color:#fca5a5;color:#ef4444;">✕ 清空</button>
+                    </div>
+                    <div class="hint">📌 上传后自动填入文本框，可继续编辑</div>
+                </div>
+
+                <!-- 加密按钮 -->
+                <button class="btn" id="encryptBtn">
+                    <span>🔒</span> 加密并下载 .zhdd
+                </button>
+
+                <!-- 状态 -->
+                <div class="status" id="encStatus">💡 输入密码和内容后点击加密</div>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- 解密区 -->
+            <!-- ============================================================ -->
+            <div class="section" id="decryptSection">
+                <div class="section-title">
+                    <span>🔓</span> 解密
+                </div>
+
+                <!-- 密码 -->
+                <div class="form-group">
+                    <label class="form-label" for="decPw">🔑 解密密码</label>
+                    <div class="input-wrap">
+                        <input type="password" id="decPw" placeholder="输入加密时的密码" autocomplete="new-password" />
+                        <button class="toggle-pw" type="button" aria-label="显示/隐藏密码">👁️</button>
+                    </div>
+                </div>
+
+                <!-- 文件选择 -->
+                <div class="form-group">
+                    <label class="form-label">📂 选择 .zhdd 文件</label>
+                    <div class="file-upload-wrap">
+                        <label class="file-btn" for="fileInput">📎 选择文件</label>
+                        <input type="file" id="fileInput" class="file-input-hidden" accept=".zhdd" />
+                        <span class="file-name" id="fileName">未选择文件</span>
+                    </div>
+                </div>
+
+                <!-- 解密按钮 -->
+                <button class="btn btn-success" id="decryptBtn">
+                    <span>🔓</span> 解密文件
+                </button>
+
+                <!-- 状态 -->
+                <div class="status" id="decStatus">💡 选择 .zhdd 文件并输入密码后解密</div>
+
+                <!-- 结果框 + 下载按钮 -->
+                <div class="result-box" id="decResult">
+                    <button class="copy-btn" id="copyResultBtn">📋 复制</button>
+                </div>
+
+                <!-- 下载txt -->
+                <div class="download-txt-wrap">
+                    <button class="btn" id="downloadTxtBtn" disabled>
+                        📥 下载为 .txt
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ====== 底部信息 ====== -->
+        <div style="margin-top:28px;text-align:center;font-size:13px;color:var(--text-muted);border-top:1px solid rgba(229,231,235,0.5);padding-top:18px;letter-spacing:0.2px;">
+            ⚡ 使用 AES‑256‑GCM 加密 · 密钥通过 PBKDF2 派生 · 支持上传 .txt 加密 / 解密后下载 .txt
+        </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- JavaScript -->
+    <!-- ============================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ============================================================
+            //  DOM 引用
+            // ============================================================
+            const encPw = document.getElementById('encPw');
+            const encText = document.getElementById('encText');
+            const encryptBtn = document.getElementById('encryptBtn');
+            const encStatus = document.getElementById('encStatus');
+
+            const decPw = document.getElementById('decPw');
+            const fileInput = document.getElementById('fileInput');
+            const fileName = document.getElementById('fileName');
+            const decryptBtn = document.getElementById('decryptBtn');
+            const decStatus = document.getElementById('decStatus');
+            const decResult = document.getElementById('decResult');
+            const copyBtn = document.getElementById('copyResultBtn');
+            const downloadTxtBtn = document.getElementById('downloadTxtBtn');
+
+            // 新增：加密区txt上传
+            const txtFileInput = document.getElementById('txtFileInput');
+            const txtFileName = document.getElementById('txtFileName');
+            const clearTxtBtn = document.getElementById('clearTxtBtn');
+
+            // ============================================================
+            //  密码显示切换
+            // ============================================================
+            document.querySelectorAll('.toggle-pw').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const input = this.parentElement.querySelector('input');
+                    if (!input) return;
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        this.textContent = '🙈';
+                    } else {
+                        input.type = 'password';
+                        this.textContent = '👁️';
+                    }
+                });
+            });
+
+            // ============================================================
+            //  工具函数
+            // ============================================================
+            function getTimestampFilename(prefix, ext) {
+                const d = new Date();
+                const pad = n => String(n).padStart(2, '0');
+                const ts =
+                    `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+                return `${prefix}_${ts}.${ext}`;
+            }
+
+            function setStatus(el, msg, type) {
+                el.textContent = msg;
+                el.className = 'status';
+                if (type) el.classList.add(type);
+            }
+
+            function readFileAsText(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = () => reject(new Error('读取文件失败'));
+                    reader.readAsText(file, 'UTF-8');
+                });
+            }
+
+            function readFileAsBuffer(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = () => reject(new Error('读取文件失败'));
+                    reader.readAsArrayBuffer(file);
+                });
+            }
+
+            function downloadBlob(blob, filename) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            // ============================================================
+            //  加密核心 (AES-256-GCM + PBKDF2)
+            // ============================================================
+            async function encryptText(text, password) {
+                if (!password || password.length < 6) {
+                    throw new Error('密码至少 6 位');
+                }
+                if (!text) {
+                    throw new Error('请输入要加密的内容');
+                }
+                const encoder = new TextEncoder();
+                const salt = crypto.getRandomValues(new Uint8Array(16));
+                const iv = crypto.getRandomValues(new Uint8Array(12));
+
+                const keyMaterial = await crypto.subtle.importKey(
+                    'raw',
+                    encoder.encode(password),
+                    'PBKDF2',
+                    false,
+                    ['deriveKey']
+                );
+                const key = await crypto.subtle.deriveKey({
+                        name: 'PBKDF2',
+                        salt: salt,
+                        iterations: 200000,
+                        hash: 'SHA-256'
+                    },
+                    keyMaterial, {
+                        name: 'AES-GCM',
+                        length: 256
+                    },
+                    false,
+                    ['encrypt']
+                );
+
+                const encrypted = await crypto.subtle.encrypt({
+                        name: 'AES-GCM',
+                        iv: iv
+                    },
+                    key,
+                    encoder.encode(text)
+                );
+
+                const cipher = new Uint8Array(encrypted);
+                const result = new Uint8Array(salt.length + iv.length + cipher.length);
+                result.set(salt, 0);
+                result.set(iv, salt.length);
+                result.set(cipher, salt.length + iv.length);
+                return result;
+            }
+
+            // ============================================================
+            //  解密核心
+            // ============================================================
+            async function decryptData(data, password) {
+                if (!password || password.length < 6) {
+                    throw new Error('密码至少 6 位');
+                }
+                if (!data || data.length < 28) {
+                    throw new Error('无效的加密文件 (数据太短)');
+                }
+                const encoder = new TextEncoder();
+                const salt = data.slice(0, 16);
+                const iv = data.slice(16, 28);
+                const ciphertext = data.slice(28);
+                if (ciphertext.length === 0) {
+                    throw new Error('无效的加密文件 (密文为空)');
+                }
+
+                const keyMaterial = await crypto.subtle.importKey(
+                    'raw',
+                    encoder.encode(password),
+                    'PBKDF2',
+                    false,
+                    ['deriveKey']
+                );
+                const key = await crypto.subtle.deriveKey({
+                        name: 'PBKDF2',
+                        salt: salt,
+                        iterations: 200000,
+                        hash: 'SHA-256'
+                    },
+                    keyMaterial, {
+                        name: 'AES-GCM',
+                        length: 256
+                    },
+                    false,
+                    ['decrypt']
+                );
+
+                const decrypted = await crypto.subtle.decrypt({
+                        name: 'AES-GCM',
+                        iv: iv
+                    },
+                    key,
+                    ciphertext
+                );
+                return new TextDecoder().decode(decrypted);
+            }
+
+            // ============================================================
+            //  加密区：上传txt -> 填入文本域
+            // ============================================================
+            txtFileInput.addEventListener('change', async function() {
+                if (this.files && this.files.length > 0) {
+                    const file = this.files[0];
+                    if (!file.name.toLowerCase().endsWith('.txt')) {
+                        setStatus(encStatus, '⚠️ 请选择 .txt 文件', 'error');
+                        txtFileName.textContent = '未选择文件';
+                        txtFileName.className = 'file-name';
+                        this.value = '';
+                        return;
+                    }
+                    try {
+                        const content = await readFileAsText(file);
+                        encText.value = content;
+                        txtFileName.textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+                        txtFileName.className = 'file-name has-file';
+                        setStatus(encStatus, '✅ 已加载: ' + file.name, 'success');
+                        // 触发 input 事件，以便其他监听
+                        encText.dispatchEvent(new Event('input'));
+                    } catch (err) {
+                        setStatus(encStatus, '❌ 读取失败: ' + err.message, 'error');
+                        txtFileName.textContent = '未选择文件';
+                        txtFileName.className = 'file-name';
+                    }
+                } else {
+                    txtFileName.textContent = '未选择文件';
+                    txtFileName.className = 'file-name';
+                }
+            });
+
+            // 清空上传的txt (仅清空文件名显示，不清除文本框内容，用户可手动清除)
+            clearTxtBtn.addEventListener('click', function() {
+                txtFileInput.value = '';
+                txtFileName.textContent = '未选择文件';
+                txtFileName.className = 'file-name';
+                setStatus(encStatus, '💡 已清除文件，可手动输入或重新上传', '');
+            });
+
+            // ============================================================
+            //  加密按钮
+            // ============================================================
+            encryptBtn.addEventListener('click', async function() {
+                const password = encPw.value;
+                const text = encText.value;
+
+                encryptBtn.disabled = true;
+                const originalHtml = encryptBtn.innerHTML;
+                encryptBtn.innerHTML = '<span class="spinner"></span> 加密中…';
+                setStatus(encStatus, '⏳ 正在加密...');
+
+                try {
+                    const encryptedData = await encryptText(text, password);
+                    const blob = new Blob([encryptedData], { type: 'application/octet-stream' });
+                    const filename = getTimestampFilename('encrypted', 'zhdd');
+                    downloadBlob(blob, filename);
+                    setStatus(encStatus, '✅ 加密成功！文件已下载: ' + filename, 'success');
+                } catch (err) {
+                    setStatus(encStatus, '❌ ' + err.message, 'error');
+                } finally {
+                    encryptBtn.disabled = false;
+                    encryptBtn.innerHTML = originalHtml;
+                }
+            });
+
+            // ============================================================
+            //  解密区：选择 .zhdd 文件
+            // ============================================================
+            fileInput.addEventListener('change', function() {
+                if (this.files && this.files.length > 0) {
+                    const f = this.files[0];
+                    if (!f.name.toLowerCase().endsWith('.zhdd')) {
+                        setStatus(decStatus, '⚠️ 请选择后缀为 .zhdd 的文件', 'error');
+                        fileName.textContent = '未选择文件';
+                        fileName.className = 'file-name';
+                        this.value = '';
+                        return;
+                    }
+                    fileName.textContent = f.name + ' (' + (f.size / 1024).toFixed(1) + ' KB)';
+                    fileName.className = 'file-name has-file';
+                    setStatus(decStatus, '📎 已选择文件，输入密码后解密', '');
+                    // 清空旧结果
+                    decResult.textContent = '';
+                    downloadTxtBtn.disabled = true;
+                } else {
+                    fileName.textContent = '未选择文件';
+                    fileName.className = 'file-name';
+                }
+            });
+
+            // ============================================================
+            //  解密按钮
+            // ============================================================
+            decryptBtn.addEventListener('click', async function() {
+                const password = decPw.value;
+                const file = fileInput.files && fileInput.files[0];
+
+                if (!file) {
+                    setStatus(decStatus, '⚠️ 请先选择一个 .zhdd 文件', 'error');
+                    return;
+                }
+                if (!file.name.toLowerCase().endsWith('.zhdd')) {
+                    setStatus(decStatus, '⚠️ 请选择后缀为 .zhdd 的文件', 'error');
+                    return;
+                }
+
+                decryptBtn.disabled = true;
+                const origHtml = decryptBtn.innerHTML;
+                decryptBtn.innerHTML = '<span class="spinner"></span> 解密中…';
+                setStatus(decStatus, '⏳ 正在解密...');
+                decResult.textContent = '';
+                downloadTxtBtn.disabled = true;
+
+                try {
+                    const buffer = await readFileAsBuffer(file);
+                    const data = new Uint8Array(buffer);
+                    const plaintext = await decryptData(data, password);
+                    decResult.textContent = plaintext;
+                    setStatus(decStatus, '✅ 解密成功！', 'success');
+                    downloadTxtBtn.disabled = false;
+                } catch (err) {
+                    setStatus(decStatus, '❌ ' + err.message, 'error');
+                    decResult.textContent = '';
+                    downloadTxtBtn.disabled = true;
+                } finally {
+                    decryptBtn.disabled = false;
+                    decryptBtn.innerHTML = origHtml;
+                }
+            });
+
+            // ============================================================
+            //  下载为txt
+            // ============================================================
+            downloadTxtBtn.addEventListener('click', function() {
+                const content = decResult.textContent;
+                if (!content) {
+                    setStatus(decStatus, '⚠️ 没有可下载的内容，请先解密', 'error');
+                    return;
+                }
+                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                const filename = getTimestampFilename('decrypted', 'txt');
+                downloadBlob(blob, filename);
+                setStatus(decStatus, '✅ 已下载: ' + filename, 'success');
+            });
+
+            // ============================================================
+            //  复制结果
+            // ============================================================
+            copyBtn.addEventListener('click', function() {
+                const text = decResult.textContent;
+                if (!text) return;
+                navigator.clipboard.writeText(text).then(() => {
+                    const old = copyBtn.textContent;
+                    copyBtn.textContent = '✅ 已复制';
+                    setTimeout(() => { copyBtn.textContent = old; }, 1800);
+                }).catch(() => {
+                    const range = document.createRange();
+                    range.selectNode(decResult);
+                    window.getSelection().removeAllRanges();
+                    window.getSelection().addRange(range);
+                    document.execCommand('copy');
+                    const old = copyBtn.textContent;
+                    copyBtn.textContent = '✅ 已复制';
+                    setTimeout(() => { copyBtn.textContent = old; }, 1800);
+                });
+            });
+
+            // ============================================================
+            //  回车快捷键：加密 / 解密
+            // ============================================================
+            encPw.addEventListener('keydown', (e) => { if (e.key === 'Enter') encryptBtn.click(); });
+            encText.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.ctrlKey) encryptBtn.click(); });
+            decPw.addEventListener('keydown', (e) => { if (e.key === 'Enter') decryptBtn.click(); });
+
+            // ============================================================
+            //  初始状态
+            // ============================================================
+            setStatus(encStatus, '💡 输入密码和内容后点击加密');
+            setStatus(decStatus, '💡 选择 .zhdd 文件并输入密码后解密');
+            downloadTxtBtn.disabled = true;
+
+            console.log('🔐 文本加密解密工具已加载 (支持TXT上传/下载)');
+        })();
+    </script>
+
+</body>
+</html>
