@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>管理后台 - ZHDD网安空间</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            background: #0b0e14;
+            color: #e8edf5;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+        a { color: #00f5d4; text-decoration: none; }
+        .back-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: #5a738a;
+            font-size: 0.9rem;
+            transition: 0.3s;
+            z-index: 10;
+        }
+        .back-link:hover { color: #00f5d4; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .card h2 {
+            color: #00f5d4;
+            margin-bottom: 1rem;
+            font-size: 1.6rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 0.5rem;
+        }
+        .field { margin-bottom: 1.2rem; }
+        .field label {
+            display: block;
+            color: #8aa3bc;
+            margin-bottom: 4px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .field input, .field textarea {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            color: #e8edf5;
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            transition: 0.3s;
+        }
+        .field input:focus, .field textarea:focus {
+            border-color: #00f5d4;
+            box-shadow: 0 0 0 3px rgba(0, 245, 212, 0.08);
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .field textarea { min-height: 60px; resize: vertical; }
+        .field textarea.large { min-height: 120px; }
+        .btn {
+            background: linear-gradient(135deg, #00f5d4, #0077b6);
+            border: none;
+            color: #0b0e14;
+            font-weight: 700;
+            padding: 10px 28px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+            font-family: inherit;
+        }
+        .btn:hover { transform: scale(1.02); box-shadow: 0 8px 30px rgba(0, 245, 212, 0.25); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #8aa3bc;
+        }
+        .btn-outline:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: none; }
+        .login-box { max-width: 400px; margin: 3rem auto; text-align: center; }
+        .login-box h2 { color: #00f5d4; margin-bottom: 0.5rem; }
+        .login-box .sub { color: #8aa3bc; margin-bottom: 1.5rem; }
+        .login-box input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            color: #e8edf5;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            outline: none;
+        }
+        .login-box input[type="password"]:focus { border-color: #00f5d4; }
+        .login-box .error { color: #ff6b6b; margin-top: 0.5rem; display: none; }
+        .hidden { display: none; }
+        .status-msg { margin-top: 1rem; text-align: center; font-size: 0.95rem; min-height: 1.5rem; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .tab-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 0.5rem;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: #8aa3bc;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: 0.3s;
+            font-family: inherit;
+        }
+        .tab-btn.active { background: rgba(0, 245, 212, 0.12); color: #00f5d4; }
+        .tab-btn:hover { color: #e8edf5; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeUp 0.3s ease; }
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .footer { text-align: center; color: #5a738a; font-size: 0.8rem; margin-top: 2rem; }
+        .footer span { color: #00f5d4; }
+        @media (max-width: 700px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .card { padding: 1.2rem; }
+            .back-link { top: 10px; left: 10px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-link">← 返回主页</a>
+
+    <div class="container">
+
+        <!-- ===== 登录区域 ===== -->
+        <div id="loginArea" class="card login-box">
+            <h2>🔐 管理后台</h2>
+            <p class="sub">请输入管理密码</p>
+            <input type="password" id="adminPassword" placeholder="密码" autofocus />
+            <button class="btn" id="loginBtn" style="width:100%;">登录</button>
+            <div class="error" id="loginError">❌ 密码错误</div>
+        </div>
+
+        <!-- ===== 主面板（登录后显示） ===== -->
+        <div id="mainPanel" class="hidden">
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px;">
+                <h1 style="color:#00f5d4; font-size:1.8rem;">📋 管理面板</h1>
+                <button class="btn btn-outline" id="logoutBtn">退出登录</button>
+            </div>
+
+            <div class="tab-bar">
+                <button class="tab-btn active" data-tab="tabPublish">📝 发布文章</button>
+                <button class="tab-btn" data-tab="tabConfig">⚙️ 编辑网站内容</button>
+            </div>
+
+            <!-- ===== Tab1: 发布文章 ===== -->
+            <div id="tabPublish" class="tab-content active">
+                <div class="card">
+                    <h2>📝 发布新文章</h2>
+                    <div class="field">
+                        <label for="postTitle">文章标题（建议格式：年-月-日-标题）</label>
+                        <input type="text" id="postTitle" placeholder="例如：2026-07-09-安全报告" />
+                    </div>
+                    <div class="field">
+                        <label for="postContent">Markdown 内容</label>
+                        <textarea id="postContent" class="large" placeholder="在此输入文章内容（支持 Markdown）"></textarea>
+                    </div>
+                    <button class="btn" id="publishBtn">🚀 发布文章</button>
+                    <div class="status-msg" id="publishStatus"></div>
+                </div>
+            </div>
+
+            <!-- ===== Tab2: 编辑网站内容 ===== -->
+            <div id="tabConfig" class="tab-content">
+                <div class="card">
+                    <h2>⚙️ 编辑网站文字</h2>
+                    <p style="color:#8aa3bc; margin-bottom:1.2rem;">修改后点击"保存配置"即可更新网站内容</p>
+
+                    <form id="configForm">
+                        <h3 style="color:#00f5d4; margin:1.5rem 0 0.5rem;">🏠 首页</h3>
+                        <div class="field"><label>标题</label><input type="text" id="cfg_home_title" /></div>
+                        <div class="field"><label>副标题</label><input type="text" id="cfg_home_subtitle" /></div>
+                        <div class="field"><label>描述（支持HTML）</label><textarea id="cfg_home_desc" class="large"></textarea></div>
+                        <div class="grid-2">
+                            <div class="field"><label>徽章1 数字</label><input type="text" id="cfg_badge1_num" /></div>
+                            <div class="field"><label>徽章1 标签</label><input type="text" id="cfg_badge1_label" /></div>
+                            <div class="field"><label>徽章2 数字</label><input type="text" id="cfg_badge2_num" /></div>
+                            <div class="field"><label>徽章2 标签</label><input type="text" id="cfg_badge2_label" /></div>
+                            <div class="field"><label>徽章3 数字</label><input type="text" id="cfg_badge3_num" /></div>
+                            <div class="field"><label>徽章3 标签</label><input type="text" id="cfg_badge3_label" /></div>
+                        </级>
+
+                        <h3 风格="颜色:#00f5d4; 边缘:1.5快速眼动的 0 0.5快速眼动的;">👥 成员页面</h3>
+                        <级 班级="field"><标签>标题</标签><输入 类型="text" 身份证="cfg_members_title" /></级>
+                        <级 班级="field"><标签>副标题</标签><输入 类型="text" 身份证="cfg_members_subtitle" /></级>
+                        <级 班级="field"><标签>成员列表（每行一个，格式：姓名|角色|描述）</标签>
+                            <文本区域 身份证="cfg_members_list" 班级="large" 行="6" 占位符="成员一|安全架构师|暂无介绍…"></文本区域>
+                        </级>
+
+                        <h3 风格="颜色:#00f5d4; 边缘:1.5快速眼动的 0 0.5快速眼动的;">📌 关于页面</h3>
+                        <级 班级="field"><标签>标题</标签><输入 类型="text" 身份证="cfg_about_title" /></级>
+                        <级 班级="field"><标签>副标题</标签><输入 类型="text" 身份证="cfg_about_subtitle" /></级>
+                        <级 班级="field"><标签>使命（支持HTML）</标签><文本区域 身份证="cfg_about_mission" 班级="large"></文本区域></级>
+                        <级 班级="field"><标签>核心能力（每行一个）</标签><文本区域 身份证="cfg_about_abilities" 班级="large" 行="5"></文本区域></级>
+                        <级 班级="field"><标签>价值观（支持HTML）</标签><文本区域 身份证="cfg_about_values" 班级="large"></文本区域></级>
+
+                        <h3 风格="颜色:#00f5d4; 边缘:1.5快速眼动的 0 0.5快速眼动的;">📬 联系页面</h3>
+                        <级 班级="field"><标签>标题</标签><输入 类型="text" 身份证="cfg_contact_title" /></级>
+                        <级 班级="field"><标签>副标题</标签><输入 类型="text" 身份证="cfg_contact_subtitle" /></级>
+                        <级 班级="field"><标签>地址</标签><输入 类型="text" 身份证="cfg_contact_address" /></级>
+                        <级 班级="field"><标签>电话</标签><输入 类型="text" 身份证="cfg_contact_phone" /></级>
+                        <级 班级="field"><标签>邮箱</标签><输入 类型="text" 身份证="cfg_contact_email" /></级>
+                        <级 班级="field"><标签>官网</标签><输入 类型="text" 身份证="cfg_contact_website" /></级>
+                        <级 班级="field"><标签>表单标题</标签><输入 类型="text" 身份证="cfg_contact_form_title" /></级>
+                        <级 班级="field"><标签>表单-姓名标签</标签><输入 类型="text" 身份证="cfg_contact_form_name" /></级>
+                        <级 class="field"><label>表单-邮箱标签</label><input type="text" id="cfg_contact_form_email" /></div>
+                        <div class="field"><label>表单-留言标签</label><input type="text" id="cfg_contact_form_message" /></div>
+                        <div class="field"><label>表单-提交按钮文字</label><input type="text" id="cfg_contact_form_submit" /></div>
+
+                        <h3 style="color:#00f5d4; margin:1.5rem 0 0.5rem;">📄 页脚</h3>
+                        <div class="field"><label>版权信息（支持HTML）</label><input type="text" id="cfg_footer_copyright" /></div>
+
+                        <button type="button" class="btn" id="saveConfigBtn">💾 保存配置</button>
+                        <div class="status-msg" id="configStatus"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">&copy; 2026 <span>ZHDD 网安空间</span> · 管理后台</div>
+    </div>
+
+    <!-- ============================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ======== 已配置（Token 需要你重新生成并填入） ========
+            const GITHUB_USERNAME = 'kali0914';
+            const REPO_NAME = 'zhdd.bbroot.com';
+            const HARD_CODED_TOKEN = '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';  //
+            const CORRECT_PASSWORD = '070301';
+            const CONFIG_PATH = 'site_config.json';
+            // ======================================================
+
+            // ---- DOM ----
+            const loginArea = document.getElementById('loginArea');
+            const mainPanel = document.getElementById('mainPanel');
+            const passwordInput = document.getElementById('adminPassword');
+            const loginBtn = document.getElementById('loginBtn');
+            const loginError = document.getElementById('loginError');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = {
+                tabPublish: document.getElementById('tabPublish'),
+                tabConfig: document.getElementById('tabConfig')
+            };
+
+            const postTitle = document.getElementById('postTitle');
+            const postContent = document.getElementById('postContent');
+            const publishBtn = document.getElementById('publishBtn');
+            const publishStatus = document.getElementById('publishStatus');
+
+            const cfgFields = {
+                home_title: document.getElementById('cfg_home_title'),
+                home_subtitle: document.getElementById('cfg_home_subtitle'),
+                home_desc: document.getElementById('cfg_home_desc'),
+                badge1_num: document.getElementById('cfg_badge1_num'),
+                badge1_label: document.getElementById('cfg_badge1_label'),
+                badge2_num: document.getElementById('cfg_badge2_num'),
+                badge2_label: document.getElementById('cfg_badge2_label'),
+                badge3_num: document.getElementById('cfg_badge3_num'),
+                badge3_label: document.getElementById('cfg_badge3_label'),
+                members_title: document.getElementById('cfg_members_title'),
+                members_subtitle: document.getElementById('cfg_members_subtitle'),
+                members_list: document.getElementById('cfg_members_list'),
+                about_title: document.getElementById('cfg_about_title'),
+                about_subtitle: document.getElementById('cfg_about_subtitle'),
+                about_mission: document.getElementById('cfg_about_mission'),
+                about_abilities: document.getElementById('cfg_about_abilities'),
+                about_values: document.getElementById('cfg_about_values'),
+                contact_title: document.getElementById('cfg_contact_title'),
+                contact_subtitle: document.getElementById('cfg_contact_subtitle'),
+                contact_address: document.getElementById('cfg_contact_address'),
+                contact_phone: document.getElementById('cfg_contact_phone'),
+                contact_email: document.getElementById('cfg_contact_email'),
+                contact_website: document.getElementById('cfg_contact_website'),
+                contact_form_title: document.getElementById('cfg_contact_form_title'),
+                contact_form_name: document.getElementById('cfg_contact_form_name'),
+                contact_form_email: document.getElementById('cfg_contact_form_email'),
+                contact_form_message: document.getElementById('cfg_contact_form_message'),
+                contact_form_submit: document.getElementById('cfg_contact_form_submit'),
+                footer_copyright: document.getElementById('cfg_footer_copyright'),
+            };
+            const saveConfigBtn = document.getElementById('saveConfigBtn');
+            const configStatus = document.getElementById('configStatus');
+
+            // ---- 登录 ----
+            function doLogin() {
+                const pwd = passwordInput.value.trim();
+                if (pwd === CORRECT_PASSWORD) {
+                    sessionStorage.setItem('admin_logged_in', 'true');
+                    loginArea.style.display = 'none';
+                    mainPanel.classList.remove('hidden');
+                    loginError.style.display = 'none';
+                    loadConfigToForm();
+                } else {
+                    loginError.style.display = 'block';
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                }
+            }
+
+            function doLogout() {
+                sessionStorage.removeItem('admin_logged_in');
+                loginArea.style.display = 'block';
+                mainPanel.classList.add('hidden');
+                passwordInput.value = '';
+                loginError.style.display = 'none';
+                passwordInput.focus();
+            }
+
+            loginBtn.addEventListener('click', doLogin);
+            passwordInput.addEventListener('keypress', e => { if (e.key === 'Enter') doLogin(); });
+            logoutBtn.addEventListener('click', doLogout);
+
+            // ---- Tab 切换 ----
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const tabId = this.dataset.tab;
+                    Object.keys(tabContents).forEach(key => {
+                        tabContents[key].classList.toggle('active', key === tabId);
+                    });
+                });
+            });
+
+            // ---- 工具：Base64 ----
+            function unicodeToBase64(str) {
+                const utf8Bytes = new TextEncoder().encode(str);
+                let binary = '';
+                for (let i = 0; i < utf8Bytes.length; i++) {
+                    binary += String.fromCharCode(utf8Bytes[i]);
+                }
+                return btoa(binary);
+            }
+
+            function base64ToUnicode(base64) {
+                const binary = atob(base64);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) {
+                    bytes[i] = binary.charCodeAt(i);
+                }
+                return new TextDecoder('utf-8').decode(bytes);
+            }
+
+            // ---- 读取配置到表单 ----
+            async function loadConfigToForm() {
+                try {
+                    const res = await fetch(
+                        `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${CONFIG_PATH}`, {
+                            headers: {
+                                'Authorization': `Bearer ${HARD_CODED_TOKEN}`,
+                                'Accept': 'application/vnd.github+json'
+                            }
+                        });
+                    if (res.status === 404) {
+                        configStatus.textContent = '⚠️ site_config.json 不存在，将使用默认值';
+                        configStatus.style.color = '#ffaa00';
+                        return;
+                    }
+                    if (!res.ok) throw new Error('读取配置失败');
+                    const data = await res.json();
+                    const content = base64ToUnicode(data.content);
+                    const config = JSON.parse(content);
+                    fillForm(config);
+                    configStatus.textContent = '✅ 已加载当前配置';
+                    configStatus.style.color = '#00f5d4';
+                } catch (err) {
+                    console.error(err);
+                    configStatus.textContent = '❌ 加载配置失败: ' + err.message;
+                    configStatus.style.color = '#ff6b6b';
+                }
+            }
+
+            function fillForm(config) {
+                cfgFields.home_title.value = config.home?.title || '';
+                cfgFields.home_subtitle.value = config.home?.subtitle || '';
+                cfgFields.home_desc.value = config.home?.description || '';
+                const badges = config.home?.badges || [{ number: '', label: '' }, { number: '', label: '' }, { number: '',
+                    label: '' }];
+                cfgFields.badge1_num.value = badges[0]?.number || '';
+                cfgFields.badge1_label.value = badges[0]?.label || '';
+                cfgFields.badge2_num.value = badges[1]?.number || '';
+                cfgFields.badge2_label.value = badges[1]?.label || '';
+                cfgFields.badge3_num.value = badges[2]?.number || '';
+                cfgFields.badge3_label.value = badges[2]?.label || '';
+
+                cfgFields.members_title.value = config.members?.title || '';
+                cfgFields.members_subtitle.value = config.members?.subtitle || '';
+                const members = config.members?.list || [];
+                cfgFields.members_list.value = members.map(m => `${m.name}|${m.role}|${m.desc}`).join('\n');
+
+                cfgFields.about_title.value = config.about?.title || '';
+                cfgFields.about_subtitle.value = config.about?.subtitle || '';
+                cfgFields.about_mission.value = config.about?.mission || '';
+                cfgFields.about_abilities.value = (config.about?.abilities || []).join('\n');
+                cfgFields.about_values.value = config.about?.values || '';
+
+                const info = config.contact?.info || {};
+                cfgFields.contact_title.value = config.contact?.title || '';
+                cfgFields.contact_subtitle.value = config.contact?.subtitle || '';
+                cfgFields.contact_address.value = info.address || '';
+                cfgFields.contact_phone.value = info.phone || '';
+                cfgFields.contact_email.value = info.email || '';
+                cfgFields.contact_website.value = info.website || '';
+                cfgFields.contact_form_title.value = config.contact?.form_title || '';
+                cfgFields.contact_form_name.value = config.contact?.form_name_label || '';
+                cfgFields.contact_form_email.value = config.contact?.form_email_label || '';
+                cfgFields.contact_form_message.value = config.contact?.form_message_label || '';
+                cfgFields.contact_form_submit.value = config.contact?.form_submit_label || '';
+
+                cfgFields.footer_copyright.value = config.footer?.copyright || '';
+            }
+
+            // ---- 收集表单数据 ----
+            function collectConfig() {
+                const badges = [
+                    { number: cfgFields.badge1_num.value.trim(), label: cfgFields.badge1_label.value.trim() },
+                    { number: cfgFields.badge2_num.value.trim(), label: cfgFields.badge2_label.value.trim() },
+                    { number: cfgFields.badge3_num.value.trim(), label: cfgFields.badge3_label.value.trim() }
+                ].filter(b => b.number || b.label);
+
+                const members = cfgFields.members_list.value.split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line)
+                    .map(line => {
+                        const parts = line.split('|').map(s => s.trim());
+                        return { name: parts[0] || '未命名', role: parts[1] || '', desc: parts[2] || '' };
+                    });
+
+                const abilities = cfgFields.about_abilities.value.split('\n')
+                    .map(s => s.trim()).filter(s => s);
+
+                return {
+                    home: {
+                        title: cfgFields.home_title.value.trim(),
+                        subtitle: cfgFields.home_subtitle.value.trim(),
+                        description: cfgFields.home_desc.value.trim(),
+                        badges: badges
+                    },
+                    members: {
+                        title: cfgFields.members_title.value.trim(),
+                        subtitle: cfgFields.members_subtitle.value.trim(),
+                        list: members
+                    },
+                    about: {
+                        title: cfgFields.about_title.value.trim(),
+                        subtitle: cfgFields.about_subtitle.value.trim(),
+                        mission: cfgFields.about_mission.value.trim(),
+                        abilities: abilities,
+                        values: cfgFields.about_values.value.trim()
+                    },
+                    contact: {
+                        title: cfgFields.contact_title.value.trim(),
+                        subtitle: cfgFields.contact_subtitle.value.trim(),
+                        info: {
+                            address: cfgFields.contact_address.value.trim(),
+                            phone: cfgFields.contact_phone.value.trim(),
+                            email: cfgFields.contact_email.value.trim(),
+                            website: cfgFields.contact_website.value.trim()
+                        },
+                        form_title: cfgFields.contact_form_title.value.trim(),
+                        form_name_label: cfgFields.contact_form_name.value.trim(),
+                        form_email_label: cfgFields.contact_form_email.value.trim(),
+                        form_message_label: cfgFields.contact_form_message.value.trim(),
+                        form_submit_label: cfgFields.contact_form_submit.value.trim()
+                    },
+                    footer: {
+                        copyright: cfgFields.footer_copyright.value.trim()
+                    }
+                };
+            }
+
+            // ---- 保存配置 ----
+            async function saveConfig() {
+                const config = collectConfig();
+                const jsonStr = JSON.stringify(config, null, 2);
+                const encoded = unicodeToBase64(jsonStr);
+
+                configStatus.textContent = '⏳ 保存中...';
+                configStatus.style.color = '#8aa3bc';
+                saveConfigBtn.disabled = true;
+
+                try {
+                    let sha = null;
+                    const getRes = await fetch(
+                        `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${CONFIG_PATH}`, {
+                            headers: {
+                                'Authorization': `Bearer ${HARD_CODED_TOKEN}`,
+                                'Accept': 'application/vnd.github+json'
+                            }
+                        });
+                    if (getRes.status === 200) {
+                        const data = await getRes.json();
+                        sha = data.sha;
+                    } else if (getRes.status !== 404) {
+                        throw new Error('检查文件失败');
+                    }
+
+                    const putBody = {
+                        message: '更新网站配置（通过管理后台）',
+                        content: encoded,
+                    };
+                    if (sha) putBody.sha = sha;
+
+                    const putRes = await fetch(
+                        `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${CONFIG_PATH}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Authorization': `Bearer ${HARD_CODED_TOKEN}`,
+                                'Accept': 'application/vnd.github+json',
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(putBody)
+                        });
+
+                    if (putRes.ok) {
+                        configStatus.textContent = '✅ 配置保存成功！网站将自动更新。';
+                        configStatus.style.color = '#00f5d4';
+                    } else {
+                        const err = await putRes.json();
+                        throw new Error(err.message || '保存失败');
+                    }
+                } catch (error) {
+                    configStatus.textContent = '❌ 保存失败: ' + error.message;
+                    configStatus.style.color = '#ff6b6b';
+                    console.error(error);
+                } finally {
+                    saveConfigBtn.disabled = false;
+                }
+            }
+
+            saveConfigBtn.addEventListener('click', saveConfig);
+
+            // ---- 发布文章 ----
+            async function doPublish() {
+                const title = postTitle.value.trim();
+                const content = postContent.value.trim();
+                if (!title || !content) {
+                    publishStatus.textContent = '⚠️ 请填写标题和内容';
+                    publishStatus.style.color = '#ff6b6b';
+                    return;
+                }
+                let filename = title;
+                if (!filename.endsWith('.md')) filename += '.md';
+                const filePath = filename.startsWith('_posts/') ? filename : `_posts/${filename}`;
+                const encoded = unicodeToBase64(content);
+
+                publishStatus.textContent = '⏳ 发布中...';
+                publishStatus.style.color = '#8aa3bc';
+                publishBtn.disabled = true;
+
+                try {
+                    let sha = null;
+                    const getRes = await fetch(
+                        `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${filePath}`, {
+                            headers: {
+                                'Authorization': `Bearer ${HARD_CODED_TOKEN}`,
+                                'Accept': 'application/vnd.github+json'
+                            }
+                        });
+                    if (getRes.status === 200) {
+                        const data = await getRes.json();
+                        sha = data.sha;
+                        if (!confirm(`文件 "${filePath}" 已存在，是否覆盖？`)) {
+                            publishStatus.textContent = '❌ 已取消';
+                            publishStatus.style.color = '#ff6b6b';
+                            publishBtn.disabled = false;
+                            return;
+                        }
+                    } else if (getRes.status !== 404) {
+                        throw new Error('检查文件失败');
+                    }
+
+                    const putBody = {
+                        message: `通过管理后台发布: ${filename}`,
+                        content: encoded,
+                    };
+                    if (sha) putBody.sha = sha;
+
+                    const putRes = await fetch(
+                        `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${filePath}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Authorization': `Bearer ${HARD_CODED_TOKEN}`,
+                                'Accept': 'application/vnd.github+json',
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(putBody)
+                        });
+
+                    if (putRes.ok) {
+                        publishStatus.textContent = '✅ 文章发布成功！';
+                        publishStatus.style.color = '#00f5d4';
+                        postTitle.value = '';
+                        postContent.value = '';
+                    } else {
+                        const err = await putRes.json();
+                        throw new Error(err.message || '发布失败');
+                    }
+                } catch (error) {
+                    publishStatus.textContent = '❌ ' + error.message;
+                    publishStatus.style.color = '#ff6b6b';
+                    console.error(error);
+                } finally {
+                    publishBtn.disabled = false;
+                }
+            }
+
+            publishBtn.addEventListener('click', doPublish);
+
+            // ---- 页面加载检查登录 ----
+            if (sessionStorage.getItem('admin_logged_in') === 'true') {
+                loginArea.style.display = 'none';
+                mainPanel.classList.remove('hidden');
+                loadConfigToForm();
+            } else {
+                loginArea.style.display = 'block';
+                mainPanel.classList.add('hidden');
+                passwordInput.focus();
+            }
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && sessionStorage.getItem('admin_logged_in') === 'true') {
+                    if (confirm('确定退出登录吗？')) doLogout();
+                }
+            });
+
+        })();
+    </script>
+</body>
+</html>
