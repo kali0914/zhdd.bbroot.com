@@ -6,12 +6,7 @@
     <title>ZHDD网安空间</title>
     <style>
         /* ===== 全局重置 & 基础 ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
             background: #0b0e14;
@@ -20,11 +15,7 @@
             display: flex;
             flex-direction: column;
         }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
+        a { text-decoration: none; color: inherit; }
 
         /* ===== 顶部导航 ===== */
         .navbar {
@@ -41,7 +32,6 @@
             z-index: 100;
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
-
         .logo {
             display: flex;
             align-items: center;
@@ -52,7 +42,6 @@
             color: #00f5d4;
             text-shadow: 0 0 20px rgba(0, 245, 212, 0.2);
         }
-
         .logo-icon {
             width: 36px;
             height: 36px;
@@ -66,18 +55,13 @@
             color: #0b0e14;
             box-shadow: 0 0 20px rgba(0, 245, 212, 0.25);
         }
-
         .nav-links {
             display: flex;
             gap: 8px;
             list-style: none;
             align-items: center;
         }
-
-        .nav-links li {
-            display: inline;
-        }
-
+        .nav-links li { display: inline; }
         .nav-btn {
             background: transparent;
             border: none;
@@ -92,18 +76,12 @@
             letter-spacing: 0.3px;
             position: relative;
         }
-
-        .nav-btn:hover {
-            color: #ffffff;
-            background: rgba(0, 245, 212, 0.08);
-        }
-
+        .nav-btn:hover { color: #ffffff; background: rgba(0, 245, 212, 0.08); }
         .nav-btn.active {
             color: #00f5d4;
             background: rgba(0, 245, 212, 0.12);
             box-shadow: 0 0 20px rgba(0, 245, 212, 0.06);
         }
-
         .nav-btn.active::after {
             content: '';
             position: absolute;
@@ -127,24 +105,11 @@
         }
 
         /* ===== 页面切换 ===== */
-        .page {
-            display: none;
-            animation: fadeUp 0.45s ease forwards;
-        }
-
-        .page.active {
-            display: block;
-        }
-
+        .page { display: none; animation: fadeUp 0.45s ease forwards; }
+        .page.active { display: block; }
         @keyframes fadeUp {
-            0% {
-                opacity: 0;
-                transform: translateY(24px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            0% { opacity: 0; transform: translateY(24px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
         /* ===== 首页 ===== */
@@ -157,7 +122,6 @@
             padding: 3rem 1rem 2rem;
             min-height: 60vh;
         }
-
         .hero h1 {
             font-size: 3.8rem;
             font-weight: 800;
@@ -168,7 +132,6 @@
             letter-spacing: 2px;
             margin-bottom: 0.5rem;
         }
-
         .hero .subtitle {
             font-size: 1.3rem;
             color: #8aa3bc;
@@ -176,7 +139,6 @@
             font-weight: 300;
             letter-spacing: 4px;
         }
-
         .hero .desc {
             max-width: 700px;
             font-size: 1.1rem;
@@ -188,12 +150,7 @@
             border: 1px solid rgba(0, 245, 212, 0.08);
             backdrop-filter: blur(4px);
         }
-
-        .hero .desc span {
-            color: #00f5d4;
-            font-weight: 600;
-        }
-
+        .hero .desc span { color: #00f5d4; font-weight: 600; }
         .badge-grid {
             display: flex;
             gap: 2rem;
@@ -201,7 +158,6 @@
             flex-wrap: wrap;
             justify-content: center;
         }
-
         .badge-item {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(0, 245, 212, 0.10);
@@ -211,24 +167,13 @@
             text-align: center;
             transition: 0.3s;
         }
-
         .badge-item:hover {
             border-color: rgba(0, 245, 212, 0.30);
             background: rgba(0, 245, 212, 0.05);
             transform: translateY(-4px);
         }
-
-        .badge-item .number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #00f5d4;
-        }
-
-        .badge-item .label {
-            font-size: 0.85rem;
-            color: #8aa3bc;
-            margin-top: 4px;
-        }
+        .badge-item .number { font-size: 2rem; font-weight: 700; color: #00f5d4; }
+        .badge-item .label { font-size: 0.85rem; color: #8aa3bc; margin-top: 4px; }
 
         /* ===== 成员页面 ===== */
         .members-grid {
@@ -237,7 +182,6 @@
             gap: 2rem;
             margin-top: 1.5rem;
         }
-
         .member-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.06);
@@ -247,13 +191,11 @@
             transition: 0.3s ease;
             backdrop-filter: blur(4px);
         }
-
         .member-card:hover {
             border-color: rgba(0, 245, 212, 0.20);
             transform: translateY(-6px);
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
         }
-
         .member-avatar {
             width: 80px;
             height: 80px;
@@ -269,26 +211,9 @@
             border: 2px solid rgba(0, 245, 212, 0.15);
             box-shadow: 0 0 30px rgba(0, 245, 212, 0.04);
         }
-
-        .member-name {
-            font-size: 1.15rem;
-            font-weight: 600;
-            color: #e8edf5;
-        }
-
-        .member-role {
-            font-size: 0.85rem;
-            color: #8aa3bc;
-            margin: 4px 0 10px;
-        }
-
-        .member-desc {
-            font-size: 0.9rem;
-            color: #b0c8dd;
-            line-height: 1.5;
-            opacity: 0.7;
-            font-style: italic;
-        }
+        .member-name { font-size: 1.15rem; font-weight: 600; color: #e8edf5; }
+        .member-role { font-size: 0.85rem; color: #8aa3bc; margin: 4px 0 10px; }
+        .member-desc { font-size: 0.9rem; color: #b0c8dd; line-height: 1.5; opacity: 0.7; font-style: italic; }
 
         .section-title {
             font-size: 2rem;
@@ -297,23 +222,11 @@
             color: #e8edf5;
             letter-spacing: 1px;
         }
-
-        .section-title .highlight {
-            color: #00f5d4;
-        }
-
-        .section-sub {
-            color: #8aa3bc;
-            margin-bottom: 2rem;
-            font-size: 1rem;
-        }
+        .section-title .highlight { color: #00f5d4; }
+        .section-sub { color: #8aa3bc; margin-bottom: 2rem; font-size: 1rem; }
 
         /* ===== 简介页面 ===== */
-        .about-content {
-            max-width: 860px;
-            margin: 0 auto;
-        }
-
+        .about-content { max-width: 860px; margin: 0 auto; }
         .about-block {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.06);
@@ -322,7 +235,6 @@
             margin-bottom: 2rem;
             backdrop-filter: blur(4px);
         }
-
         .about-block h3 {
             font-size: 1.4rem;
             color: #00f5d4;
@@ -331,19 +243,8 @@
             align-items: center;
             gap: 10px;
         }
-
-        .about-block p {
-            line-height: 1.9;
-            color: #b8ccdd;
-            font-size: 1.05rem;
-        }
-
-        .about-block ul {
-            list-style: none;
-            padding: 0;
-            margin-top: 0.8rem;
-        }
-
+        .about-block p { line-height: 1.9; color: #b8ccdd; font-size: 1.05rem; }
+        .about-block ul { list-style: none; padding: 0; margin-top: 0.8rem; }
         .about-block ul li {
             padding: 0.5rem 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
@@ -352,12 +253,7 @@
             align-items: center;
             gap: 12px;
         }
-
-        .about-block ul li::before {
-            content: '▸';
-            color: #00f5d4;
-            font-weight: 700;
-        }
+        .about-block ul li::before { content: '▸'; color: #00f5d4; font-weight: 700; }
 
         /* ===== 联系页面 ===== */
         .contact-wrapper {
@@ -366,20 +262,13 @@
             gap: 2.5rem;
             margin-top: 1rem;
         }
-
         .contact-info {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 24px;
             padding: 2rem 2.2rem;
         }
-
-        .contact-info h3 {
-            font-size: 1.3rem;
-            color: #00f5d4;
-            margin-bottom: 1.5rem;
-        }
-
+        .contact-info h3 { font-size: 1.3rem; color: #00f5d4; margin-bottom: 1.5rem; }
         .contact-item {
             display: flex;
             align-items: center;
@@ -387,11 +276,7 @@
             padding: 0.8rem 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
         }
-
-        .contact-item:last-child {
-            border-bottom: none;
-        }
-
+        .contact-item:last-child { border-bottom: none; }
         .contact-item .icon {
             width: 40px;
             height: 40px;
@@ -404,16 +289,8 @@
             color: #00f5d4;
             flex-shrink: 0;
         }
-
-        .contact-item .info {
-            font-size: 0.98rem;
-            color: #b8ccdd;
-        }
-
-        .contact-item .info strong {
-            color: #e8edf5;
-            font-weight: 500;
-        }
+        .contact-item .info { font-size: 0.98rem; color: #b8ccdd; }
+        .contact-item .info strong { color: #e8edf5; font-weight: 500; }
 
         .contact-form {
             background: rgba(255, 255, 255, 0.02);
@@ -421,17 +298,8 @@
             border-radius: 24px;
             padding: 2rem 2.2rem;
         }
-
-        .contact-form h3 {
-            font-size: 1.3rem;
-            color: #00f5d4;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.2rem;
-        }
-
+        .contact-form h3 { font-size: 1.3rem; color: #00f5d4; margin-bottom: 1.5rem; }
+        .form-group { margin-bottom: 1.2rem; }
         .form-group label {
             display: block;
             font-size: 0.9rem;
@@ -439,9 +307,7 @@
             margin-bottom: 4px;
             font-weight: 500;
         }
-
-        .form-group input,
-        .form-group textarea {
+        .form-group input, .form-group textarea {
             width: 100%;
             padding: 12px 16px;
             background: rgba(255, 255, 255, 0.04);
@@ -453,19 +319,12 @@
             transition: 0.3s;
             outline: none;
         }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
+        .form-group input:focus, .form-group textarea:focus {
             border-color: #00f5d4;
             box-shadow: 0 0 0 3px rgba(0, 245, 212, 0.08);
             background: rgba(255, 255, 255, 0.06);
         }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
+        .form-group textarea { resize: vertical; min-height: 100px; }
         .submit-btn {
             background: linear-gradient(135deg, #00f5d4, #0077b6);
             border: none;
@@ -480,7 +339,6 @@
             letter-spacing: 0.5px;
             box-shadow: 0 4px 20px rgba(0, 245, 212, 0.15);
         }
-
         .submit-btn:hover {
             transform: scale(1.02);
             box-shadow: 0 8px 30px rgba(0, 245, 212, 0.25);
@@ -497,112 +355,53 @@
             background: rgba(13, 18, 28, 0.6);
             backdrop-filter: blur(8px);
         }
-
-        .footer span {
+        .footer span { color: #00f5d4; }
+        .footer .admin-link {
+            display: inline-block;
+            margin-top: 8px;
+            color: #5a738a;
+            font-size: 0.85rem;
+            transition: 0.3s;
+            border-bottom: 1px dashed #5a738a;
+        }
+        .footer .admin-link:hover {
             color: #00f5d4;
+            border-bottom-color: #00f5d4;
+        }
+
+        /* ===== 加载提示 ===== */
+        .loading-mask {
+            text-align: center;
+            padding: 4rem;
+            color: #8aa3bc;
+            font-size: 1.2rem;
         }
 
         /* ===== 响应式 ===== */
         @media (max-width: 820px) {
-            .navbar {
-                padding: 0 1.2rem;
-                height: 64px;
-                flex-wrap: wrap;
-            }
-
-            .logo {
-                font-size: 1.2rem;
-            }
-
-            .logo-icon {
-                width: 30px;
-                height: 30px;
-                font-size: 14px;
-            }
-
-            .nav-links {
-                gap: 4px;
-            }
-
-            .nav-btn {
-                font-size: 0.85rem;
-                padding: 6px 14px;
-            }
-
-            .hero h1 {
-                font-size: 2.4rem;
-            }
-
-            .hero .desc {
-                padding: 1.2rem 1.5rem;
-                font-size: 0.98rem;
-            }
-
-            .contact-wrapper {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-
-            .about-block {
-                padding: 1.5rem 1.2rem;
-            }
-
-            .members-grid {
-                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-                gap: 1.2rem;
-            }
-
-            .badge-grid {
-                gap: 1rem;
-            }
-
-            .badge-item {
-                padding: 0.8rem 1.2rem;
-                min-width: 100px;
-            }
-
-            .badge-item .number {
-                font-size: 1.5rem;
-            }
+            .navbar { padding: 0 1.2rem; height: 64px; flex-wrap: wrap; }
+            .logo { font-size: 1.2rem; }
+            .logo-icon { width: 30px; height: 30px; font-size: 14px; }
+            .nav-links { gap: 4px; }
+            .nav-btn { font-size: 0.85rem; padding: 6px 14px; }
+            .hero h1 { font-size: 2.4rem; }
+            .hero .desc { padding: 1.2rem 1.5rem; font-size: 0.98rem; }
+            .contact-wrapper { grid-template-columns: 1fr; gap: 1.5rem; }
+            .about-block { padding: 1.5rem 1.2rem; }
+            .members-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1.2rem; }
+            .badge-grid { gap: 1rem; }
+            .badge-item { padding: 0.8rem 1.2rem; min-width: 100px; }
+            .badge-item .number { font-size: 1.5rem; }
         }
-
         @media (max-width: 480px) {
-            .navbar {
-                padding: 0 0.8rem;
-                height: 58px;
-            }
-
-            .nav-btn {
-                font-size: 0.75rem;
-                padding: 4px 10px;
-            }
-
-            .logo {
-                font-size: 1rem;
-            }
-
-            .logo-icon {
-                width: 26px;
-                height: 26px;
-                font-size: 12px;
-            }
-
-            .hero h1 {
-                font-size: 1.8rem;
-            }
-
-            .hero .subtitle {
-                font-size: 0.95rem;
-                letter-spacing: 2px;
-            }
-
-            .section-title {
-                font-size: 1.5rem;
-            }
-
-            .member-card {
-                padding: 1.2rem 0.8rem;
-            }
+            .navbar { padding: 0 0.8rem; height: 58px; }
+            .nav-btn { font-size: 0.75rem; padding: 4px 10px; }
+            .logo { font-size: 1rem; }
+            .logo-icon { width: 26px; height: 26px; font-size: 12px; }
+            .hero h1 { font-size: 1.8rem; }
+            .hero .subtitle { font-size: 0.95rem; letter-spacing: 2px; }
+            .section-title { font-size: 1.5rem; }
+            .member-card { padding: 1.2rem 0.8rem; }
         }
     </style>
 </head>
@@ -612,7 +411,7 @@
     <nav class="navbar">
         <div class="logo">
             <span class="logo-icon">Z</span>
-            ZHDD 网安空间
+            <span id="brandName">ZHDD 网安空间</span>
         </div>
         <ul class="nav-links">
             <li><button class="nav-btn active" data-page="home">首页</button></li>
@@ -624,103 +423,42 @@
 
     <!-- ===== 主内容 ===== -->
     <div class="main-container">
+        <div id="loadingPlaceholder" class="loading-mask">⏳ 加载网站内容...</div>
 
         <!-- ====== 首页 ====== -->
-        <section id="page-home" class="page active">
+        <section id="page-home" class="page">
             <div class="hero">
-                <h1>ZHDD 网安空间</h1>
-                <p class="subtitle">—— 守护数字边界 · 铸就安全未来 ——</p>
-                <div class="desc">
+                <h1 id="homeTitle">ZHDD 网安空间</h1>
+                <p class="subtitle" id="homeSubtitle">—— 守护数字边界 · 铸就安全未来 ——</p>
+                <div class="desc" id="homeDesc">
                     <span>ZHDD网安空间</span> 专注于网络安全攻防与信息化建设，
                     为政企客户提供<strong>渗透测试</strong>、<strong>安全加固</strong>、
                     <strong>应急响应</strong>及<strong>等保合规</strong>一站式服务。
                     以技术为盾，以创新为矛，捍卫每一寸数字疆域。
                 </div>
-                <div class="badge-grid">
-                    <div class="badge-item">
-                        <div class="number">1×24</div>
-                        <div class="label">应急响应</div>
-                    </div>
-                    <div class="badge-item">
-                        <div class="number">0+</div>
-                        <div class="label">服务客户</div>
-                    </div>
-                    <div class="badge-item">
-                        <div class="number">0.09%</div>
-                        <div class="label">威胁拦截率</div>
-                    </div>
-                </div>
+                <div class="badge-grid" id="badgeGrid"></div>
             </div>
         </section>
 
         <!-- ====== 成员页面 ====== -->
         <section id="page-members" class="page">
-            <h2 class="section-title">👥 团队 <span class="highlight">成员</span></h2>
-            <p class="section-sub">核心安全专家，守护您的数字资产</p>
-            <div class="members-grid">
-                <!-- 成员 1 -->
-                <div class="member-card">
-                    <div class="member-avatar">👤</div>
-                    <div class="member-name">阳光森林</div>
-                    <div class="member-role">站长</div>
-                    <div class="member-desc">暂无</div>
-                </div>
-                <!-- 成员 2 -->
-                <div class="member-card">
-                    <div class="member-avatar">👤</div>
-                    <div class="member-name">HD</div>
-                    <div class="member-role">渗透测试专家</div>
-                    <div class="member-desc">暂无介绍，待更新…</div>
-                </div>
-                <!-- 成员 3 -->
-                <div class="member-card">
-                    <div class="member-avatar">👤</div>
-                    <div class="member-name">暂无</div>
-                    <div class="member-role">暂无</div>
-                    <div class="member-desc">暂无介绍，待更新…</div>
-                </div>
-                <!-- 成员 4 -->
-                <div class="member-card">
-                    <div class="member-avatar">👤</div>
-                    <div class="member-name">成员四</div>
-                    <div class="member-role">威胁情报分析师</div>
-                    <div class="member-desc">暂无介绍，待更新…</div>
-                </div>
-                <!-- 成员 5 -->
-                <div class="member-card">
-                    <div class="member-avatar">👤</div>
-                    <div class="member-name">成员五</div>
-                    <div class="member-role">等保合规顾问</div>
-                    <div class="member-desc">暂无介绍，待更新…</div>
-                </div>
-                <!-- 成员 6 -->
-                <div class="member-card">
-                    <div class="member-avatar">👤</div>
-                    <div class="member-name">成员六</div>
-                    <div class="member-role">安全研发工程师</div>
-                    <div class="member-desc">暂无介绍，待更新…</div>
-                </div>
-            </div>
+            <h2 class="section-title" id="membersTitle">👥 团队 <span class="highlight">成员</span></h2>
+            <p class="section-sub" id="membersSub">核心安全专家，守护您的数字资产</p>
+            <div class="members-grid" id="membersGrid"></div>
         </section>
 
         <!-- ====== 简介页面 ====== -->
         <section id="page-about" class="page">
             <div class="about-content">
-                <h2 class="section-title">📌 关于 <span class="highlight">ZHDD</span></h2>
-                <p class="section-sub">知安 · 护安 · 铸安</p>
-
+                <h2 class="section-title" id="aboutTitle">📌 关于 <span class="highlight">ZHDD</span></h2>
+                <p class="section-sub" id="aboutSub">知安 · 护安 · 铸安</p>
                 <div class="about-block">
                     <h3>🛡️ 我们的使命</h3>
-                    <p>
-                        ZHDD网安空间致力于构建<strong>主动防御、动态感知、协同响应</strong>的
-                        新一代安全体系。我们以攻防实战为导向，融合大数据与AI技术，
-                        为客户提供可持续演进的安全能力。
-                    </p>
+                    <p id="aboutMission">ZHDD网安空间致力于构建<strong>主动防御、动态感知、协同响应</strong>的新一代安全体系。我们以攻防实战为导向，融合大数据与AI技术，为客户提供可持续演进的安全能力。</p>
                 </div>
-
                 <div class="about-block">
                     <h3>⚡ 核心能力</h3>
-                    <ul>
+                    <ul id="aboutAbilities">
                         <li>渗透测试 &amp; 红蓝对抗</li>
                         <li>安全运营 &amp; 态势感知</li>
                         <li>应急响应 &amp; 溯源取证</li>
@@ -728,10 +466,9 @@
                         <li>安全培训 &amp; 意识提升</li>
                     </ul>
                 </div>
-
                 <div class="about-block">
                     <h3>🌐 价值观</h3>
-                    <p>
+                    <p id="aboutValues">
                         <strong>专业</strong> —— 深耕技术，追求极致；<br />
                         <strong>诚信</strong> —— 透明交付，客户至上；<br />
                         <strong>创新</strong> —— 突破边界，引领未来。
@@ -742,67 +479,69 @@
 
         <!-- ====== 联系页面 ====== -->
         <section id="page-contact" class="page">
-            <h2 class="section-title">📬 联系 <span class="highlight">我们</span></h2>
-            <p class="section-sub">随时与我们取得联系，共筑安全防线</p>
-
+            <h2 class="section-title" id="contactTitle">📬 联系 <span class="highlight">我们</span></h2>
+            <p class="section-sub" id="contactSub">随时与我们取得联系，共筑安全防线</p>
             <div class="contact-wrapper">
-                <!-- 左侧：联系信息 -->
                 <div class="contact-info">
-                    <h3>📇 联系方式</h3>
+                    <h3 id="contactInfoTitle">📇 联系方式</h3>
                     <div class="contact-item">
                         <div class="icon">📍</div>
-                        <div class="info"><strong>地址</strong><br />江西省南昌市 · 未知</div>
+                        <div class="info"><strong>地址</strong><br /><span id="contactAddress">江西省南昌市 · 网络安全产业园</span></div>
                     </div>
                     <div class="contact-item">
                         <div class="icon">📞</div>
-                        <div class="info"><strong>电话</strong><br />暂无</div>
+                        <div class="info"><strong>电话</strong><br /><span id="contactPhone">0791-8888-6666</span></div>
                     </div>
                     <div class="contact-item">
                         <div class="icon">✉️</div>
-                        <div class="info"><strong>邮箱</strong><br />kali0914@yeah.net</div>
+                        <div class="info"><strong>邮箱</strong><br /><span id="contactEmail">security@zhdd.com</span></div>
                     </div>
                     <div class="contact-item">
                         <div class="icon">🌐</div>
-                        <div class="info"><strong>官网</strong><br />www.zhdd.bbroot.com</div>
+                        <div class="info"><strong>官网</strong><br /><span id="contactWebsite">www.zhdd-security.cn</span></div>
                     </div>
                 </div>
-
-                <!-- 右侧：留言表单 -->
                 <div class="contact-form">
-                    <h3>✍️ 留言咨询</h3>
+                    <h3 id="contactFormTitle">✍️ 留言咨询</h3>
                     <form id="contactForm" onsubmit="return handleSubmit(event)">
                         <div class="form-group">
-                            <label for="name">您的姓名</label>
+                            <label id="contactFormNameLabel" for="name">您的姓名</label>
                             <input type="text" id="name" placeholder="请输入姓名" required />
                         </div>
                         <div class="form-group">
-                            <label for="email">邮箱地址</label>
+                            <label id="contactFormEmailLabel" for="email">邮箱地址</label>
                             <input type="email" id="email" placeholder="请输入邮箱" required />
                         </div>
                         <div class="form-group">
-                            <label for="message">留言内容</label>
+                            <label id="contactFormMessageLabel" for="message">留言内容</label>
                             <textarea id="message" placeholder="请描述您的需求…" required></textarea>
                         </div>
-                        <button type="submit" class="submit-btn">发送留言</button>
+                        <button type="submit" class="submit-btn" id="contactFormSubmitBtn">发送留言</button>
                     </form>
                 </div>
             </div>
         </section>
-
     </div>
 
     <!-- ===== 页脚 ===== -->
     <footer class="footer">
-        &copy; 2026 <span>ZHDD 网安空间</span> — 守护数字边界 · 铸就安全未来
+        <span id="footerCopyright">&copy; 2026 ZHDD 网安空间 — 守护数字边界 · 铸就安全未来</span>
+        <br />
+        <a href="admin.html" class="admin-link">🔧 管理后台</a>
     </footer>
 
     <!-- ============================================================ -->
-    <!-- ===== JavaScript：页面切换 & 表单交互 ===== -->
     <script>
         (function() {
             'use strict';
 
-            // ----- 获取元素 -----
+            // ======== 已配置好 ========
+            const GITHUB_USERNAME = 'kali0914';
+            const REPO_NAME = 'zhdd.bbroot.com';
+            const CONFIG_PATH = 'site_config.json';
+            // =========================
+
+            // ---- DOM 元素 ----
             const navBtns = document.querySelectorAll('.nav-btn');
             const pages = {
                 home: document.getElementById('page-home'),
@@ -810,78 +549,119 @@
                 about: document.getElementById('page-about'),
                 contact: document.getElementById('page-contact'),
             };
+            const loadingEl = document.getElementById('loadingPlaceholder');
 
-            // ----- 切换页面函数 -----
+            // ---- 切换页面 ----
             function switchPage(pageId) {
-                // 隐藏所有页面
                 Object.values(pages).forEach(p => p.classList.remove('active'));
-                // 显示目标页面
-                if (pages[pageId]) {
-                    pages[pageId].classList.add('active');
-                }
-                // 更新按钮状态
+                if (pages[pageId]) pages[pageId].classList.add('active');
                 navBtns.forEach(btn => {
                     btn.classList.remove('active');
-                    if (btn.dataset.page === pageId) {
-                        btn.classList.add('active');
-                    }
+                    if (btn.dataset.page === pageId) btn.classList.add('active');
                 });
-                // 滚动到顶部
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
-            // ----- 绑定导航按钮事件 -----
             navBtns.forEach(btn => {
-                btn.addEventListener('click', function(e) {
+                btn.addEventListener('click', function() {
                     const pageId = this.dataset.page;
-                    if (pageId) {
-                        switchPage(pageId);
-                    }
+                    if (pageId) switchPage(pageId);
                 });
             });
 
-            // ----- 表单提交（模拟） -----
+            // ---- 加载配置并渲染 ----
+            function loadConfig() {
+                loadingEl.style.display = 'block';
+                fetch(`https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/${CONFIG_PATH}`)
+                    .then(res => {
+                        if (!res.ok) throw new Error('Config not found');
+                        return res.json();
+                    })
+                    .then(config => {
+                        // 首页
+                        document.getElementById('homeTitle').textContent = config.home.title;
+                        document.getElementById('homeSubtitle').textContent = config.home.subtitle;
+                        document.getElementById('homeDesc').innerHTML = config.home.description;
+                        const badgeGrid = document.getElementById('badgeGrid');
+                        badgeGrid.innerHTML = config.home.badges.map(b =>
+                            `<div class="badge-item"><div class="number">${b.number}</div><div class="label">${b.label}</div></div>`
+                        ).join('');
+
+                        // 成员
+                        document.getElementById('membersTitle').innerHTML = config.members.title;
+                        document.getElementById('membersSub').textContent = config.members.subtitle;
+                        const membersGrid = document.getElementById('membersGrid');
+                        membersGrid.innerHTML = config.members.list.map(m =>
+                            `<div class="member-card">
+                                <div class="member-avatar">👤</div>
+                                <div class="member-name">${m.name}</div>
+                                <div class="member-role">${m.role}</div>
+                                <div class="member-desc">${m.desc}</div>
+                            </div>`
+                        ).join('');
+
+                        // 关于
+                        document.getElementById('aboutTitle').innerHTML = config.about.title;
+                        document.getElementById('aboutSub').textContent = config.about.subtitle;
+                        document.getElementById('aboutMission').innerHTML = config.about.mission;
+                        document.getElementById('aboutAbilities').innerHTML = config.about.abilities.map(a =>
+                            `<li>${a}</li>`
+                        ).join('');
+                        document.getElementById('aboutValues').innerHTML = config.about.values;
+
+                        // 联系
+                        document.getElementById('contactTitle').innerHTML = config.contact.title;
+                        document.getElementById('contactSub').textContent = config.contact.subtitle;
+                        document.getElementById('contactAddress').textContent = config.contact.info.address;
+                        document.getElementById('contactPhone').textContent = config.contact.info.phone;
+                        document.getElementById('contactEmail').textContent = config.contact.info.email;
+                        document.getElementById('contactWebsite').textContent = config.contact.info.website;
+                        document.getElementById('contactInfoTitle').textContent = '📇 联系方式';
+                        document.getElementById('contactFormTitle').textContent = config.contact.form_title;
+                        document.getElementById('contactFormNameLabel').textContent = config.contact.form_name_label;
+                        document.getElementById('contactFormEmailLabel').textContent = config.contact.form_email_label;
+                        document.getElementById('contactFormMessageLabel').textContent = config.contact.form_message_label;
+                        document.getElementById('contactFormSubmitBtn').textContent = config.contact.form_submit_label;
+
+                        // 页脚
+                        document.getElementById('footerCopyright').innerHTML = config.footer.copyright;
+                        document.getElementById('brandName').textContent = config.home.title;
+
+                        loadingEl.style.display = 'none';
+                    })
+                    .catch(err => {
+                        console.warn('加载配置失败，使用默认文字', err);
+                        loadingEl.style.display = 'none';
+                    });
+            }
+
+            // ---- 联系表单 ----
             window.handleSubmit = function(e) {
                 e.preventDefault();
                 const name = document.getElementById('name').value.trim();
                 const email = document.getElementById('email').value.trim();
                 const message = document.getElementById('message').value.trim();
-
                 if (!name || !email || !message) {
                     alert('请完整填写所有字段 🙏');
                     return false;
                 }
-
-                // 模拟发送成功
                 alert('✅ 留言已发送！我们会尽快与您联系。\n（此功能为演示，实际对接后端即可）');
                 document.getElementById('contactForm').reset();
                 return false;
             };
 
-            // ----- 可选：URL hash 路由（如果用户想通过 #home 访问） -----
+            // ---- URL hash 路由 ----
             function handleHash() {
                 const hash = window.location.hash.slice(1) || 'home';
-                if (pages[hash]) {
-                    switchPage(hash);
-                }
+                if (pages[hash]) switchPage(hash);
             }
-
             window.addEventListener('hashchange', handleHash);
-
-            // 初始加载时，检查 hash
-            if (window.location.hash) {
-                handleHash();
-            } else {
-                // 默认首页（已经 active）
-                // 但为了确保按钮高亮，重新同步一下
-                switchPage('home');
-            }
-
-            // 暴露 switchPage 给控制台调试用（可选）
+            if (window.location.hash) { handleHash(); } else { switchPage('home'); }
             window.switchPage = switchPage;
 
+            // 加载配置
+            loadConfig();
         })();
     </script>
-
 </body>
 </html>
