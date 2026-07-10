@@ -133,6 +133,27 @@
         }
         .footer { text-align: center; color: #5a738a; font-size: 0.8rem; margin-top: 2rem; }
         .footer span { color: #00f5d4; }
+
+        /* 日志样式 */
+        .log-container {
+            background: #0a0c10;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #b8ccdd;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-top: 1rem;
+        }
+        .log-container .log-info { color: #48cae4; }
+        .log-container .log-success { color: #00f5d4; }
+        .log-container .log-error { color: #ff6b6b; }
+        .log-container .log-warn { color: #ffd93d; }
+
         @media (max-width: 700px) {
             .grid-2 { grid-template-columns: 1fr; }
             .card { padding: 1.2rem; }
@@ -192,6 +213,7 @@
                     <p style="color:#8aa3bc; margin-bottom:1.2rem;">修改后点击"保存配置"即可更新网站内容</p>
 
                     <form id="configForm">
+                        <!-- 表单字段省略（与之前相同） -->
                         <h3 style="color:#00f5d4; margin:1.5rem 0 0.5rem;">🏠 首页</h3>
                         <div class="field"><label>标题</label><input type="text" id="cfg_home_title" /></div>
                         <div class="field"><label>副标题</label><input type="text" id="cfg_home_subtitle" /></div>
@@ -200,43 +222,45 @@
                             <div class="field"><label>徽章1 数字</label><input type="text" id="cfg_badge1_num" /></div>
                             <div class="field"><label>徽章1 标签</label><input type="text" id="cfg_badge1_label" /></div>
                             <div class="field"><label>徽章2 数字</label><input type="text" id="cfg_badge2_num" /></div>
-                            <div class="field"><label>徽章2 标签</label><input type="text" id="cfg_badge2_label" /></div>
-                            <div class="field"><label>徽章3 数字</label><input type="text" id="cfg_badge3_num" /></div>
-                            <div class="field"><label>徽章3 标签</label><input type="text" id="cfg_badge3_label" /></div>
-                        </div>
+                            <级 班级="field"><标签>徽章2 标签</标签><输入 类型="text" 身份证="cfg_badge2_label" /></级>
+                            <级 班级="field"><标签>徽章3 数字</标签><输入 类型="text" 身份证="cfg_badge3_num" /></级>
+                            <级 班级="field"><标签>徽章3 标签</标签><输入 类型="text" 身份证="cfg_badge3_label" /></级>
+                        </级>
 
-                        <h3 style="color:#00f5d4; margin:1.5rem 0 0.5rem;">👥 成员页面</h3>
-                        <div class="field"><label>标题</label><input type="text" id="cfg_members_title" /></div>
-                        <div class="field"><label>副标题</label><input type="text" id="cfg_members_subtitle" /></div>
-                        <div class="field"><label>成员列表（每行一个，格式：姓名|角色|描述）</label>
-                            <textarea id="cfg_members_list" class="large" rows="6" placeholder="成员一|安全架构师|暂无介绍…"></textarea>
-                        </div>
+                        <h3 风格="颜色:#00f5d4; 边缘:1.5快速眼动的 0 0.5快速眼动的;">👥 成员页面</h3>
+                        <级 班级="field"><标签>标题</标签><输入 类型="text" 身份证="cfg_members_title" /></级>
+                        <级 班级="field"><标签>副标题</标签><输入 类型="text" 身份证="cfg_members_subtitle" /></级>
+                        <级 班级="field"><标签>成员列表（每行一个，格式：姓名|角色|描述）</标签>
+                            <文本区域 身份证="cfg_members_list" 班级="large" 行="6" 占位符="成员一|安全架构师|暂无介绍…"></文本区域>
+                        </级>
 
-                        <h3 style="color:#00f5d4; margin:1.5rem 0 0.5rem;">📌 关于页面</h3>
-                        <div class="field"><label>标题</label><input type="text" id="cfg_about_title" /></div>
-                        <div class="field"><label>副标题</label><input type="text" id="cfg_about_subtitle" /></div>
-                        <div class="field"><label>使命（支持HTML）</label><textarea id="cfg_about_mission" class="large"></textarea></div>
-                        <div class="field"><label>核心能力（每行一个）</label><textarea id="cfg_about_abilities" class="large" rows="5"></textarea></div>
-                        <div class="field"><label>价值观（支持HTML）</label><textarea id="cfg_about_values" class="large"></textarea></div>
+                        <h3 风格="颜色:#00f5d4; 边缘:1.5快速眼动的 0 0.5快速眼动的;">📌 关于页面</h3>
+                        <级 班级="field"><标签>标题</标签><输入 类型="text" 身份证="cfg_about_title" /></级>
+                        <级 班级="field"><标签>副标题</标签><输入 类型="text" 身份证="cfg_about_subtitle" /></级>
+                        <级 班级="field"><标签>使命（支持HTML）</标签><文本区域 身份证="cfg_about_mission" 班级="large"></文本区域></级>
+                        <级 班级="field"><标签>核心能力（每行一个）</标签><文本区域 身份证="cfg_about_abilities" 班级="large" 行="5"></文本区域></级>
+                        <级 班级="field"><标签>价值观（支持HTML）</标签><文本区域 身份证="cfg_about_values" 班级="large"></文本区域></级>
 
-                        <h3 style="color:#00f5d4; margin:1.5rem 0 0.5rem;">📬 联系页面</h3>
-                        <div class="field"><label>标题</label><input type="text" id="cfg_contact_title" /></div>
-                        <div class="field"><label>副标题</label><input type="text" id="cfg_contact_subtitle" /></div>
-                        <div class="field"><label>地址</label><input type="text" id="cfg_contact_address" /></div>
-                        <div class="field"><label>电话</label><input type="text" id="cfg_contact_phone" /></div>
-                        <div class="field"><label>邮箱</label><input type="text" id="cfg_contact_email" /></div>
-                        <div class="field"><label>官网</label><input type="text" id="cfg_contact_website" /></div>
-                        <div class="field"><label>表单标题</label><input type="text" id="cfg_contact_form_title" /></div>
-                        <div class="field"><label>表单-姓名标签</label><input type="text" id="cfg_contact_form_name" /></div>
-                        <div class="field"><label>表单-邮箱标签</label><input type="text" id="cfg_contact_form_email" /></div>
-                        <div class="field"><label>表单-留言标签</label><input type="text" id="cfg_contact_form_message" /></div>
-                        <div class="field"><label>表单-提交按钮文字</label><input type="text" id="cfg_contact_form_submit" /></div>
+                        <h3 风格="颜色:#00f5d4; 边缘:1.5快速眼动的 0 0.5快速眼动的;">📬 联系页面</h3>
+                        <级 班级="field"><标签>标题</标签><输入 类型="text" 身份证="cfg_contact_title" /></级>
+                        <级 班级="field"><标签>副标题</标签><输入 类型="text" 身份证="cfg_contact_subtitle" /></级>
+                        <级 班级="field"><标签>地址</标签><输入 类型="text" 身份证="cfg_contact_address" /></级>
+                        <级 班级="field"><标签>电话</标签><输入 类型="text" 身份证="cfg_contact_phone" /></级>
+                        <级 班级="field"><标签>邮箱</标签><输入 类型="text" 身份证="cfg_contact_email" /></级>
+                        <级 班级="field"><标签>官网</标签><输入 类型="text" 身份证="cfg_contact_website" /></级>
+                        <级 班级="field"><标签>表单标题</标签><输入 类型="text" 身份证="cfg_contact_form_title" /></级>
+                        <级 班级="field"><标签>表单-姓名标签</标签><输入 类型="text" 身份证="cfg_contact_form_name" /></级>
+                        <级 班级="field"><标签>表单-邮箱标签</标签><输入 类型="text" 身份证="cfg_contact_form_email" /></级>
+                        <级 班级="field"><标签>表单-留言标签</标签><输入 类型="text" 身份证="cfg_contact_form_message" /></级>
+                        <级 班级="field"><标签>表单-提交按钮文字</标签><输入 类型="text" 身份证="cfg_contact_form_submit" /></级>
 
-                        <h3 style="color:#00f5d4; margin:1.5rem 0 0.5rem;">📄 页脚</h3>
-                        <div class="field"><label>版权信息（支持HTML）</label><input type="text" id="cfg_footer_copyright" /></div>
+                        <h3 风格="颜色:#00f5d4; 边缘:1.5快速眼动的 0 0.5快速眼动的;">📄 页脚</h3>
+                        <级 班级="field"><标签>版权信息（支持HTML）</标签><输入 类型="text" 身份证="cfg_footer_copyright" /></级>
 
-                        <button type="button" class="btn" id="saveConfigBtn">💾 保存配置</button>
+                        <按钮 类型="button" 班级="btn" 身份证="saveConfigBtn">💾 保存配置</button>
                         <div class="status-msg" id="configStatus"></div>
+                        <!-- 日志面板 -->
+                        <div id="logPanel" class="log-container">📋 操作日志将显示在这里...</div>
                     </form>
                 </div>
             </div>
@@ -253,7 +277,7 @@
             // ======== 已配置（Token 需要你重新生成并填入） ========
             const GITHUB_USERNAME = 'kali0914';
             const REPO_NAME = 'zhdd.bbroot.com';
-            const HARD_CODED_TOKEN = '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';  // ⚠️ 请替换为新生成的 Token
+            const HARD_CODED_TOKEN = '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';  // ⚠️ 请替换为新生成的 Token
             const CORRECT_PASSWORD = '070301';
             const CONFIG_PATH = 'site_config.json';
             // ======================================================
@@ -310,6 +334,25 @@
             };
             const saveConfigBtn = document.getElementById('saveConfigBtn');
             const configStatus = document.getElementById('configStatus');
+            const logPanel = document.getElementById('logPanel');
+
+            // ---- 日志函数 ----
+            function addLog(message, type = 'info') {
+                const time = new Date().toLocaleTimeString();
+                const colorClass = {
+                    info: 'log-info',
+                    success: 'log-success',
+                    error: 'log-error',
+                    warn: 'log-warn'
+                } [type] || 'log-info';
+                const entry = document.createElement('div');
+                entry.className = colorClass;
+                entry.textContent = `[${time}] ${message}`;
+                logPanel.appendChild(entry);
+                logPanel.scrollTop = logPanel.scrollHeight;
+                // 同时输出到控制台
+                console.log(`[${type}] ${message}`);
+            }
 
             // ---- 登录 ----
             function doLogin() {
@@ -320,10 +363,12 @@
                     mainPanel.classList.remove('hidden');
                     loginError.style.display = 'none';
                     loadConfigToForm();
+                    addLog('登录成功', 'success');
                 } else {
                     loginError.style.display = 'block';
                     passwordInput.value = '';
                     passwordInput.focus();
+                    addLog('登录失败：密码错误', 'error');
                 }
             }
 
@@ -334,6 +379,7 @@
                 passwordInput.value = '';
                 loginError.style.display = 'none';
                 passwordInput.focus();
+                addLog('已退出登录', 'warn');
             }
 
             loginBtn.addEventListener('click', doLogin);
@@ -349,6 +395,9 @@
                     Object.keys(tabContents).forEach(key => {
                         tabContents[key].classList.toggle('active', key === tabId);
                     });
+                    if (tabId === 'tabConfig') {
+                        addLog('切换到“编辑网站内容”标签', 'info');
+                    }
                 });
             });
 
@@ -373,30 +422,40 @@
 
             // ---- 读取配置到表单 ----
             async function loadConfigToForm() {
+                addLog('开始加载网站配置...', 'info');
                 try {
-                    const res = await fetch(
-                        `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${CONFIG_PATH}`, {
-                            headers: {
-                                'Authorization': `Bearer ${HARD_CODED_TOKEN}`,
-                                'Accept': 'application/vnd.github+json'
-                            }
-                        });
+                    const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${CONFIG_PATH}`;
+                    addLog(`GET ${url}`, 'info');
+                    const res = await fetch(url, {
+                        headers: {
+                            'Authorization': `Bearer ${HARD_CODED_TOKEN}`,
+                            'Accept': 'application/vnd.github+json'
+                        }
+                    });
+                    addLog(`响应状态码: ${res.status} ${res.statusText}`, 'info');
+
                     if (res.status === 404) {
                         configStatus.textContent = '⚠️ site_config.json 不存在，将使用默认值';
                         configStatus.style.color = '#ffaa00';
+                        addLog('配置文件不存在，将使用默认值', 'warn');
                         return;
                     }
-                    if (!res.ok) throw new Error('读取配置失败');
+                    if (!res.ok) {
+                        const errorText = await res.text();
+                        throw new Error(`HTTP ${res.status}: ${errorText}`);
+                    }
                     const data = await res.json();
                     const content = base64ToUnicode(data.content);
                     const config = JSON.parse(content);
                     fillForm(config);
                     configStatus.textContent = '✅ 已加载当前配置';
                     configStatus.style.color = '#00f5d4';
+                    addLog('配置加载成功', 'success');
                 } catch (err) {
                     console.error(err);
                     configStatus.textContent = '❌ 加载配置失败: ' + err.message;
                     configStatus.style.color = '#ff6b6b';
+                    addLog(`加载配置失败: ${err.message}`, 'error');
                 }
             }
 
@@ -499,59 +558,80 @@
                 };
             }
 
-            // ---- 保存配置 ----
+            // ---- 保存配置（带详细日志） ----
             async function saveConfig() {
+                // 清空日志（可选，这里保留之前的日志）
+                // logPanel.innerHTML = '';
+                addLog('===== 开始保存配置 =====', 'info');
+
                 const config = collectConfig();
                 const jsonStr = JSON.stringify(config, null, 2);
                 const encoded = unicodeToBase64(jsonStr);
+                addLog(`配置内容已编码，长度 ${jsonStr.length} 字符`, 'info');
 
                 configStatus.textContent = '⏳ 保存中...';
                 configStatus.style.color = '#8aa3bc';
                 saveConfigBtn.disabled = true;
 
                 try {
+                    // 1. 获取文件 sha（如果存在）
+                    const getUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${CONFIG_PATH}`;
+                    addLog(`GET ${getUrl}`, 'info');
+                    const getRes = await fetch(getUrl, {
+                        headers: {
+                            'Authorization': `Bearer ${HARD_CODED_TOKEN}`,
+                            'Accept': 'application/vnd.github+json'
+                        }
+                    });
+                    addLog(`GET 响应状态: ${getRes.status} ${getRes.statusText}`, 'info');
+
                     let sha = null;
-                    const getRes = await fetch(
-                        `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${CONFIG_PATH}`, {
-                            headers: {
-                                'Authorization': `Bearer ${HARD_CODED_TOKEN}`,
-                                'Accept': 'application/vnd.github+json'
-                            }
-                        });
                     if (getRes.status === 200) {
                         const data = await getRes.json();
                         sha = data.sha;
-                    } else if (getRes.status !== 404) {
-                        throw new Error('检查文件失败');
+                        addLog(`文件已存在，SHA: ${sha}`, 'success');
+                    } else if (getRes.status === 404) {
+                        addLog('文件不存在，将创建新文件', 'warn');
+                    } else {
+                        // 其他错误，尝试读取错误信息
+                        const errorText = await getRes.text();
+                        throw new Error(`GET 失败 (${getRes.status}): ${errorText}`);
                     }
 
+                    // 2. PUT 更新或创建
+                    const putUrl = getUrl;
+                    addLog(`PUT ${putUrl}`, 'info');
                     const putBody = {
                         message: '更新网站配置（通过管理后台）',
                         content: encoded,
                     };
                     if (sha) putBody.sha = sha;
 
-                    const putRes = await fetch(
-                        `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${CONFIG_PATH}`, {
-                            method: 'PUT',
-                            headers: {
-                                'Authorization': `Bearer ${HARD_CODED_TOKEN}`,
-                                'Accept': 'application/vnd.github+json',
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(putBody)
-                        });
+                    const putRes = await fetch(putUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${HARD_CODED_TOKEN}`,
+                            'Accept': 'application/vnd.github+json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(putBody)
+                    });
+                    addLog(`PUT 响应状态: ${putRes.status} ${putRes.statusText}`, 'info');
 
                     if (putRes.ok) {
+                        const result = await putRes.json();
+                        addLog(`提交成功，commit: ${result.commit.sha}`, 'success');
                         configStatus.textContent = '✅ 配置保存成功！网站将自动更新。';
                         configStatus.style.color = '#00f5d4';
+                        addLog('===== 保存完成 =====', 'success');
                     } else {
-                        const err = await putRes.json();
-                        throw new Error(err.message || '保存失败');
+                        const errorText = await putRes.text();
+                        throw new Error(`PUT 失败 (${putRes.status}): ${errorText}`);
                     }
                 } catch (error) {
                     configStatus.textContent = '❌ 保存失败: ' + error.message;
                     configStatus.style.color = '#ff6b6b';
+                    addLog(`保存失败: ${error.message}`, 'error');
                     console.error(error);
                 } finally {
                     saveConfigBtn.disabled = false;
@@ -560,13 +640,14 @@
 
             saveConfigBtn.addEventListener('click', saveConfig);
 
-            // ---- 发布文章 ----
+            // ---- 发布文章（也增加日志） ----
             async function doPublish() {
                 const title = postTitle.value.trim();
                 const content = postContent.value.trim();
                 if (!title || !content) {
                     publishStatus.textContent = '⚠️ 请填写标题和内容';
                     publishStatus.style.color = '#ff6b6b';
+                    addLog('发布文章失败：标题或内容为空', 'warn');
                     return;
                 }
                 let filename = title;
@@ -577,27 +658,37 @@
                 publishStatus.textContent = '⏳ 发布中...';
                 publishStatus.style.color = '#8aa3bc';
                 publishBtn.disabled = true;
+                addLog(`开始发布文章: ${filePath}`, 'info');
 
                 try {
+                    // 检查文件是否存在
+                    const getUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${filePath}`;
+                    addLog(`GET ${getUrl}`, 'info');
+                    const getRes = await fetch(getUrl, {
+                        headers: {
+                            'Authorization': `Bearer ${HARD_CODED_TOKEN}`,
+                            'Accept': 'application/vnd.github+json'
+                        }
+                    });
+                    addLog(`GET 状态: ${getRes.status}`, 'info');
+
                     let sha = null;
-                    const getRes = await fetch(
-                        `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${filePath}`, {
-                            headers: {
-                                'Authorization': `Bearer ${HARD_CODED_TOKEN}`,
-                                'Accept': 'application/vnd.github+json'
-                            }
-                        });
                     if (getRes.status === 200) {
                         const data = await getRes.json();
                         sha = data.sha;
+                        addLog(`文件已存在，SHA: ${sha}`, 'success');
                         if (!confirm(`文件 "${filePath}" 已存在，是否覆盖？`)) {
                             publishStatus.textContent = '❌ 已取消';
                             publishStatus.style.color = '#ff6b6b';
+                            addLog('用户取消覆盖', 'warn');
                             publishBtn.disabled = false;
                             return;
                         }
                     } else if (getRes.status !== 404) {
-                        throw new Error('检查文件失败');
+                        const errorText = await getRes.text();
+                        throw new Error(`检查文件失败 (${getRes.status}): ${errorText}`);
+                    } else {
+                        addLog('文件不存在，将创建', 'warn');
                     }
 
                     const putBody = {
@@ -606,29 +697,33 @@
                     };
                     if (sha) putBody.sha = sha;
 
-                    const putRes = await fetch(
-                        `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${filePath}`, {
-                            method: 'PUT',
-                            headers: {
-                                'Authorization': `Bearer ${HARD_CODED_TOKEN}`,
-                                'Accept': 'application/vnd.github+json',
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(putBody)
-                        });
+                    const putUrl = getUrl;
+                    addLog(`PUT ${putUrl}`, 'info');
+                    const putRes = await fetch(putUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${HARD_CODED_TOKEN}`,
+                            'Accept': 'application/vnd.github+json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(putBody)
+                    });
+                    addLog(`PUT 状态: ${putRes.status}`, 'info');
 
                     if (putRes.ok) {
                         publishStatus.textContent = '✅ 文章发布成功！';
                         publishStatus.style.color = '#00f5d4';
                         postTitle.value = '';
                         postContent.value = '';
+                        addLog(`文章发布成功: ${filePath}`, 'success');
                     } else {
-                        const err = await putRes.json();
-                        throw new Error(err.message || '发布失败');
+                        const errorText = await putRes.text();
+                        throw new Error(`发布失败 (${putRes.status}): ${errorText}`);
                     }
                 } catch (error) {
                     publishStatus.textContent = '❌ ' + error.message;
                     publishStatus.style.color = '#ff6b6b';
+                    addLog(`发布失败: ${error.message}`, 'error');
                     console.error(error);
                 } finally {
                     publishBtn.disabled = false;
@@ -642,10 +737,13 @@
                 loginArea.style.display = 'none';
                 mainPanel.classList.remove('hidden');
                 loadConfigToForm();
+                addLog('已恢复登录状态', 'info');
             } else {
                 loginArea.style.display = 'block';
                 mainPanel.classList.add('hidden');
                 passwordInput.focus();
+                // 初始化日志
+                addLog('请登录管理后台', 'info');
             }
 
             document.addEventListener('keydown', function(e) {
@@ -656,5 +754,6 @@
 
         })();
     </script>
+
 </body>
 </html>
