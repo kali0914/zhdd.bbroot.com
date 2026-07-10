@@ -134,7 +134,7 @@
         .footer { text-align: center; color: #5a738a; font-size: 0.8rem; margin-top: 2rem; }
         .footer span { color: #00f5d4; }
 
-        /* 日志样式 */
+        /* log styles */
         .log-container {
             background: #0a0c10;
             border: 1px solid rgba(255, 255, 255, 0.06);
@@ -167,7 +167,7 @@
 
     <div class="container">
 
-        <!-- ===== 登录区域 ===== -->
+        <!-- Login Area -->
         <div id="loginArea" class="card login-box">
             <h2>🔐 管理后台</h2>
             <p class="sub">请输入管理密码</p>
@@ -176,7 +176,7 @@
             <div class="error" id="loginError">❌ 密码错误</div>
         </div>
 
-        <!-- ===== 主面板（登录后显示） ===== -->
+        <!-- Main Panel (visible after login) -->
         <div id="mainPanel" class="hidden">
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px;">
@@ -189,7 +189,7 @@
                 <button class="tab-btn" data-tab="tabConfig">⚙️ 编辑网站内容</button>
             </div>
 
-            <!-- ===== Tab1: 发布文章 ===== -->
+            <!-- Tab1: Publish -->
             <div id="tabPublish" class="tab-content active">
                 <div class="card">
                     <h2>📝 发布新文章</h2>
@@ -206,7 +206,7 @@
                 </div>
             </div>
 
-            <!-- ===== Tab2: 编辑网站内容 ===== -->
+            <!-- Tab2: Edit Site Content -->
             <div id="tabConfig" class="tab-content">
                 <div class="card">
                     <h2>⚙️ 编辑网站文字</h2>
@@ -258,7 +258,7 @@
 
                         <button type="button" class="btn" id="saveConfigBtn">💾 保存配置</button>
                         <div class="status-msg" id="configStatus"></div>
-                        <!-- 日志面板 -->
+                        <!-- Log Panel -->
                         <div id="logPanel" class="log-container">📋 操作日志将显示在这里...</div>
                     </form>
                 </div>
@@ -274,34 +274,33 @@
             'use strict';
 
             // ==========================================================
-            // Token 拆分为三段（分别在第42行、第75行、第165行附近）
+            // Token split into 3 parts (around lines 42, 75, 165)
             // ==========================================================
 
-            // >>>>>>>>>>>>>>>>> 第42行附近 <<<<<<<<<<<<<<<<<
+            // <<<<<<<<<<<<<<<<< Part 1 (near line 42) >>>>>>>>>>>>>>>>>>>
             const tokenPart1 = 'ghp_';
 
-            // ... 其他代码 ...
+            // ... (other code) ...
 
-            // >>>>>>>>>>>>>>>>> 第75行附近 <<<<<<<<<<<<<<<<<
+            // <<<<<<<<<<<<<<<<< Part 2 (near line 75) >>>>>>>>>>>>>>>>>>>
             const tokenPart2 = 'RDOBKDAWaUmk5YtyPrZSbCGyRI4q';
 
-            // ... 其他代码 ...
+            // ... (other code) ...
 
-            // >>>>>>>>>>>>>>>>> 第165行附近 <<<<<<<<<<<<<<<<<
+            // <<<<<<<<<<<<<<<<< Part 3 (near line 165) >>>>>>>>>>>>>>>>>>>
             const tokenPart3 = 'La44CQl6';
 
             // ==========================================================
-            // 配置区域
+            // Configuration
             // ==========================================================
             const GITHUB_USERNAME = 'kali0914';
             const REPO_NAME = 'zhdd.bbroot.com';
-            // 拼接 Token
             const HARD_CODED_TOKEN = tokenPart1 + tokenPart2 + tokenPart3;
             const CORRECT_PASSWORD = '070301';
             const CONFIG_PATH = 'site_config.json';
             // ==========================================================
 
-            // ---- DOM ----
+            // ---- DOM references ----
             const loginArea = document.getElementById('loginArea');
             const mainPanel = document.getElementById('mainPanel');
             const passwordInput = document.getElementById('adminPassword');
@@ -355,7 +354,7 @@
             const configStatus = document.getElementById('configStatus');
             const logPanel = document.getElementById('logPanel');
 
-            // ---- 日志函数 ----
+            // ---- Logger ----
             function addLog(message, type = 'info') {
                 const time = new Date().toLocaleTimeString();
                 const colorClass = {
@@ -372,7 +371,7 @@
                 console.log(`[${type}] ${message}`);
             }
 
-            // ---- 登录 ----
+            // ---- Login ----
             function doLogin() {
                 const pwd = passwordInput.value.trim();
                 if (pwd === CORRECT_PASSWORD) {
@@ -381,12 +380,12 @@
                     mainPanel.classList.remove('hidden');
                     loginError.style.display = 'none';
                     loadConfigToForm();
-                    addLog('登录成功', 'success');
+                    addLog('Login successful', 'success');
                 } else {
                     loginError.style.display = 'block';
                     passwordInput.value = '';
                     passwordInput.focus();
-                    addLog('登录失败：密码错误', 'error');
+                    addLog('Login failed: wrong password', 'error');
                 }
             }
 
@@ -397,14 +396,14 @@
                 passwordInput.value = '';
                 loginError.style.display = 'none';
                 passwordInput.focus();
-                addLog('已退出登录', 'warn');
+                addLog('Logged out', 'warn');
             }
 
             loginBtn.addEventListener('click', doLogin);
             passwordInput.addEventListener('keypress', e => { if (e.key === 'Enter') doLogin(); });
             logoutBtn.addEventListener('click', doLogout);
 
-            // ---- Tab 切换 ----
+            // ---- Tab switching ----
             tabBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
                     tabBtns.forEach(b => b.classList.remove('active'));
@@ -414,12 +413,12 @@
                         tabContents[key].classList.toggle('active', key === tabId);
                     });
                     if (tabId === 'tabConfig') {
-                        addLog('切换到“编辑网站内容”标签', 'info');
+                        addLog('Switched to "Edit Site Content" tab', 'info');
                     }
                 });
             });
 
-            // ---- 工具：Base64 ----
+            // ---- Base64 helpers (supports Unicode) ----
             function unicodeToBase64(str) {
                 const utf8Bytes = new TextEncoder().encode(str);
                 let binary = '';
@@ -438,9 +437,9 @@
                 return new TextDecoder('utf-8').decode(bytes);
             }
 
-            // ---- 读取配置到表单 ----
+            // ---- Load config into form ----
             async function loadConfigToForm() {
-                addLog('开始加载网站配置...', 'info');
+                addLog('Loading site configuration...', 'info');
                 try {
                     const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${CONFIG_PATH}`;
                     addLog(`GET ${url}`, 'info');
@@ -450,12 +449,12 @@
                             'Accept': 'application/vnd.github+json'
                         }
                     });
-                    addLog(`响应状态码: ${res.status} ${res.statusText}`, 'info');
+                    addLog(`Response status: ${res.status} ${res.statusText}`, 'info');
 
                     if (res.status === 404) {
-                        configStatus.textContent = '⚠️ site_config.json 不存在，将使用默认值';
+                        configStatus.textContent = '⚠️ site_config.json not found, using defaults';
                         configStatus.style.color = '#ffaa00';
-                        addLog('配置文件不存在，将使用默认值', 'warn');
+                        addLog('Config file not found, using defaults', 'warn');
                         return;
                     }
                     if (!res.ok) {
@@ -466,14 +465,14 @@
                     const content = base64ToUnicode(data.content);
                     const config = JSON.parse(content);
                     fillForm(config);
-                    configStatus.textContent = '✅ 已加载当前配置';
+                    configStatus.textContent = '✅ Loaded current configuration';
                     configStatus.style.color = '#00f5d4';
-                    addLog('配置加载成功', 'success');
+                    addLog('Config loaded successfully', 'success');
                 } catch (err) {
                     console.error(err);
-                    configStatus.textContent = '❌ 加载配置失败: ' + err.message;
+                    configStatus.textContent = '❌ Failed to load config: ' + err.message;
                     configStatus.style.color = '#ff6b6b';
-                    addLog(`加载配置失败: ${err.message}`, 'error');
+                    addLog(`Load config failed: ${err.message}`, 'error');
                 }
             }
 
@@ -517,7 +516,7 @@
                 cfgFields.footer_copyright.value = config.footer?.copyright || '';
             }
 
-            // ---- 收集表单数据 ----
+            // ---- Collect form data ----
             function collectConfig() {
                 const badges = [
                     { number: cfgFields.badge1_num.value.trim(), label: cfgFields.badge1_label.value.trim() },
@@ -576,21 +575,21 @@
                 };
             }
 
-            // ---- 保存配置（带详细日志） ----
+            // ---- Save config (with detailed logging) ----
             async function saveConfig() {
-                addLog('===== 开始保存配置 =====', 'info');
+                addLog('===== Starting save config =====', 'info');
 
                 const config = collectConfig();
                 const jsonStr = JSON.stringify(config, null, 2);
                 const encoded = unicodeToBase64(jsonStr);
-                addLog(`配置内容已编码，长度 ${jsonStr.length} 字符`, 'info');
+                addLog(`Config encoded, length ${jsonStr.length} chars`, 'info');
 
-                configStatus.textContent = '⏳ 保存中...';
+                configStatus.textContent = '⏳ Saving...';
                 configStatus.style.color = '#8aa3bc';
                 saveConfigBtn.disabled = true;
 
                 try {
-                    // 1. 获取文件 sha
+                    // 1. Get file sha
                     const getUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${CONFIG_PATH}`;
                     addLog(`GET ${getUrl}`, 'info');
                     const getRes = await fetch(getUrl, {
@@ -599,25 +598,25 @@
                             'Accept': 'application/vnd.github+json'
                         }
                     });
-                    addLog(`GET 响应状态: ${getRes.status} ${getRes.statusText}`, 'info');
+                    addLog(`GET response: ${getRes.status} ${getRes.statusText}`, 'info');
 
                     let sha = null;
                     if (getRes.status === 200) {
                         const data = await getRes.json();
                         sha = data.sha;
-                        addLog(`文件已存在，SHA: ${sha}`, 'success');
+                        addLog(`File exists, SHA: ${sha}`, 'success');
                     } else if (getRes.status === 404) {
-                        addLog('文件不存在，将创建新文件', 'warn');
+                        addLog('File not found, will create new', 'warn');
                     } else {
                         const errorText = await getRes.text();
-                        throw new Error(`GET 失败 (${getRes.status}): ${errorText}`);
+                        throw new Error(`GET failed (${getRes.status}): ${errorText}`);
                     }
 
-                    // 2. PUT 更新
+                    // 2. PUT update
                     const putUrl = getUrl;
                     addLog(`PUT ${putUrl}`, 'info');
                     const putBody = {
-                        message: '更新网站配置（通过管理后台）',
+                        message: 'Update site config via admin',
                         content: encoded,
                     };
                     if (sha) putBody.sha = sha;
@@ -631,22 +630,22 @@
                         },
                         body: JSON.stringify(putBody)
                     });
-                    addLog(`PUT 响应状态: ${putRes.status} ${putRes.statusText}`, 'info');
+                    addLog(`PUT response: ${putRes.status} ${putRes.statusText}`, 'info');
 
                     if (putRes.ok) {
                         const result = await putRes.json();
-                        addLog(`提交成功，commit: ${result.commit.sha}`, 'success');
-                        configStatus.textContent = '✅ 配置保存成功！网站将自动更新。';
+                        addLog(`Commit successful, SHA: ${result.commit.sha}`, 'success');
+                        configStatus.textContent = '✅ Config saved successfully! Site will auto-update.';
                         configStatus.style.color = '#00f5d4';
-                        addLog('===== 保存完成 =====', 'success');
+                        addLog('===== Save completed =====', 'success');
                     } else {
                         const errorText = await putRes.text();
-                        throw new Error(`PUT 失败 (${putRes.status}): ${errorText}`);
+                        throw new Error(`PUT failed (${putRes.status}): ${errorText}`);
                     }
                 } catch (error) {
-                    configStatus.textContent = '❌ 保存失败: ' + error.message;
+                    configStatus.textContent = '❌ Save failed: ' + error.message;
                     configStatus.style.color = '#ff6b6b';
-                    addLog(`保存失败: ${error.message}`, 'error');
+                    addLog(`Save failed: ${error.message}`, 'error');
                     console.error(error);
                 } finally {
                     saveConfigBtn.disabled = false;
@@ -655,14 +654,14 @@
 
             saveConfigBtn.addEventListener('click', saveConfig);
 
-            // ---- 发布文章 ----
+            // ---- Publish article ----
             async function doPublish() {
                 const title = postTitle.value.trim();
                 const content = postContent.value.trim();
                 if (!title || !content) {
-                    publishStatus.textContent = '⚠️ 请填写标题和内容';
+                    publishStatus.textContent = '⚠️ Please fill in title and content';
                     publishStatus.style.color = '#ff6b6b';
-                    addLog('发布文章失败：标题或内容为空', 'warn');
+                    addLog('Publish failed: title or content empty', 'warn');
                     return;
                 }
                 let filename = title;
@@ -670,10 +669,10 @@
                 const filePath = filename.startsWith('_posts/') ? filename : `_posts/${filename}`;
                 const encoded = unicodeToBase64(content);
 
-                publishStatus.textContent = '⏳ 发布中...';
+                publishStatus.textContent = '⏳ Publishing...';
                 publishStatus.style.color = '#8aa3bc';
                 publishBtn.disabled = true;
-                addLog(`开始发布文章: ${filePath}`, 'info');
+                addLog(`Publishing article: ${filePath}`, 'info');
 
                 try {
                     const getUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${filePath}`;
@@ -684,29 +683,29 @@
                             'Accept': 'application/vnd.github+json'
                         }
                     });
-                    addLog(`GET 状态: ${getRes.status}`, 'info');
+                    addLog(`GET status: ${getRes.status}`, 'info');
 
                     let sha = null;
                     if (getRes.status === 200) {
                         const data = await getRes.json();
                         sha = data.sha;
-                        addLog(`文件已存在，SHA: ${sha}`, 'success');
-                        if (!confirm(`文件 "${filePath}" 已存在，是否覆盖？`)) {
-                            publishStatus.textContent = '❌ 已取消';
+                        addLog(`File exists, SHA: ${sha}`, 'success');
+                        if (!confirm(`File "${filePath}" already exists. Overwrite?`)) {
+                            publishStatus.textContent = '❌ Cancelled';
                             publishStatus.style.color = '#ff6b6b';
-                            addLog('用户取消覆盖', 'warn');
+                            addLog('User cancelled overwrite', 'warn');
                             publishBtn.disabled = false;
                             return;
                         }
                     } else if (getRes.status !== 404) {
                         const errorText = await getRes.text();
-                        throw new Error(`检查文件失败 (${getRes.status}): ${errorText}`);
+                        throw new Error(`Check file failed (${getRes.status}): ${errorText}`);
                     } else {
-                        addLog('文件不存在，将创建', 'warn');
+                        addLog('File not found, will create', 'warn');
                     }
 
                     const putBody = {
-                        message: `通过管理后台发布: ${filename}`,
+                        message: `Publish article via admin: ${filename}`,
                         content: encoded,
                     };
                     if (sha) putBody.sha = sha;
@@ -722,22 +721,22 @@
                         },
                         body: JSON.stringify(putBody)
                     });
-                    addLog(`PUT 状态: ${putRes.status}`, 'info');
+                    addLog(`PUT status: ${putRes.status}`, 'info');
 
                     if (putRes.ok) {
-                        publishStatus.textContent = '✅ 文章发布成功！';
+                        publishStatus.textContent = '✅ Article published successfully!';
                         publishStatus.style.color = '#00f5d4';
                         postTitle.value = '';
                         postContent.value = '';
-                        addLog(`文章发布成功: ${filePath}`, 'success');
+                        addLog(`Article published: ${filePath}`, 'success');
                     } else {
                         const errorText = await putRes.text();
-                        throw new Error(`发布失败 (${putRes.status}): ${errorText}`);
+                        throw new Error(`Publish failed (${putRes.status}): ${errorText}`);
                     }
                 } catch (error) {
                     publishStatus.textContent = '❌ ' + error.message;
                     publishStatus.style.color = '#ff6b6b';
-                    addLog(`发布失败: ${error.message}`, 'error');
+                    addLog(`Publish failed: ${error.message}`, 'error');
                     console.error(error);
                 } finally {
                     publishBtn.disabled = false;
@@ -746,748 +745,27 @@
 
             publishBtn.addEventListener('click', doPublish);
 
-            // ---- 页面加载检查登录 ----
+            // ---- Check login status on page load ----
             if (sessionStorage.getItem('admin_logged_in') === 'true') {
                 loginArea.style.display = 'none';
                 mainPanel.classList.remove('hidden');
                 loadConfigToForm();
-                addLog('已恢复登录状态', 'info');
+                addLog('Session restored', 'info');
             } else {
                 loginArea.style.display = 'block';
                 mainPanel.classList.add('hidden');
                 passwordInput.focus();
-                addLog('请登录管理后台', 'info');
+                addLog('Please login to admin panel', 'info');
             }
 
+            // ---- ESC to logout ----
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape' && sessionStorage.getItem('admin_logged_in') === 'true') {
-                    if (confirm('确定退出登录吗？')) doLogout();
+                    if (confirm('Logout?')) doLogout();
                 }
             });
 
         })();
     </script>
-</body>
-</html>            margin-bottom: 1rem;
-            font-size: 1.6rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            padding-bottom: 0.5rem;
-        }
-        .field { margin-bottom: 1.2rem; }
-        .field label {
-            display: block;
-            color: #8aa3bc;
-            margin-bottom: 4px;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-        .field input, .field textarea {
-            width: 100%;
-            padding: 10px 14px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            color: #e8edf5;
-            font-size: 0.95rem;
-            font-family: inherit;
-            outline: none;
-            transition: 0.3s;
-        }
-        .field input:focus, .field textarea:focus {
-            border-color: #00f5d4;
-            box-shadow: 0 0 0 3px rgba(0, 245, 212, 0.08);
-            background: rgba(255, 255, 255, 0.06);
-        }
-        .field textarea { min-height: 60px; resize: vertical; }
-        .field textarea.large { min-height: 120px; }
-        .btn {
-            background: linear-gradient(135deg, #00f5d4, #0077b6);
-            border: none;
-            color: #0b0e14;
-            font-weight: 700;
-            padding: 10px 28px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: 0.3s;
-            font-family: inherit;
-        }
-        .btn:hover { transform: scale(1.02); box-shadow: 0 8px 30px rgba(0, 245, 212, 0.25); }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-        .btn-outline {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #8aa3bc;
-        }
-        .btn-outline:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: none; }
-        .login-box { max-width: 400px; margin: 3rem auto; text-align: center; }
-        .login-box h2 { color: #00f5d4; margin-bottom: 0.5rem; }
-        .login-box .sub { color: #8aa3bc; margin-bottom: 1.5rem; }
-        .login-box input[type="password"] {
-            width: 100%;
-            padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 14px;
-            color: #e8edf5;
-            font-size: 1rem;
-            margin-bottom: 1rem;
-            outline: none;
-        }
-        .login-box input[type="password"]:focus { border-color: #00f5d4; }
-        .login-box .error { color: #ff6b6b; margin-top: 0.5rem; display: none; }
-        .hidden { display: none; }
-        .status-msg { margin-top: 1rem; text-align: center; font-size: 0.95rem; min-height: 1.5rem; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .tab-bar {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            padding-bottom: 0.5rem;
-        }
-        .tab-btn {
-            background: transparent;
-            border: none;
-            color: #8aa3bc;
-            padding: 8px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            transition: 0.3s;
-            font-family: inherit;
-        }
-        .tab-btn.active { background: rgba(0, 245, 212, 0.12); color: #00f5d4; }
-        .tab-btn:hover { color: #e8edf5; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeUp 0.3s ease; }
-        @keyframes fadeUp {
-            0% { opacity: 0; transform: translateY(10px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-        .footer { text-align: center; color: #5a738a; font-size: 0.8rem; margin-top: 2rem; }
-        .footer span { color: #00f5d4; }
-
-        /* 日志样式 */
-        .log-container {
-            background: #0a0c10;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            padding: 1rem;
-            max-height: 300px;
-            overflow-y: auto;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 0.85rem;
-            color: #b8ccdd;
-            white-space: pre-wrap;
-            word-break: break-all;
-            margin-top: 1rem;
-        }
-        .log-container .log-info { color: #48cae4; }
-        .log-container .log-success { color: #00f5d4; }
-        .log-container .log-error { color: #ff6b6b; }
-        .log-container .log-warn { color: #ffd93d; }
-
-        @media (max-width: 700px) {
-            .grid-2 { grid-template-columns: 1fr; }
-            .card { padding: 1.2rem; }
-            .back-link { top: 10px; left: 10px; font-size: 0.8rem; }
-        }
-    </style>
-</head>
-<body>
-
-    <a href="index.html" class="back-link">← 返回主页</a>
-
-    <div class="container">
-
-        <!-- ===== 登录区域 ===== -->
-        <div id="loginArea" class="card login-box">
-            <h2>🔐 管理后台</h2>
-            <p class="sub">请输入管理密码</p>
-            <input type="password" id="adminPassword" placeholder="密码" autofocus />
-            <button class="btn" id="loginBtn" style="width:100%;">登录</button>
-            <div class="error" id="loginError">❌ 密码错误</div>
-        </div>
-
-        <!-- ===== 主面板（登录后显示） ===== -->
-        <div id="mainPanel" class="hidden">
-
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px;">
-                <h1 style="color:#00f5d4; font-size:1.8rem;">📋 管理面板</h1>
-                <button class="btn btn-outline" id="logoutBtn">退出登录</button>
-            </div>
-
-            <div class="tab-bar">
-                <button class="tab-btn active" data-tab="tabPublish">📝 发布文章</button>
-                <button class="tab-btn" data-tab="tabConfig">⚙️ 编辑网站内容</button>
-            </div>
-
-            <!-- ===== Tab1: 发布文章 ===== -->
-            <div id="tabPublish" class="tab-content active">
-                <div class="card">
-                    <h2>📝 发布新文章</h2>
-                    <div class="field">
-                        <label for="postTitle">文章标题（建议格式：年-月-日-标题）</label>
-                        <input type="text" id="postTitle" placeholder="例如：2026-07-09-安全报告" />
-                    </div>
-                    <div class="field">
-                        <label for="postContent">Markdown 内容</label>
-                        <textarea id="postContent" class="large" placeholder="在此输入文章内容（支持 Markdown）"></textarea>
-                    </div>
-                    <button class="btn" id="publishBtn">🚀 发布文章</button>
-                    <div class="status-msg" id="publishStatus"></div>
-                </div>
-            </div>
-
-            <!-- ===== Tab2: 编辑网站内容 ===== -->
-            <div id="tabConfig" class="tab-content">
-                <div class="card">
-                    <h2>⚙️ 编辑网站文字</h2>
-                    <p style="color:#8aa3bc; margin-bottom:1.2rem;">修改后点击"保存配置"即可更新网站内容</p>
-
-                    <form id="configForm">
-                        <!-- 表单字段省略（与之前相同） -->
-                        <h3 style="color:#00f5d4; margin:1.5rem 0 0.5rem;">🏠 首页</h3>
-                        <div class="field"><label>标题</label><input type="text" id="cfg_home_title" /></div>
-                        <div class="field"><label>副标题</label><input type="text" id="cfg_home_subtitle" /></div>
-                        <div class="field"><label>描述（支持HTML）</label><textarea id="cfg_home_desc" class="large"></textarea></div>
-                        <div class="grid-2">
-                            <div class="field"><label>徽章1 数字</label><input type="text" id="cfg_badge1_num" /></div>
-                            <div class="field"><label>徽章1 标签</label><input type="text" id="cfg_badge1_label" /></div>
-                            <div class="field"><label>徽章2 数字</label><input type="text" id="cfg_badge2_num" /></div>
-                            <级 班级="field"><标签>徽章2 标签</标签><输入 类型="text" 身份证="cfg_badge2_label" /></级>
-                            <级 班级="field"><标签>徽章3 数字</标签><输入 类型="text" 身份证="cfg_badge3_num" /></级>
-                            <级 班级="field"><标签>徽章3 标签</标签><输入 类型="text" 身份证="cfg_badge3_label" /></级>
-                        </级>
-
-                        <h3 风格="颜色:#00f5d4; 边缘:1.5快速眼动的 0 0.5快速眼动的;">👥 成员页面</h3>
-                        <级 班级="field"><标签>标题</标签><输入 类型="text" 身份证="cfg_members_title" /></级>
-                        <级 班级="field"><标签>副标题</标签><输入 类型="text" 身份证="cfg_members_subtitle" /></级>
-                        <级 班级="field"><标签>成员列表（每行一个，格式：姓名|角色|描述）</标签>
-                            <文本区域 身份证="cfg_members_list" 班级="large" 行="6" 占位符="成员一|安全架构师|暂无介绍…"></文本区域>
-                        </级>
-
-                        <h3 风格="颜色:#00f5d4; 边缘:1.5快速眼动的 0 0.5快速眼动的;">📌 关于页面</h3>
-                        <级 班级="field"><标签>标题</标签><输入 类型="text" 身份证="cfg_about_title" /></级>
-                        <级 班级="field"><标签>副标题</标签><输入 类型="text" 身份证="cfg_about_subtitle" /></级>
-                        <级 班级="field"><标签>使命（支持HTML）</标签><文本区域 身份证="cfg_about_mission" 班级="large"></文本区域></级>
-                        <级 班级="field"><标签>核心能力（每行一个）</标签><文本区域 身份证="cfg_about_abilities" 班级="large" 行="5"></文本区域></级>
-                        <级 班级="field"><标签>价值观（支持HTML）</标签><文本区域 身份证="cfg_about_values" 班级="large"></文本区域></级>
-
-                        <h3 风格="颜色:#00f5d4; 边缘:1.5快速眼动的 0 0.5快速眼动的;">📬 联系页面</h3>
-                        <级 班级="field"><标签>标题</标签><输入 类型="text" 身份证="cfg_contact_title" /></级>
-                        <级 班级="field"><标签>副标题</标签><输入 类型="text" 身份证="cfg_contact_subtitle" /></级>
-                        <级 班级="field"><标签>地址</标签><输入 类型="text" 身份证="cfg_contact_address" /></级>
-                        <级 班级="field"><标签>电话</标签><输入 类型="text" 身份证="cfg_contact_phone" /></级>
-                        <级 班级="field"><标签>邮箱</标签><输入 类型="text" 身份证="cfg_contact_email" /></级>
-                        <级 班级="field"><标签>官网</标签><输入 类型="text" 身份证="cfg_contact_website" /></级>
-                        <级 班级="field"><标签>表单标题</标签><输入 类型="text" 身份证="cfg_contact_form_title" /></级>
-                        <级 班级="field"><标签>表单-姓名标签</标签><输入 类型="text" 身份证="cfg_contact_form_name" /></级>
-                        <级 班级="field"><标签>表单-邮箱标签</标签><输入 类型="text" 身份证="cfg_contact_form_email" /></级>
-                        <级 班级="field"><标签>表单-留言标签</标签><输入 类型="text" 身份证="cfg_contact_form_message" /></级>
-                        <级 班级="field"><标签>表单-提交按钮文字</标签><输入 类型="text" 身份证="cfg_contact_form_submit" /></级>
-
-                        <h3 风格="颜色:#00f5d4; 边缘:1.5快速眼动的 0 0.5快速眼动的;">📄 页脚</h3>
-                        <级 班级="field"><标签>版权信息（支持HTML）</标签><输入 类型="text" 身份证="cfg_footer_copyright" /></级>
-
-                        <按钮 类型="button" 班级="btn" 身份证="saveConfigBtn">💾 保存配置</button>
-                        <div class="status-msg" id="configStatus"></div>
-                        <!-- 日志面板 -->
-                        <div id="logPanel" class="log-container">📋 操作日志将显示在这里...</div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">&copy; 2026 <span>ZHDD 网安空间</span> · 管理后台</div>
-    </div>
-
-    <!-- ============================================================ -->
-    <script>
-        (function() {
-            'use strict';
-
-            // ======== 已配置（Token 需要你重新生成并填入） ========
-            const GITHUB_USERNAME = 'kali0914';
-            const REPO_NAME = 'zhdd.bbroot.com';
-            const HARD_CODED_TOKEN = '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';  // ⚠️ 请替换为新生成的 Token
-            const CORRECT_PASSWORD = '070301';
-            const CONFIG_PATH = 'site_config.json';
-            // ======================================================
-
-            // ---- DOM ----
-            const loginArea = document.getElementById('loginArea');
-            const mainPanel = document.getElementById('mainPanel');
-            const passwordInput = document.getElementById('adminPassword');
-            const loginBtn = document.getElementById('loginBtn');
-            const loginError = document.getElementById('loginError');
-            const logoutBtn = document.getElementById('logoutBtn');
-
-            const tabBtns = document.querySelectorAll('.tab-btn');
-            const tabContents = {
-                tabPublish: document.getElementById('tabPublish'),
-                tabConfig: document.getElementById('tabConfig')
-            };
-
-            const postTitle = document.getElementById('postTitle');
-            const postContent = document.getElementById('postContent');
-            const publishBtn = document.getElementById('publishBtn');
-            const publishStatus = document.getElementById('publishStatus');
-
-            const cfgFields = {
-                home_title: document.getElementById('cfg_home_title'),
-                home_subtitle: document.getElementById('cfg_home_subtitle'),
-                home_desc: document.getElementById('cfg_home_desc'),
-                badge1_num: document.getElementById('cfg_badge1_num'),
-                badge1_label: document.getElementById('cfg_badge1_label'),
-                badge2_num: document.getElementById('cfg_badge2_num'),
-                badge2_label: document.getElementById('cfg_badge2_label'),
-                badge3_num: document.getElementById('cfg_badge3_num'),
-                badge3_label: document.getElementById('cfg_badge3_label'),
-                members_title: document.getElementById('cfg_members_title'),
-                members_subtitle: document.getElementById('cfg_members_subtitle'),
-                members_list: document.getElementById('cfg_members_list'),
-                about_title: document.getElementById('cfg_about_title'),
-                about_subtitle: document.getElementById('cfg_about_subtitle'),
-                about_mission: document.getElementById('cfg_about_mission'),
-                about_abilities: document.getElementById('cfg_about_abilities'),
-                about_values: document.getElementById('cfg_about_values'),
-                contact_title: document.getElementById('cfg_contact_title'),
-                contact_subtitle: document.getElementById('cfg_contact_subtitle'),
-                contact_address: document.getElementById('cfg_contact_address'),
-                contact_phone: document.getElementById('cfg_contact_phone'),
-                contact_email: document.getElementById('cfg_contact_email'),
-                contact_website: document.getElementById('cfg_contact_website'),
-                contact_form_title: document.getElementById('cfg_contact_form_title'),
-                contact_form_name: document.getElementById('cfg_contact_form_name'),
-                contact_form_email: document.getElementById('cfg_contact_form_email'),
-                contact_form_message: document.getElementById('cfg_contact_form_message'),
-                contact_form_submit: document.getElementById('cfg_contact_form_submit'),
-                footer_copyright: document.getElementById('cfg_footer_copyright'),
-            };
-            const saveConfigBtn = document.getElementById('saveConfigBtn');
-            const configStatus = document.getElementById('configStatus');
-            const logPanel = document.getElementById('logPanel');
-
-            // ---- 日志函数 ----
-            function addLog(message, type = 'info') {
-                const time = new Date().toLocaleTimeString();
-                const colorClass = {
-                    info: 'log-info',
-                    success: 'log-success',
-                    error: 'log-error',
-                    warn: 'log-warn'
-                } [type] || 'log-info';
-                const entry = document.createElement('div');
-                entry.className = colorClass;
-                entry.textContent = `[${time}] ${message}`;
-                logPanel.appendChild(entry);
-                logPanel.scrollTop = logPanel.scrollHeight;
-                // 同时输出到控制台
-                console.log(`[${type}] ${message}`);
-            }
-
-            // ---- 登录 ----
-            function doLogin() {
-                const pwd = passwordInput.value.trim();
-                if (pwd === CORRECT_PASSWORD) {
-                    sessionStorage.setItem('admin_logged_in', 'true');
-                    loginArea.style.display = 'none';
-                    mainPanel.classList.remove('hidden');
-                    loginError.style.display = 'none';
-                    loadConfigToForm();
-                    addLog('登录成功', 'success');
-                } else {
-                    loginError.style.display = 'block';
-                    passwordInput.value = '';
-                    passwordInput.focus();
-                    addLog('登录失败：密码错误', 'error');
-                }
-            }
-
-            function doLogout() {
-                sessionStorage.removeItem('admin_logged_in');
-                loginArea.style.display = 'block';
-                mainPanel.classList.add('hidden');
-                passwordInput.value = '';
-                loginError.style.display = 'none';
-                passwordInput.focus();
-                addLog('已退出登录', 'warn');
-            }
-
-            loginBtn.addEventListener('click', doLogin);
-            passwordInput.addEventListener('keypress', e => { if (e.key === 'Enter') doLogin(); });
-            logoutBtn.addEventListener('click', doLogout);
-
-            // ---- Tab 切换 ----
-            tabBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    tabBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    const tabId = this.dataset.tab;
-                    Object.keys(tabContents).forEach(key => {
-                        tabContents[key].classList.toggle('active', key === tabId);
-                    });
-                    if (tabId === 'tabConfig') {
-                        addLog('切换到“编辑网站内容”标签', 'info');
-                    }
-                });
-            });
-
-            // ---- 工具：Base64 ----
-            function unicodeToBase64(str) {
-                const utf8Bytes = new TextEncoder().encode(str);
-                let binary = '';
-                for (let i = 0; i < utf8Bytes.length; i++) {
-                    binary += String.fromCharCode(utf8Bytes[i]);
-                }
-                return btoa(binary);
-            }
-
-            function base64ToUnicode(base64) {
-                const binary = atob(base64);
-                const bytes = new Uint8Array(binary.length);
-                for (let i = 0; i < binary.length; i++) {
-                    bytes[i] = binary.charCodeAt(i);
-                }
-                return new TextDecoder('utf-8').decode(bytes);
-            }
-
-            // ---- 读取配置到表单 ----
-            async function loadConfigToForm() {
-                addLog('开始加载网站配置...', 'info');
-                try {
-                    const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${CONFIG_PATH}`;
-                    addLog(`GET ${url}`, 'info');
-                    const res = await fetch(url, {
-                        headers: {
-                            'Authorization': `Bearer ${HARD_CODED_TOKEN}`,
-                            'Accept': 'application/vnd.github+json'
-                        }
-                    });
-                    addLog(`响应状态码: ${res.status} ${res.statusText}`, 'info');
-
-                    if (res.status === 404) {
-                        configStatus.textContent = '⚠️ site_config.json 不存在，将使用默认值';
-                        configStatus.style.color = '#ffaa00';
-                        addLog('配置文件不存在，将使用默认值', 'warn');
-                        return;
-                    }
-                    if (!res.ok) {
-                        const errorText = await res.text();
-                        throw new Error(`HTTP ${res.status}: ${errorText}`);
-                    }
-                    const data = await res.json();
-                    const content = base64ToUnicode(data.content);
-                    const config = JSON.parse(content);
-                    fillForm(config);
-                    configStatus.textContent = '✅ 已加载当前配置';
-                    configStatus.style.color = '#00f5d4';
-                    addLog('配置加载成功', 'success');
-                } catch (err) {
-                    console.error(err);
-                    configStatus.textContent = '❌ 加载配置失败: ' + err.message;
-                    configStatus.style.color = '#ff6b6b';
-                    addLog(`加载配置失败: ${err.message}`, 'error');
-                }
-            }
-
-            function fillForm(config) {
-                cfgFields.home_title.value = config.home?.title || '';
-                cfgFields.home_subtitle.value = config.home?.subtitle || '';
-                cfgFields.home_desc.value = config.home?.description || '';
-                const badges = config.home?.badges || [{ number: '', label: '' }, { number: '', label: '' }, { number: '',
-                    label: '' }];
-                cfgFields.badge1_num.value = badges[0]?.number || '';
-                cfgFields.badge1_label.value = badges[0]?.label || '';
-                cfgFields.badge2_num.value = badges[1]?.number || '';
-                cfgFields.badge2_label.value = badges[1]?.label || '';
-                cfgFields.badge3_num.value = badges[2]?.number || '';
-                cfgFields.badge3_label.value = badges[2]?.label || '';
-
-                cfgFields.members_title.value = config.members?.title || '';
-                cfgFields.members_subtitle.value = config.members?.subtitle || '';
-                const members = config.members?.list || [];
-                cfgFields.members_list.value = members.map(m => `${m.name}|${m.role}|${m.desc}`).join('\n');
-
-                cfgFields.about_title.value = config.about?.title || '';
-                cfgFields.about_subtitle.value = config.about?.subtitle || '';
-                cfgFields.about_mission.value = config.about?.mission || '';
-                cfgFields.about_abilities.value = (config.about?.abilities || []).join('\n');
-                cfgFields.about_values.value = config.about?.values || '';
-
-                const info = config.contact?.info || {};
-                cfgFields.contact_title.value = config.contact?.title || '';
-                cfgFields.contact_subtitle.value = config.contact?.subtitle || '';
-                cfgFields.contact_address.value = info.address || '';
-                cfgFields.contact_phone.value = info.phone || '';
-                cfgFields.contact_email.value = info.email || '';
-                cfgFields.contact_website.value = info.website || '';
-                cfgFields.contact_form_title.value = config.contact?.form_title || '';
-                cfgFields.contact_form_name.value = config.contact?.form_name_label || '';
-                cfgFields.contact_form_email.value = config.contact?.form_email_label || '';
-                cfgFields.contact_form_message.value = config.contact?.form_message_label || '';
-                cfgFields.contact_form_submit.value = config.contact?.form_submit_label || '';
-
-                cfgFields.footer_copyright.value = config.footer?.copyright || '';
-            }
-
-            // ---- 收集表单数据 ----
-            function collectConfig() {
-                const badges = [
-                    { number: cfgFields.badge1_num.value.trim(), label: cfgFields.badge1_label.value.trim() },
-                    { number: cfgFields.badge2_num.value.trim(), label: cfgFields.badge2_label.value.trim() },
-                    { number: cfgFields.badge3_num.value.trim(), label: cfgFields.badge3_label.value.trim() }
-                ].filter(b => b.number || b.label);
-
-                const members = cfgFields.members_list.value.split('\n')
-                    .map(line => line.trim())
-                    .filter(line => line)
-                    .map(line => {
-                        const parts = line.split('|').map(s => s.trim());
-                        return { name: parts[0] || '未命名', role: parts[1] || '', desc: parts[2] || '' };
-                    });
-
-                const abilities = cfgFields.about_abilities.value.split('\n')
-                    .map(s => s.trim()).filter(s => s);
-
-                return {
-                    home: {
-                        title: cfgFields.home_title.value.trim(),
-                        subtitle: cfgFields.home_subtitle.value.trim(),
-                        description: cfgFields.home_desc.value.trim(),
-                        badges: badges
-                    },
-                    members: {
-                        title: cfgFields.members_title.value.trim(),
-                        subtitle: cfgFields.members_subtitle.value.trim(),
-                        list: members
-                    },
-                    about: {
-                        title: cfgFields.about_title.value.trim(),
-                        subtitle: cfgFields.about_subtitle.value.trim(),
-                        mission: cfgFields.about_mission.value.trim(),
-                        abilities: abilities,
-                        values: cfgFields.about_values.value.trim()
-                    },
-                    contact: {
-                        title: cfgFields.contact_title.value.trim(),
-                        subtitle: cfgFields.contact_subtitle.value.trim(),
-                        info: {
-                            address: cfgFields.contact_address.value.trim(),
-                            phone: cfgFields.contact_phone.value.trim(),
-                            email: cfgFields.contact_email.value.trim(),
-                            website: cfgFields.contact_website.value.trim()
-                        },
-                        form_title: cfgFields.contact_form_title.value.trim(),
-                        form_name_label: cfgFields.contact_form_name.value.trim(),
-                        form_email_label: cfgFields.contact_form_email.value.trim(),
-                        form_message_label: cfgFields.contact_form_message.value.trim(),
-                        form_submit_label: cfgFields.contact_form_submit.value.trim()
-                    },
-                    footer: {
-                        copyright: cfgFields.footer_copyright.value.trim()
-                    }
-                };
-            }
-
-            // ---- 保存配置（带详细日志） ----
-            async function saveConfig() {
-                // 清空日志（可选，这里保留之前的日志）
-                // logPanel.innerHTML = '';
-                addLog('===== 开始保存配置 =====', 'info');
-
-                const config = collectConfig();
-                const jsonStr = JSON.stringify(config, null, 2);
-                const encoded = unicodeToBase64(jsonStr);
-                addLog(`配置内容已编码，长度 ${jsonStr.length} 字符`, 'info');
-
-                configStatus.textContent = '⏳ 保存中...';
-                configStatus.style.color = '#8aa3bc';
-                saveConfigBtn.disabled = true;
-
-                try {
-                    // 1. 获取文件 sha（如果存在）
-                    const getUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${CONFIG_PATH}`;
-                    addLog(`GET ${getUrl}`, 'info');
-                    const getRes = await fetch(getUrl, {
-                        headers: {
-                            'Authorization': `Bearer ${HARD_CODED_TOKEN}`,
-                            'Accept': 'application/vnd.github+json'
-                        }
-                    });
-                    addLog(`GET 响应状态: ${getRes.status} ${getRes.statusText}`, 'info');
-
-                    let sha = null;
-                    if (getRes.status === 200) {
-                        const data = await getRes.json();
-                        sha = data.sha;
-                        addLog(`文件已存在，SHA: ${sha}`, 'success');
-                    } else if (getRes.status === 404) {
-                        addLog('文件不存在，将创建新文件', 'warn');
-                    } else {
-                        // 其他错误，尝试读取错误信息
-                        const errorText = await getRes.text();
-                        throw new Error(`GET 失败 (${getRes.status}): ${errorText}`);
-                    }
-
-                    // 2. PUT 更新或创建
-                    const putUrl = getUrl;
-                    addLog(`PUT ${putUrl}`, 'info');
-                    const putBody = {
-                        message: '更新网站配置（通过管理后台）',
-                        content: encoded,
-                    };
-                    if (sha) putBody.sha = sha;
-
-                    const putRes = await fetch(putUrl, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `Bearer ${HARD_CODED_TOKEN}`,
-                            'Accept': 'application/vnd.github+json',
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(putBody)
-                    });
-                    addLog(`PUT 响应状态: ${putRes.status} ${putRes.statusText}`, 'info');
-
-                    if (putRes.ok) {
-                        const result = await putRes.json();
-                        addLog(`提交成功，commit: ${result.commit.sha}`, 'success');
-                        configStatus.textContent = '✅ 配置保存成功！网站将自动更新。';
-                        configStatus.style.color = '#00f5d4';
-                        addLog('===== 保存完成 =====', 'success');
-                    } else {
-                        const errorText = await putRes.text();
-                        throw new Error(`PUT 失败 (${putRes.status}): ${errorText}`);
-                    }
-                } catch (error) {
-                    configStatus.textContent = '❌ 保存失败: ' + error.message;
-                    configStatus.style.color = '#ff6b6b';
-                    addLog(`保存失败: ${error.message}`, 'error');
-                    console.error(error);
-                } finally {
-                    saveConfigBtn.disabled = false;
-                }
-            }
-
-            saveConfigBtn.addEventListener('click', saveConfig);
-
-            // ---- 发布文章（也增加日志） ----
-            async function doPublish() {
-                const title = postTitle.value.trim();
-                const content = postContent.value.trim();
-                if (!title || !content) {
-                    publishStatus.textContent = '⚠️ 请填写标题和内容';
-                    publishStatus.style.color = '#ff6b6b';
-                    addLog('发布文章失败：标题或内容为空', 'warn');
-                    return;
-                }
-                let filename = title;
-                if (!filename.endsWith('.md')) filename += '.md';
-                const filePath = filename.startsWith('_posts/') ? filename : `_posts/${filename}`;
-                const encoded = unicodeToBase64(content);
-
-                publishStatus.textContent = '⏳ 发布中...';
-                publishStatus.style.color = '#8aa3bc';
-                publishBtn.disabled = true;
-                addLog(`开始发布文章: ${filePath}`, 'info');
-
-                try {
-                    // 检查文件是否存在
-                    const getUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${filePath}`;
-                    addLog(`GET ${getUrl}`, 'info');
-                    const getRes = await fetch(getUrl, {
-                        headers: {
-                            'Authorization': `Bearer ${HARD_CODED_TOKEN}`,
-                            'Accept': 'application/vnd.github+json'
-                        }
-                    });
-                    addLog(`GET 状态: ${getRes.status}`, 'info');
-
-                    let sha = null;
-                    if (getRes.status === 200) {
-                        const data = await getRes.json();
-                        sha = data.sha;
-                        addLog(`文件已存在，SHA: ${sha}`, 'success');
-                        if (!confirm(`文件 "${filePath}" 已存在，是否覆盖？`)) {
-                            publishStatus.textContent = '❌ 已取消';
-                            publishStatus.style.color = '#ff6b6b';
-                            addLog('用户取消覆盖', 'warn');
-                            publishBtn.disabled = false;
-                            return;
-                        }
-                    } else if (getRes.status !== 404) {
-                        const errorText = await getRes.text();
-                        throw new Error(`检查文件失败 (${getRes.status}): ${errorText}`);
-                    } else {
-                        addLog('文件不存在，将创建', 'warn');
-                    }
-
-                    const putBody = {
-                        message: `通过管理后台发布: ${filename}`,
-                        content: encoded,
-                    };
-                    if (sha) putBody.sha = sha;
-
-                    const putUrl = getUrl;
-                    addLog(`PUT ${putUrl}`, 'info');
-                    const putRes = await fetch(putUrl, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `Bearer ${HARD_CODED_TOKEN}`,
-                            'Accept': 'application/vnd.github+json',
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(putBody)
-                    });
-                    addLog(`PUT 状态: ${putRes.status}`, 'info');
-
-                    if (putRes.ok) {
-                        publishStatus.textContent = '✅ 文章发布成功！';
-                        publishStatus.style.color = '#00f5d4';
-                        postTitle.value = '';
-                        postContent.value = '';
-                        addLog(`文章发布成功: ${filePath}`, 'success');
-                    } else {
-                        const errorText = await putRes.text();
-                        throw new Error(`发布失败 (${putRes.status}): ${errorText}`);
-                    }
-                } catch (error) {
-                    publishStatus.textContent = '❌ ' + error.message;
-                    publishStatus.style.color = '#ff6b6b';
-                    addLog(`发布失败: ${error.message}`, 'error');
-                    console.error(error);
-                } finally {
-                    publishBtn.disabled = false;
-                }
-            }
-
-            publishBtn.addEventListener('click', doPublish);
-
-            // ---- 页面加载检查登录 ----
-            if (sessionStorage.getItem('admin_logged_in') === 'true') {
-                loginArea.style.display = 'none';
-                mainPanel.classList.remove('hidden');
-                loadConfigToForm();
-                addLog('已恢复登录状态', 'info');
-            } else {
-                loginArea.style.display = 'block';
-                mainPanel.classList.add('hidden');
-                passwordInput.focus();
-                // 初始化日志
-                addLog('请登录管理后台', 'info');
-            }
-
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && sessionStorage.getItem('admin_logged_in') === 'true') {
-                    if (confirm('确定退出登录吗？')) doLogout();
-                }
-            });
-
-        })();
-    </script>
-
 </body>
 </html>
