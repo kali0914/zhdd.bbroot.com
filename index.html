@@ -369,12 +369,84 @@
             border-bottom-color: #00f5d4;
         }
 
-        /* ===== 加载提示 ===== */
+        /* ===== 加载动画：沙漏 ===== */
         .loading-mask {
-            text-align: center;
-            padding: 4rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #0b0e14;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        .loading-mask.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .hourglass {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 80px;
+            animation: spin 2s linear infinite;
+        }
+        .hourglass::before,
+        .hourglass::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            border-style: solid;
+            border-color: #00f5d4 transparent transparent transparent;
+        }
+        .hourglass::before {
+            top: 0;
+            border-width: 30px 40px 0 40px;
+            animation: drop 1.5s ease-in-out infinite;
+        }
+        .hourglass::after {
+            bottom: 0;
+            border-width: 0 40px 30px 40px;
+            border-color: transparent transparent #00f5d4 transparent;
+            animation: fill 1.5s ease-in-out infinite;
+        }
+        .hourglass .sand {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: #00f5d4;
+            border-radius: 50%;
+            animation: sandFlow 1.5s ease-in-out infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes drop {
+            0%, 20% { top: 0; opacity: 1; }
+            80%, 100% { top: 40px; opacity: 0; }
+        }
+        @keyframes fill {
+            0%, 20% { bottom: 0; opacity: 0; }
+            80%, 100% { bottom: 40px; opacity: 1; }
+        }
+        @keyframes sandFlow {
+            0%, 20% { transform: translate(-50%, -20px); opacity: 1; }
+            80%, 100% { transform: translate(-50%, 20px); opacity: 0; }
+        }
+        .loading-mask p {
+            margin-top: 20px;
             color: #8aa3bc;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
         }
 
         /* ===== 响应式 ===== */
@@ -407,11 +479,19 @@
 </head>
 <body>
 
+    <!-- ===== 加载遮罩（沙漏动画） ===== -->
+    <div id="loadingMask" class="loading-mask">
+        <div class="hourglass">
+            <div class="sand"></div>
+        </div>
+        <p>加载中...</p>
+    </div>
+
     <!-- ===== 导航栏 ===== -->
     <nav class="navbar">
         <div class="logo">
             <span class="logo-icon">Z</span>
-            <span id="brandName">ZHDD 网安空间</span>
+            <span id="brandName"></span>
         </div>
         <ul class="nav-links">
             <li><button class="nav-btn active" data-page="home">首页</button></li>
@@ -423,100 +503,69 @@
 
     <!-- ===== 主内容 ===== -->
     <div class="main-container">
-        <div id="loadingPlaceholder" class="loading-mask">⏳ 加载网站内容...</div>
 
         <!-- ====== 首页 ====== -->
         <section id="page-home" class="page">
             <div class="hero">
-                <h1 id="homeTitle">ZHDD 网安空间</h1>
-                <p class="subtitle" id="homeSubtitle">—— 守护数字边界 · 铸就安全未来 ——</p>
-                <div class="desc" id="homeDesc">
-                    <span>ZHDD网安空间</span> 专注于网络安全攻防与信息化建设，
-                    为政企客户提供<strong>渗透测试</strong>、<strong>安全加固</strong>、
-                    <strong>应急响应</strong>及<strong>等保合规</strong>一站式服务。
-                    以技术为盾，以创新为矛，捍卫每一寸数字疆域。
-                </div>
+                <h1 id="homeTitle"></h1>
+                <p class="subtitle" id="homeSubtitle"></p>
+                <div class="desc" id="homeDesc"></div>
                 <div class="badge-grid" id="badgeGrid"></div>
             </div>
         </section>
 
         <!-- ====== 成员页面 ====== -->
         <section id="page-members" class="page">
-            <h2 class="section-title" id="membersTitle">👥 团队 <span class="highlight">成员</span></h2>
-            <p class="section-sub" id="membersSub">核心安全专家，守护您的数字资产</p>
+            <h2 class="section-title" id="membersTitle"></h2>
+            <p class="section-sub" id="membersSub"></p>
             <div class="members-grid" id="membersGrid"></div>
         </section>
 
         <!-- ====== 简介页面 ====== -->
         <section id="page-about" class="page">
             <div class="about-content">
-                <h2 class="section-title" id="aboutTitle">📌 关于 <span class="highlight">ZHDD</span></h2>
-                <p class="section-sub" id="aboutSub">知安 · 护安 · 铸安</p>
+                <h2 class="section-title" id="aboutTitle"></h2>
+                <p class="section-sub" id="aboutSub"></p>
                 <div class="about-block">
                     <h3>🛡️ 我们的使命</h3>
-                    <p id="aboutMission">ZHDD网安空间致力于构建<strong>主动防御、动态感知、协同响应</strong>的新一代安全体系。我们以攻防实战为导向，融合大数据与AI技术，为客户提供可持续演进的安全能力。</p>
+                    <p id="aboutMission"></p>
                 </div>
                 <div class="about-block">
                     <h3>⚡ 核心能力</h3>
-                    <ul id="aboutAbilities">
-                        <li>渗透测试 &amp; 红蓝对抗</li>
-                        <li>安全运营 &amp; 态势感知</li>
-                        <li>应急响应 &amp; 溯源取证</li>
-                        <li>等保2.0 &amp; 合规咨询</li>
-                        <li>安全培训 &amp; 意识提升</li>
-                    </ul>
+                    <ul id="aboutAbilities"></ul>
                 </div>
                 <div class="about-block">
                     <h3>🌐 价值观</h3>
-                    <p id="aboutValues">
-                        <strong>专业</strong> —— 深耕技术，追求极致；<br />
-                        <strong>诚信</strong> —— 透明交付，客户至上；<br />
-                        <strong>创新</strong> —— 突破边界，引领未来。
-                    </p>
+                    <p id="aboutValues"></p>
                 </div>
             </div>
         </section>
 
         <!-- ====== 联系页面 ====== -->
         <section id="page-contact" class="page">
-            <h2 class="section-title" id="contactTitle">📬 联系 <span class="highlight">我们</span></h2>
-            <p class="section-sub" id="contactSub">随时与我们取得联系，共筑安全防线</p>
+            <h2 class="section-title" id="contactTitle"></h2>
+            <p class="section-sub" id="contactSub"></p>
             <div class="contact-wrapper">
                 <div class="contact-info">
-                    <h3 id="contactInfoTitle">📇 联系方式</h3>
-                    <div class="contact-item">
-                        <div class="icon">📍</div>
-                        <div class="info"><strong>地址</strong><br /><span id="contactAddress">江西省南昌市 · 网络安全产业园</span></div>
-                    </div>
-                    <div class="contact-item">
-                        <div class="icon">📞</div>
-                        <div class="info"><strong>电话</strong><br /><span id="contactPhone">0791-8888-6666</span></div>
-                    </div>
-                    <div class="contact-item">
-                        <div class="icon">✉️</div>
-                        <div class="info"><strong>邮箱</strong><br /><span id="contactEmail">security@zhdd.com</span></div>
-                    </div>
-                    <div class="contact-item">
-                        <div class="icon">🌐</div>
-                        <div class="info"><strong>官网</strong><br /><span id="contactWebsite">www.zhdd-security.cn</span></div>
-                    </div>
+                    <h3 id="contactInfoTitle"></h3>
+                    <div id="contactItems"></div>
                 </div>
                 <div class="contact-form">
-                    <h3 id="contactFormTitle">✍️ 留言咨询</h3>
+                    <h3 id="contactFormTitle"></h3>
                     <form id="contactForm" onsubmit="return handleSubmit(event)">
                         <div class="form-group">
-                            <label id="contactFormNameLabel" for="name">您的姓名</label>
+                            <label id="contactFormNameLabel" for="name"></label>
                             <input type="text" id="name" placeholder="请输入姓名" required />
                         </div>
                         <div class="form-group">
-                            <label id="contactFormEmailLabel" for="email">邮箱地址</label>
+                            <label id="contactFormEmailLabel" for="email"></label>
                             <input type="email" id="email" placeholder="请输入邮箱" required />
                         </div>
                         <div class="form-group">
-                            <label id="contactFormMessageLabel" for="message">留言内容</label>
+                            <label id="contactFormMessageLabel" for="message"></label>
                             <textarea id="message" placeholder="请描述您的需求…" required></textarea>
                         </div>
-                        <button type="submit" class="submit-btn" id="contactFormSubmitBtn">发送留言</button>
+                        <button type="submit" class="submit-btn" id="contactFormSubmitBtn"></button>
                     </form>
                 </div>
             </div>
@@ -525,7 +574,7 @@
 
     <!-- ===== 页脚 ===== -->
     <footer class="footer">
-        <span id="footerCopyright">&copy; 2026 ZHDD 网安空间 — 守护数字边界 · 铸就安全未来</span>
+        <span id="footerCopyright"></span>
         <br />
         <a href="admin.html" class="admin-link">🔧 管理后台</a>
     </footer>
@@ -535,11 +584,12 @@
         (function() {
             'use strict';
 
-            // ======== 已配置好 ========
+            // ======== 配置（已填好） ========
             const GITHUB_USERNAME = 'kali0914';
             const REPO_NAME = 'zhdd.bbroot.com';
             const CONFIG_PATH = 'site_config.json';
-            // =========================
+            const CACHE_KEY = 'site_config_cache';
+            // =================================
 
             // ---- DOM 元素 ----
             const navBtns = document.querySelectorAll('.nav-btn');
@@ -549,7 +599,107 @@
                 about: document.getElementById('page-about'),
                 contact: document.getElementById('page-contact'),
             };
-            const loadingEl = document.getElementById('loadingPlaceholder');
+            const loadingMask = document.getElementById('loadingMask');
+
+            // ---- 渲染函数（所有文字从配置注入） ----
+            function renderConfig(config) {
+                // 首页
+                document.getElementById('homeTitle').textContent = config.home.title;
+                document.getElementById('homeSubtitle').textContent = config.home.subtitle;
+                document.getElementById('homeDesc').innerHTML = config.home.description;
+                const badgeGrid = document.getElementById('badgeGrid');
+                badgeGrid.innerHTML = config.home.badges.map(b =>
+                    `<div class="badge-item"><div class="number">${b.number}</div><div class="label">${b.label}</div></div>`
+                ).join('');
+
+                // 成员
+                document.getElementById('membersTitle').innerHTML = config.members.title;
+                document.getElementById('membersSub').textContent = config.members.subtitle;
+                const membersGrid = document.getElementById('membersGrid');
+                if (config.members.list && config.members.list.length) {
+                    membersGrid.innerHTML = config.members.list.map(m =>
+                        `<div class="member-card">
+                            <div class="member-avatar">👤</div>
+                            <div class="member-name">${m.name}</div>
+                            <div class="member-role">${m.role}</div>
+                            <div class="member-desc">${m.desc}</div>
+                        </div>`
+                    ).join('');
+                } else {
+                    membersGrid.innerHTML = '<p style="color:#8aa3bc;">暂无成员信息</p>';
+                }
+
+                // 关于
+                document.getElementById('aboutTitle').innerHTML = config.about.title;
+                document.getElementById('aboutSub').textContent = config.about.subtitle;
+                document.getElementById('aboutMission').innerHTML = config.about.mission;
+                document.getElementById('aboutAbilities').innerHTML = config.about.abilities.map(a =>
+                    `<li>${a}</li>`
+                ).join('');
+                document.getElementById('aboutValues').innerHTML = config.about.values;
+
+                // 联系
+                document.getElementById('contactTitle').innerHTML = config.contact.title;
+                document.getElementById('contactSub').textContent = config.contact.subtitle;
+                document.getElementById('contactInfoTitle').textContent = config.contact.info_title || '联系方式';
+                const contactItems = document.getElementById('contactItems');
+                if (config.contact.items && config.contact.items.length) {
+                    contactItems.innerHTML = config.contact.items.map(item =>
+                        `<div class="contact-item">
+                            <div class="icon">${item.icon}</div>
+                            <div class="info"><strong>${item.label}</strong><br />${item.value}</div>
+                        </div>`
+                    ).join('');
+                } else {
+                    contactItems.innerHTML = '<p style="color:#8aa3bc;">暂无联系信息</p>';
+                }
+
+                document.getElementById('contactFormTitle').textContent = config.contact.form_title;
+                document.getElementById('contactFormNameLabel').textContent = config.contact.form_name_label;
+                document.getElementById('contactFormEmailLabel').textContent = config.contact.form_email_label;
+                document.getElementById('contactFormMessageLabel').textContent = config.contact.form_message_label;
+                document.getElementById('contactFormSubmitBtn').textContent = config.contact.form_submit_label;
+
+                // 页脚
+                document.getElementById('footerCopyright').innerHTML = config.footer.copyright;
+                document.getElementById('brandName').textContent = config.home.title;
+            }
+
+            // ---- 加载配置（缓存优先） ----
+            function loadConfig() {
+                // 1. 从缓存读取并渲染
+                const cached = localStorage.getItem(CACHE_KEY);
+                if (cached) {
+                    try {
+                        const config = JSON.parse(cached);
+                        renderConfig(config);
+                        // 隐藏加载遮罩（如果已显示）
+                        loadingMask.classList.add('hidden');
+                        console.log('✅ 使用缓存配置');
+                    } catch (e) {
+                        console.warn('缓存解析失败', e);
+                    }
+                }
+
+                // 2. 从远程拉取最新配置
+                fetch(`https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/${CONFIG_PATH}`)
+                    .then(res => {
+                        if (!res.ok) throw new Error('Config not found');
+                        return res.json();
+                    })
+                    .then(config => {
+                        localStorage.setItem(CACHE_KEY, JSON.stringify(config));
+                        renderConfig(config);
+                        loadingMask.classList.add('hidden');
+                        console.log('✅ 远程配置加载成功，已更新缓存');
+                    })
+                    .catch(err => {
+                        console.warn('⚠️ 远程配置加载失败:', err);
+                        // 如果缓存也没有，则隐藏加载遮罩并显示空白
+                        loadingMask.classList.add('hidden');
+                        // 如果没有任何内容，可以显示提示，但这里保持空白
+                    });
+            }
 
             // ---- 切换页面 ----
             function switchPage(pageId) {
@@ -569,72 +719,6 @@
                 });
             });
 
-            // ---- 加载配置并渲染 ----
-            function loadConfig() {
-                loadingEl.style.display = 'block';
-                fetch(`https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/${CONFIG_PATH}`)
-                    .then(res => {
-                        if (!res.ok) throw new Error('Config not found');
-                        return res.json();
-                    })
-                    .then(config => {
-                        // 首页
-                        document.getElementById('homeTitle').textContent = config.home.title;
-                        document.getElementById('homeSubtitle').textContent = config.home.subtitle;
-                        document.getElementById('homeDesc').innerHTML = config.home.description;
-                        const badgeGrid = document.getElementById('badgeGrid');
-                        badgeGrid.innerHTML = config.home.badges.map(b =>
-                            `<div class="badge-item"><div class="number">${b.number}</div><div class="label">${b.label}</div></div>`
-                        ).join('');
-
-                        // 成员
-                        document.getElementById('membersTitle').innerHTML = config.members.title;
-                        document.getElementById('membersSub').textContent = config.members.subtitle;
-                        const membersGrid = document.getElementById('membersGrid');
-                        membersGrid.innerHTML = config.members.list.map(m =>
-                            `<div class="member-card">
-                                <div class="member-avatar">👤</div>
-                                <div class="member-name">${m.name}</div>
-                                <div class="member-role">${m.role}</div>
-                                <div class="member-desc">${m.desc}</div>
-                            </div>`
-                        ).join('');
-
-                        // 关于
-                        document.getElementById('aboutTitle').innerHTML = config.about.title;
-                        document.getElementById('aboutSub').textContent = config.about.subtitle;
-                        document.getElementById('aboutMission').innerHTML = config.about.mission;
-                        document.getElementById('aboutAbilities').innerHTML = config.about.abilities.map(a =>
-                            `<li>${a}</li>`
-                        ).join('');
-                        document.getElementById('aboutValues').innerHTML = config.about.values;
-
-                        // 联系
-                        document.getElementById('contactTitle').innerHTML = config.contact.title;
-                        document.getElementById('contactSub').textContent = config.contact.subtitle;
-                        document.getElementById('contactAddress').textContent = config.contact.info.address;
-                        document.getElementById('contactPhone').textContent = config.contact.info.phone;
-                        document.getElementById('contactEmail').textContent = config.contact.info.email;
-                        document.getElementById('contactWebsite').textContent = config.contact.info.website;
-                        document.getElementById('contactInfoTitle').textContent = '📇 联系方式';
-                        document.getElementById('contactFormTitle').textContent = config.contact.form_title;
-                        document.getElementById('contactFormNameLabel').textContent = config.contact.form_name_label;
-                        document.getElementById('contactFormEmailLabel').textContent = config.contact.form_email_label;
-                        document.getElementById('contactFormMessageLabel').textContent = config.contact.form_message_label;
-                        document.getElementById('contactFormSubmitBtn').textContent = config.contact.form_submit_label;
-
-                        // 页脚
-                        document.getElementById('footerCopyright').innerHTML = config.footer.copyright;
-                        document.getElementById('brandName').textContent = config.home.title;
-
-                        loadingEl.style.display = 'none';
-                    })
-                    .catch(err => {
-                        console.warn('加载配置失败，使用默认文字', err);
-                        loadingEl.style.display = 'none';
-                    });
-            }
-
             // ---- 联系表单 ----
             window.handleSubmit = function(e) {
                 e.preventDefault();
@@ -645,7 +729,7 @@
                     alert('请完整填写所有字段 🙏');
                     return false;
                 }
-                alert('✅ 留言已发送！我们会尽快与您联系。\n（此功能为演示，实际对接后端即可）');
+                alert('✅ 留言已发送！我们会尽快与您联系。\n（此功能为演示）');
                 document.getElementById('contactForm').reset();
                 return false;
             };
@@ -659,9 +743,10 @@
             if (window.location.hash) { handleHash(); } else { switchPage('home'); }
             window.switchPage = switchPage;
 
-            // 加载配置
+            // ---- 启动：加载配置 ----
             loadConfig();
         })();
     </script>
+
 </body>
 </html>
