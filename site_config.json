@@ -64,20 +64,20 @@
   },
   "contact": {
     "title": "📬 联系 我们",
-    "subtitle": "随时与我们取得联系，共筑安全防线",
+    "subtitle": "测试",
     "info": {
-      "address": "",
+      "address": "测试",
       "phone": "null",
       "email": "kali0914@yeah.net",
       "website": "www.zhdd.bbroot.com"
     },
     "form_title": "✍️ 留言咨询",
-    "form_name_label": "您的姓名",
-    "form_email_label": "邮箱地址",
-    "form_message_label": "留言内容",
-    "form_submit_label": "发送留言"
+    "form_name_label": "",
+    "form_email_label": "测试",
+    "form_message_label": "测试",
+    "form_submit_label": "测试"
   },
   "footer": {
-    "copyright": "© 2026 ZHDD 网安空间 — 守护数字边界 · 铸就安全未来"
+    "copyright": "© 2026 ZHDD 网安空间 — 站长QQ:1361264462"
   }
 }
