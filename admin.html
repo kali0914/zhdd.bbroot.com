@@ -165,9 +165,7 @@
         .log-container .log-warn { color: #ffd93d; }
 
         /* 统一列表样式 */
-        .item-list {
-            margin-top: 0.5rem;
-        }
+        .item-list { margin-top: 0.5rem; }
         .item-list .list-item {
             display: flex;
             align-items: flex-start;
@@ -784,7 +782,6 @@
                     editStatus.style.color = '#ff6b6b';
                     return;
                 }
-                // 获取原时间
                 let oldTime = '';
                 try {
                     const g = await fetch(
@@ -844,13 +841,15 @@
                 } finally { editSaveBtn.disabled = false; }
             });
 
-            // ---- 加载反馈 ----
+            // ============================================================
+            //  用户反馈（已修复：直接查询，不关联 auth.users）
+            // ============================================================
             async function loadFeedback() {
                 feedbackContainer.innerHTML = '<div class="status-msg">⏳ 加载中...</div>';
                 try {
                     const { data, error } = await supabase
                         .from('feedbacks')
-                        .select('*, auth.users(email)')
+                        .select('*')
                         .order('created_at', { ascending: false });
                     if (error) throw error;
                     if (!data || data.length === 0) {
@@ -858,14 +857,9 @@
                         return;
                     }
                     let html = '<div class="item-list">';
+                    const statusMap = { pending: 'pending', read: 'read', resolved: 'resolved', rejected: 'rejected' };
+                    const statusText = { pending: '待处理', read: '已读', resolved: '已解决', rejected: '已拒绝' };
                     for (const f of data) {
-                        const statusMap = {
-                            pending: 'pending',
-                            read: 'read',
-                            resolved: 'resolved',
-                            rejected: 'rejected'
-                        };
-                        const statusText = { pending: '待处理', read: '已读', resolved: '已解决', rejected: '已拒绝' };
                         const statusClass = statusMap[f.status] || 'pending';
                         html += `
                             <div class="list-item">
@@ -884,7 +878,6 @@
                     html += '</div>';
                     feedbackContainer.innerHTML = html;
 
-                    // 绑定状态更新事件
                     feedbackContainer.querySelectorAll('.btn').forEach(btn => {
                         btn.addEventListener('click', async function() {
                             const id = this.dataset.id;
@@ -898,7 +891,9 @@
                 }
             }
 
-            // ---- 加载留言 ----
+            // ============================================================
+            //  用户留言
+            // ============================================================
             async function loadMessages() {
                 messagesContainer.innerHTML = '<div class="status-msg">⏳ 加载中...</div>';
                 try {
@@ -933,7 +928,6 @@
                     html += '</div>';
                     messagesContainer.innerHTML = html;
 
-                    // 绑定状态更新事件
                     messagesContainer.querySelectorAll('.btn').forEach(btn => {
                         btn.addEventListener('click', async function() {
                             const id = this.dataset.id;
@@ -947,7 +941,9 @@
                 }
             }
 
-            // ---- 配置管理 ----
+            // ============================================================
+            //  配置管理
+            // ============================================================
             async function loadConfigToForm() {
                 try {
                     const r = await fetch(
