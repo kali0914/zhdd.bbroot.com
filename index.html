@@ -94,18 +94,6 @@
             border-radius: 4px;
             box-shadow: 0 0 12px #00f5d4;
         }
-        /* 文章按钮单独样式（链接） */
-        .nav-btn.article-link {
-            color: #00f5d4;
-            border: 1px solid rgba(0, 245, 212, 0.2);
-            padding: 6px 18px;
-            border-radius: 30px;
-            transition: all 0.25s ease;
-        }
-        .nav-btn.article-link:hover {
-            background: rgba(0, 245, 212, 0.15);
-            border-color: #00f5d4;
-        }
 
         /* ===== 主容器 ===== */
         .main-container {
@@ -356,6 +344,93 @@
             box-shadow: 0 8px 30px rgba(0, 245, 212, 0.25);
         }
 
+        /* ===== 文章列表页 ===== */
+        .articles-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .articles-header .search-box {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            color: #e8edf5;
+            font-size: 0.95rem;
+            outline: none;
+            width: 100%;
+            max-width: 300px;
+            transition: 0.3s;
+        }
+        .articles-header .search-box:focus {
+            border-color: #00f5d4;
+            box-shadow: 0 0 0 3px rgba(0, 245, 212, 0.08);
+        }
+        .article-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .article-item:hover {
+            border-color: rgba(0, 245, 212, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .article-item .title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #e8edf5;
+        }
+        .article-item .meta {
+            font-size: 0.85rem;
+            color: #8aa3bc;
+            margin-top: 4px;
+        }
+        .article-item .summary {
+            color: #b0c8dd;
+            font-size: 0.95rem;
+            margin-top: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.6;
+        }
+        .article-item .full-content {
+            display: none;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            color: #b8ccdd;
+            line-height: 1.8;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+        }
+        .article-item.expanded .full-content {
+            display: block;
+        }
+        .article-item.expanded .summary {
+            display: none;
+        }
+        .no-articles {
+            text-align: center;
+            padding: 3rem;
+            color: #5a738a;
+            font-size: 1.1rem;
+        }
+        .articles-loading {
+            text-align: center;
+            padding: 3rem;
+            color: #8aa3bc;
+            font-size: 1.1rem;
+        }
+
         /* ===== 页脚 ===== */
         .footer {
             text-align: center;
@@ -476,6 +551,7 @@
             .badge-grid { gap: 1rem; }
             .badge-item { padding: 0.8rem 1.2rem; min-width: 100px; }
             .badge-item .number { font-size: 1.5rem; }
+            .articles-header .search-box { max-width: 100%; }
         }
         @media (max-width: 480px) {
             .navbar { padding: 0 0.8rem; height: 58px; }
@@ -486,6 +562,7 @@
             .hero .subtitle { font-size: 0.95rem; letter-spacing: 2px; }
             .section-title { font-size: 1.5rem; }
             .member-card { padding: 1.2rem 0.8rem; }
+            .article-item { padding: 1rem 1rem; }
         }
     </style>
 </head>
@@ -508,14 +585,14 @@
             <li><button class="nav-btn" data-page="members">成员</button></li>
             <li><button class="nav-btn" data-page="about">简介</button></li>
             <li><button class="nav-btn" data-page="contact">联系</button></li>
-            <li><a href="articles.html" class="nav-btn article-link">📄 文章</a></li>
+            <li><button class="nav-btn" data-page="articles">📄 文章</button></li>
         </ul>
     </nav>
 
-    <!-- ===== 主内容 ===== -->
+    <!-- ===== 主容器 ===== -->
     <div class="main-container">
 
-        <!-- 首页 -->
+        <!-- ====== 首页 ====== -->
         <section id="page-home" class="page active">
             <div class="hero">
                 <h1 id="homeTitle"></h1>
@@ -525,14 +602,14 @@
             </div>
         </section>
 
-        <!-- 成员 -->
+        <!-- ====== 成员 ====== -->
         <section id="page-members" class="page">
             <h2 class="section-title" id="membersTitle"></h2>
             <p class="section-sub" id="membersSub"></p>
             <div class="members-grid" id="membersGrid"></div>
         </section>
 
-        <!-- 简介 -->
+        <!-- ====== 简介 ====== -->
         <section id="page-about" class="page">
             <div class="about-content">
                 <h2 class="section-title" id="aboutTitle"></h2>
@@ -552,7 +629,7 @@
             </div>
         </section>
 
-        <!-- 联系 -->
+        <!-- ====== 联系 ====== -->
         <section id="page-contact" class="page">
             <h2 class="section-title" id="contactTitle"></h2>
             <p class="section-sub" id="contactSub"></p>
@@ -581,9 +658,21 @@
                 </div>
             </div>
         </section>
+
+        <!-- ====== 文章列表 ====== -->
+        <section id="page-articles" class="page">
+            <div class="articles-header">
+                <h2 class="section-title" style="margin-bottom:0;">📄 文章列表</h2>
+                <input type="text" id="articleSearch" class="search-box" placeholder="🔍 搜索标题..." />
+            </div>
+            <div id="articlesContainer">
+                <div class="articles-loading">⏳ 加载文章中...</div>
+            </div>
+        </section>
+
     </div>
 
-    <!-- 页脚 -->
+    <!-- ===== 页脚 ===== -->
     <footer class="footer">
         <span id="footerCopyright"></span>
         <br />
@@ -595,22 +684,161 @@
         (function() {
             'use strict';
 
+            // ======== 配置 ========
             const GITHUB_USERNAME = 'kali0914';
             const REPO_NAME = 'zhdd.bbroot.com';
             const CONFIG_PATH = 'site_config.json';
             const CACHE_KEY = 'site_config_cache';
+            const FIXED_PASSWORD = '070301'; // 解密密码
 
             // ---- DOM ----
-            const navBtns = document.querySelectorAll('.nav-btn:not(.article-link)');
+            const navBtns = document.querySelectorAll('.nav-btn');
             const pages = {
                 home: document.getElementById('page-home'),
                 members: document.getElementById('page-members'),
                 about: document.getElementById('page-about'),
                 contact: document.getElementById('page-contact'),
+                articles: document.getElementById('page-articles'),
             };
             const loadingMask = document.getElementById('loadingMask');
+            const articlesContainer = document.getElementById('articlesContainer');
+            const searchInput = document.getElementById('articleSearch');
 
-            // ---- 渲染 ----
+            let allArticles = []; // 缓存文章列表 { title, time, content, filename }
+
+            // ---- 工具：Base64 ----
+            function base64ToUint8Array(base64) {
+                const binary = atob(base64);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) {
+                    bytes[i] = binary.charCodeAt(i);
+                }
+                return bytes;
+            }
+
+            // ---- 解密（与 admin 一致） ----
+            async function decryptData(data, password) {
+                if (!password || password.length < 6) throw new Error('密码至少6位');
+                if (!data || data.length < 28) throw new Error('无效的加密数据');
+                const salt = data.slice(0, 16);
+                const iv = data.slice(16, 28);
+                const ciphertext = data.slice(28);
+                const encoder = new TextEncoder();
+                const keyMaterial = await crypto.subtle.importKey(
+                    'raw',
+                    encoder.encode(password),
+                    'PBKDF2',
+                    false,
+                    ['deriveKey']
+                );
+                const key = await crypto.subtle.deriveKey({
+                        name: 'PBKDF2',
+                        salt: salt,
+                        iterations: 200000,
+                        hash: 'SHA-256'
+                    },
+                    keyMaterial, {
+                        name: 'AES-GCM',
+                        length: 256
+                    },
+                    false,
+                    ['decrypt']
+                );
+                const decrypted = await crypto.subtle.decrypt({
+                        name: 'AES-GCM',
+                        iv: iv
+                    },
+                    key,
+                    ciphertext
+                );
+                return new TextDecoder().decode(decrypted);
+            }
+
+            // ---- 加载文章列表 ----
+            async function loadArticles() {
+                articlesContainer.innerHTML = '<div class="articles-loading">⏳ 加载文章中...</div>';
+                try {
+                    const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/`;
+                    const res = await fetch(url, {
+                        headers: { 'Accept': 'application/vnd.github+json' }
+                    });
+                    if (!res.ok) throw new Error('无法获取文件列表');
+                    const files = await res.json();
+                    const zhddFiles = files.filter(f => f.name.endsWith('.zhdd') && f.type === 'file');
+                    if (zhddFiles.length === 0) {
+                        articlesContainer.innerHTML = '<div class="no-articles">📭 暂无文章</div>';
+                        allArticles = [];
+                        return;
+                    }
+
+                    const articles = [];
+                    for (const file of zhddFiles) {
+                        try {
+                            const contentRes = await fetch(file.download_url);
+                            if (!contentRes.ok) continue;
+                            const arrayBuffer = await contentRes.arrayBuffer();
+                            const data = new Uint8Array(arrayBuffer);
+                            const decryptedJson = await decryptData(data, FIXED_PASSWORD);
+                            const article = JSON.parse(decryptedJson);
+                            articles.push({
+                                title: article.title || '无标题',
+                                time: article.time || '未知时间',
+                                content: article.content || '',
+                                filename: file.name
+                            });
+                        } catch (e) {
+                            console.warn('解密失败:', file.name, e);
+                        }
+                    }
+                    // 按时间倒序
+                    articles.sort((a, b) => (a.time < b.time ? 1 : -1));
+                    allArticles = articles;
+                    renderArticles(articles);
+                } catch (err) {
+                    console.error(err);
+                    articlesContainer.innerHTML = `<div class="no-articles">❌ 加载失败: ${err.message}</div>`;
+                }
+            }
+
+            // ---- 渲染文章列表 ----
+            function renderArticles(articles) {
+                if (!articles || articles.length === 0) {
+                    articlesContainer.innerHTML = '<div class="no-articles">📭 暂无文章</div>';
+                    return;
+                }
+                let html = '';
+                for (const art of articles) {
+                    const summary = art.content.substring(0, 150) + (art.content.length > 150 ? '...' : '');
+                    html += `
+                        <div class="article-item" data-title="${art.title.toLowerCase()}" data-content="${art.content}">
+                            <div class="title">${art.title}</div>
+                            <div class="meta">🕒 ${art.time}</div>
+                            <div class="summary">${summary}</div>
+                            <div class="full-content">${art.content}</div>
+                        </div>
+                    `;
+                }
+                articlesContainer.innerHTML = html;
+                // 点击展开
+                document.querySelectorAll('.article-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        this.classList.toggle('expanded');
+                    });
+                });
+            }
+
+            // ---- 搜索过滤 ----
+            searchInput.addEventListener('input', function() {
+                const keyword = this.value.trim().toLowerCase();
+                if (!keyword) {
+                    renderArticles(allArticles);
+                } else {
+                    const filtered = allArticles.filter(art => art.title.toLowerCase().includes(keyword));
+                    renderArticles(filtered);
+                }
+            });
+
+            // ---- 渲染主页面配置（原有功能） ----
             function renderConfig(config) {
                 document.getElementById('homeTitle').textContent = config.home.title;
                 document.getElementById('homeSubtitle').textContent = config.home.subtitle;
@@ -669,7 +897,7 @@
                 document.getElementById('brandName').textContent = config.home.title;
             }
 
-            // ---- 加载配置 ----
+            // ---- 加载配置（缓存优先） ----
             function loadConfig() {
                 const cached = localStorage.getItem(CACHE_KEY);
                 if (cached) {
@@ -707,6 +935,10 @@
                     if (btn.dataset.page === pageId) btn.classList.add('active');
                 });
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+                // 切换到文章页时加载列表
+                if (pageId === 'articles') {
+                    loadArticles();
+                }
             }
 
             navBtns.forEach(btn => {
@@ -740,8 +972,11 @@
             if (window.location.hash) { handleHash(); } else { switchPage('home'); }
             window.switchPage = switchPage;
 
+            // ---- 启动 ----
             loadConfig();
+
         })();
     </script>
+
 </body>
 </html>
