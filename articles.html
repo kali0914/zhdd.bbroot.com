@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>文章列表 - ZHDD网安空间</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            background: #0b0e14;
+            color: #e8edf5;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .back-link {
+            display: inline-block;
+            color: #00f5d4;
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            transition: 0.3s;
+        }
+        .back-link:hover { opacity: 0.7; }
+        h1 {
+            color: #00f5d4;
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+        .sub {
+            color: #8aa3bc;
+            margin-bottom: 2rem;
+        }
+        .search-box {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            color: #e8edf5;
+            font-size: 1rem;
+            outline: none;
+            margin-bottom: 2rem;
+            transition: 0.3s;
+        }
+        .search-box:focus {
+            border-color: #00f5d4;
+            box-shadow: 0 0 0 3px rgba(0, 245, 212, 0.08);
+        }
+        .article-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .article-item:hover {
+            border-color: rgba(0, 245, 212, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .article-item .title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #e8edf5;
+        }
+        .article-item .meta {
+            font-size: 0.85rem;
+            color: #8aa3bc;
+            margin-top: 4px;
+        }
+        .article-item .summary {
+            color: #b0c8dd;
+            font-size: 0.95rem;
+            margin-top: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.6;
+        }
+        .article-item .full-content {
+            display: none;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            color: #b8ccdd;
+            line-height: 1.8;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+        }
+        .article-item.expanded .full-content {
+            display: block;
+        }
+        .article-item.expanded .summary {
+            display: none;
+        }
+        .loading-mask {
+            text-align: center;
+            padding: 3rem;
+            color: #8aa3bc;
+            font-size: 1.1rem;
+        }
+        .no-articles {
+            text-align: center;
+            padding: 3rem;
+            color: #5a738a;
+            font-size: 1.1rem;
+        }
+        .footer {
+            text-align: center;
+            color: #5a738a;
+            font-size: 0.8rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-top: 1.5rem;
+        }
+        .footer span { color: #00f5d4; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="index.html" class="back-link">← 返回主页</a>
+        <h1>📄 文章列表</h1>
+        <p class="sub">所有加密文章已自动解密</p>
+        <input type="text" id="searchInput" class="search-box" placeholder="🔍 搜索文章标题..." />
+
+        <div id="articlesContainer">
+            <div class="loading-mask">⏳ 加载文章中...</div>
+        </div>
+
+        <div class="footer">&copy; 2026 <span>ZHDD 网安空间</span></div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            const GITHUB_USERNAME = 'kali0914';
+            const REPO_NAME = 'zhdd.bbroot.com';
+            const FIXED_PASSWORD = '070301'; // 与加密密码一致
+
+            const container = document.getElementById('articlesContainer');
+            const searchInput = document.getElementById('searchInput');
+            let allArticles = []; // 存储 { title, time, content, filename }
+
+            // ---- 解密核心（与加密对应） ----
+            async function decryptData(data, password) {
+                if (!password || password.length < 6) throw new Error('密码至少6位');
+                if (!data || data.length < 28) throw new Error('无效的加密数据');
+                const salt = data.slice(0, 16);
+                const iv = data.slice(16, 28);
+                const ciphertext = data.slice(28);
+                const encoder = new TextEncoder();
+                const keyMaterial = await crypto.subtle.importKey(
+                    'raw',
+                    encoder.encode(password),
+                    'PBKDF2',
+                    false,
+                    ['deriveKey']
+                );
+                const key = await crypto.subtle.deriveKey({
+                        name: 'PBKDF2',
+                        salt: salt,
+                        iterations: 200000,
+                        hash: 'SHA-256'
+                    },
+                    keyMaterial, {
+                        name: 'AES-GCM',
+                        length: 256
+                    },
+                    false,
+                    ['decrypt']
+                );
+                const decrypted = await crypto.subtle.decrypt({
+                        name: 'AES-GCM',
+                        iv: iv
+                    },
+                    key,
+                    ciphertext
+                );
+                return new TextDecoder().decode(decrypted);
+            }
+
+            // ---- 从Base64转Uint8Array ----
+            function base64ToUint8Array(base64) {
+                const binary = atob(base64);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) {
+                    bytes[i] = binary.charCodeAt(i);
+                }
+                return bytes;
+            }
+
+            // ---- 获取所有 .zhdd 文件 ----
+            async function fetchArticles() {
+                try {
+                    // 获取仓库根目录内容
+                    const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/`;
+                    const res = await fetch(url, {
+                        headers: {
+                            'Accept': 'application/vnd.github+json'
+                        }
+                    });
+                    if (!res.ok) throw new Error('无法获取文件列表');
+                    const files = await res.json();
+                    // 筛选 .zhdd 文件
+                    const zhddFiles = files.filter(f => f.name.endsWith('.zhdd') && f.type === 'file');
+                    if (zhddFiles.length === 0) {
+                        container.innerHTML = '<div class="no-articles">📭 暂无文章</div>';
+                        return;
+                    }
+
+                    container.innerHTML = '<div class="loading-mask">⏳ 解密文章中...</div>';
+                    const articles = [];
+                    for (const file of zhddFiles) {
+                        try {
+                            // 下载文件内容
+                            const contentRes = await fetch(file.download_url);
+                            if (!contentRes.ok) continue;
+                            const arrayBuffer = await contentRes.arrayBuffer();
+                            const data = new Uint8Array(arrayBuffer);
+                            // 解密
+                            const decryptedJson = await decryptData(data, FIXED_PASSWORD);
+                            const article = JSON.parse(decryptedJson);
+                            articles.push({
+                                title: article.title || '无标题',
+                                time: article.time || '未知时间',
+                                content: article.content || '',
+                                filename: file.name
+                            });
+                        } catch (e) {
+                            console.warn('解密失败:', file.name, e);
+                        }
+                    }
+                    // 按时间倒序（最新的在前）
+                    articles.sort((a, b) => {
+                        if (a.time < b.time) return 1;
+                        if (a.time > b.time) return -1;
+                        return 0;
+                    });
+                    allArticles = articles;
+                    renderArticles(articles);
+                } catch (err) {
+                    console.error(err);
+                    container.innerHTML = `<div class="no-articles">❌ 加载失败: ${err.message}</div>`;
+                }
+            }
+
+            // ---- 渲染文章列表 ----
+            function renderArticles(articles) {
+                if (!articles || articles.length === 0) {
+                    container.innerHTML = '<div class="no-articles">📭 暂无文章</div>';
+                    return;
+                }
+                let html = '';
+                for (const art of articles) {
+                    // 生成摘要（截取前150字）
+                    const summary = art.content.substring(0, 150) + (art.content.length > 150 ? '...' : '');
+                    html += `
+                        <div class="article-item" data-title="${art.title.toLowerCase()}" data-content="${art.content}">
+                            <div class="title">${art.title}</div>
+                            <div class="meta">🕒 ${art.time}</div>
+                            <div class="summary">${summary}</div>
+                            <div class="full-content">${art.content}</div>
+                        </div>
+                    `;
+                }
+                container.innerHTML = html;
+
+                // 点击展开全文
+                document.querySelectorAll('.article-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        this.classList.toggle('expanded');
+                    });
+                });
+            }
+
+            // ---- 搜索过滤 ----
+            searchInput.addEventListener('input', function() {
+                const keyword = this.value.trim().toLowerCase();
+                if (!keyword) {
+                    renderArticles(allArticles);
+                    return;
+                }
+                const filtered = allArticles.filter(art => art.title.toLowerCase().includes(keyword));
+                renderArticles(filtered);
+            });
+
+            // ---- 启动 ----
+            fetchArticles();
+        })();
+    </script>
+
+</body>
+</html>
