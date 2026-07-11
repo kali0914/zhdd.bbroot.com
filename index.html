@@ -94,6 +94,18 @@
             border-radius: 4px;
             box-shadow: 0 0 12px #00f5d4;
         }
+        /* 文章按钮单独样式（链接） */
+        .nav-btn.article-link {
+            color: #00f5d4;
+            border: 1px solid rgba(0, 245, 212, 0.2);
+            padding: 6px 18px;
+            border-radius: 30px;
+            transition: all 0.25s ease;
+        }
+        .nav-btn.article-link:hover {
+            background: rgba(0, 245, 212, 0.15);
+            border-color: #00f5d4;
+        }
 
         /* ===== 主容器 ===== */
         .main-container {
@@ -369,7 +381,7 @@
             border-bottom-color: #00f5d4;
         }
 
-        /* ===== 加载动画：沙漏 ===== */
+        /* ===== 加载动画 ===== */
         .loading-mask {
             position: fixed;
             top: 0;
@@ -479,11 +491,9 @@
 </head>
 <body>
 
-    <!-- ===== 加载遮罩（沙漏动画） ===== -->
+    <!-- ===== 加载遮罩 ===== -->
     <div id="loadingMask" class="loading-mask">
-        <div class="hourglass">
-            <div class="sand"></div>
-        </div>
+        <div class="hourglass"><div class="sand"></div></div>
         <p>加载中...</p>
     </div>
 
@@ -498,14 +508,15 @@
             <li><button class="nav-btn" data-page="members">成员</button></li>
             <li><button class="nav-btn" data-page="about">简介</button></li>
             <li><button class="nav-btn" data-page="contact">联系</button></li>
+            <li><a href="articles.html" class="nav-btn article-link">📄 文章</a></li>
         </ul>
     </nav>
 
     <!-- ===== 主内容 ===== -->
     <div class="main-container">
 
-        <!-- ====== 首页 ====== -->
-        <section id="page-home" class="page">
+        <!-- 首页 -->
+        <section id="page-home" class="page active">
             <div class="hero">
                 <h1 id="homeTitle"></h1>
                 <p class="subtitle" id="homeSubtitle"></p>
@@ -514,14 +525,14 @@
             </div>
         </section>
 
-        <!-- ====== 成员页面 ====== -->
+        <!-- 成员 -->
         <section id="page-members" class="page">
             <h2 class="section-title" id="membersTitle"></h2>
             <p class="section-sub" id="membersSub"></p>
             <div class="members-grid" id="membersGrid"></div>
         </section>
 
-        <!-- ====== 简介页面 ====== -->
+        <!-- 简介 -->
         <section id="page-about" class="page">
             <div class="about-content">
                 <h2 class="section-title" id="aboutTitle"></h2>
@@ -541,7 +552,7 @@
             </div>
         </section>
 
-        <!-- ====== 联系页面 ====== -->
+        <!-- 联系 -->
         <section id="page-contact" class="page">
             <h2 class="section-title" id="contactTitle"></h2>
             <p class="section-sub" id="contactSub"></p>
@@ -572,7 +583,7 @@
         </section>
     </div>
 
-    <!-- ===== 页脚 ===== -->
+    <!-- 页脚 -->
     <footer class="footer">
         <span id="footerCopyright"></span>
         <br />
@@ -584,15 +595,13 @@
         (function() {
             'use strict';
 
-            // ======== 配置（已填好） ========
             const GITHUB_USERNAME = 'kali0914';
             const REPO_NAME = 'zhdd.bbroot.com';
             const CONFIG_PATH = 'site_config.json';
             const CACHE_KEY = 'site_config_cache';
-            // =================================
 
-            // ---- DOM 元素 ----
-            const navBtns = document.querySelectorAll('.nav-btn');
+            // ---- DOM ----
+            const navBtns = document.querySelectorAll('.nav-btn:not(.article-link)');
             const pages = {
                 home: document.getElementById('page-home'),
                 members: document.getElementById('page-members'),
@@ -601,9 +610,8 @@
             };
             const loadingMask = document.getElementById('loadingMask');
 
-            // ---- 渲染函数（所有文字从配置注入） ----
+            // ---- 渲染 ----
             function renderConfig(config) {
-                // 首页
                 document.getElementById('homeTitle').textContent = config.home.title;
                 document.getElementById('homeSubtitle').textContent = config.home.subtitle;
                 document.getElementById('homeDesc').innerHTML = config.home.description;
@@ -612,7 +620,6 @@
                     `<div class="badge-item"><div class="number">${b.number}</div><div class="label">${b.label}</div></div>`
                 ).join('');
 
-                // 成员
                 document.getElementById('membersTitle').innerHTML = config.members.title;
                 document.getElementById('membersSub').textContent = config.members.subtitle;
                 const membersGrid = document.getElementById('membersGrid');
@@ -629,7 +636,6 @@
                     membersGrid.innerHTML = '<p style="color:#8aa3bc;">暂无成员信息</p>';
                 }
 
-                // 关于
                 document.getElementById('aboutTitle').innerHTML = config.about.title;
                 document.getElementById('aboutSub').textContent = config.about.subtitle;
                 document.getElementById('aboutMission').innerHTML = config.about.mission;
@@ -638,7 +644,6 @@
                 ).join('');
                 document.getElementById('aboutValues').innerHTML = config.about.values;
 
-                // 联系
                 document.getElementById('contactTitle').innerHTML = config.contact.title;
                 document.getElementById('contactSub').textContent = config.contact.subtitle;
                 document.getElementById('contactInfoTitle').textContent = config.contact.info_title || '联系方式';
@@ -660,28 +665,22 @@
                 document.getElementById('contactFormMessageLabel').textContent = config.contact.form_message_label;
                 document.getElementById('contactFormSubmitBtn').textContent = config.contact.form_submit_label;
 
-                // 页脚
                 document.getElementById('footerCopyright').innerHTML = config.footer.copyright;
                 document.getElementById('brandName').textContent = config.home.title;
             }
 
-            // ---- 加载配置（缓存优先） ----
+            // ---- 加载配置 ----
             function loadConfig() {
-                // 1. 从缓存读取并渲染
                 const cached = localStorage.getItem(CACHE_KEY);
                 if (cached) {
                     try {
                         const config = JSON.parse(cached);
                         renderConfig(config);
-                        // 隐藏加载遮罩（如果已显示）
                         loadingMask.classList.add('hidden');
                         console.log('✅ 使用缓存配置');
-                    } catch (e) {
-                        console.warn('缓存解析失败', e);
-                    }
+                    } catch (e) { console.warn('缓存解析失败', e); }
                 }
 
-                // 2. 从远程拉取最新配置
                 fetch(`https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/${CONFIG_PATH}`)
                     .then(res => {
                         if (!res.ok) throw new Error('Config not found');
@@ -691,13 +690,11 @@
                         localStorage.setItem(CACHE_KEY, JSON.stringify(config));
                         renderConfig(config);
                         loadingMask.classList.add('hidden');
-                        console.log('✅ 远程配置加载成功，已更新缓存');
+                        console.log('✅ 远程配置加载成功');
                     })
                     .catch(err => {
                         console.warn('⚠️ 远程配置加载失败:', err);
-                        // 如果缓存也没有，则隐藏加载遮罩并显示空白
                         loadingMask.classList.add('hidden');
-                        // 如果没有任何内容，可以显示提示，但这里保持空白
                     });
             }
 
@@ -734,7 +731,7 @@
                 return false;
             };
 
-            // ---- URL hash 路由 ----
+            // ---- hash路由 ----
             function handleHash() {
                 const hash = window.location.hash.slice(1) || 'home';
                 if (pages[hash]) switchPage(hash);
@@ -743,10 +740,8 @@
             if (window.location.hash) { handleHash(); } else { switchPage('home'); }
             window.switchPage = switchPage;
 
-            // ---- 启动：加载配置 ----
             loadConfig();
         })();
     </script>
-
 </body>
 </html>
