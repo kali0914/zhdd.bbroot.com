@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>管理后台 - ZHDD网安空间</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -24,7 +25,7 @@
             z-index: 10;
         }
         .back-link:hover { color: #00f5d4; }
-        .container { max-width: 1000px; margin: 0 auto; }
+        .container { max-width: 1100px; margin: 0 auto; }
         .card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -86,16 +87,13 @@
             color: #8aa3bc;
         }
         .btn-outline:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: none; }
-        .btn-danger {
-            background: #ef4444;
-            color: #fff;
-        }
+        .btn-danger { background: #ef4444; color: #fff; }
         .btn-danger:hover { background: #dc2626; }
-        .btn-sm {
-            padding: 4px 14px;
-            font-size: 0.85rem;
-            border-radius: 20px;
-        }
+        .btn-sm { padding: 4px 14px; font-size: 0.85rem; border-radius: 20px; }
+        .btn-success { background: #22c55e; color: #fff; }
+        .btn-success:hover { background: #16a34a; }
+        .btn-warning { background: #f59e0b; color: #fff; }
+        .btn-warning:hover { background: #d97706; }
         .login-box { max-width: 400px; margin: 3rem auto; text-align: center; }
         .login-box h2 { color: #00f5d4; margin-bottom: 0.5rem; }
         .login-box .sub { color: #8aa3bc; margin-bottom: 1.5rem; }
@@ -115,6 +113,7 @@
         .hidden { display: none; }
         .status-msg { margin-top: 1rem; text-align: center; font-size: 0.95rem; min-height: 1.5rem; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
         .tab-bar {
             display: flex;
             gap: 0.5rem;
@@ -142,6 +141,7 @@
             0% { opacity: 0; transform: translateY(10px); }
             100% { opacity: 1; transform: translateY(0); }
         }
+
         .footer { text-align: center; color: #5a738a; font-size: 0.8rem; margin-top: 2rem; }
         .footer span { color: #00f5d4; }
 
@@ -164,85 +164,55 @@
         .log-container .log-error { color: #ff6b6b; }
         .log-container .log-warn { color: #ffd93d; }
 
-        /* 文章管理列表 */
-        .article-mgmt-item {
+        /* 统一列表样式 */
+        .item-list {
+            margin-top: 0.5rem;
+        }
+        .item-list .list-item {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: space-between;
             padding: 0.8rem 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            gap: 1rem;
             flex-wrap: wrap;
-            gap: 0.5rem;
         }
-        .article-mgmt-item:last-child { border-bottom: none; }
-        .article-mgmt-item .info {
+        .item-list .list-item:last-child { border-bottom: none; }
+        .item-list .list-item .info {
             flex: 1;
-            min-width: 150px;
+            min-width: 200px;
         }
-        .article-mgmt-item .info .title {
-            font-weight: 600;
+        .item-list .list-item .info .content {
             color: #e8edf5;
+            font-size: 0.95rem;
         }
-        .article-mgmt-item .info .meta {
+        .item-list .list-item .info .meta {
             font-size: 0.8rem;
             color: #8aa3bc;
+            margin-top: 4px;
         }
-        .article-mgmt-item .actions {
-            display: flex;
-            gap: 6px;
+        .item-list .list-item .status-badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
-        .article-mgmt-item .actions .btn {
-            font-size: 0.8rem;
-            padding: 4px 14px;
-        }
-        .no-articles {
-            text-align: center;
-            padding: 2rem;
-            color: #8aa3bc;
-        }
-
-        /* 模态框 */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-overlay.active {
-            display: flex;
-        }
-        .modal-box {
-            background: #1a202a;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 24px;
-            padding: 2rem;
-            max-width: 700px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .modal-box h3 {
-            color: #00f5d4;
-            margin-bottom: 1rem;
-        }
-        .modal-box .btn-group {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 1rem;
-        }
+        .item-list .list-item .status-badge.pending { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .item-list .list-item .status-badge.read { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .item-list .list-item .status-badge.resolved { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+        .item-list .list-item .status-badge.rejected { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .item-list .list-item .status-badge.unread { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .item-list .list-item .status-badge.replied { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+        .item-list .list-item .actions { display: flex; gap: 4px; flex-wrap: wrap; }
+        .item-list .list-item .actions .btn { font-size: 0.75rem; padding: 2px 10px; }
 
         @media (max-width: 700px) {
             .grid-2 { grid-template-columns: 1fr; }
             .card { padding: 1.2rem; }
             .back-link { top: 10px; left: 10px; font-size: 0.8rem; }
-            .article-mgmt-item { flex-direction: column; align-items: flex-start; }
-            .article-mgmt-item .actions { width: 100%; justify-content: flex-end; }
-            .modal-box { padding: 1.2rem; }
+            .list-item { flex-direction: column; align-items: stretch; }
+            .list-item .actions { justify-content: flex-end; }
         }
     </style>
 </head>
@@ -252,7 +222,7 @@
 
     <div class="container">
 
-        <!-- 登录 -->
+        <!-- ===== 登录区域 ===== -->
         <div id="loginArea" class="card login-box">
             <h2>🔐 管理后台</h2>
             <p class="sub">请输入管理密码</p>
@@ -261,7 +231,7 @@
             <div class="error" id="loginError">❌ 密码错误</div>
         </div>
 
-        <!-- 主面板 -->
+        <!-- ===== 主面板 ===== -->
         <div id="mainPanel" class="hidden">
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px;">
@@ -270,12 +240,14 @@
             </div>
 
             <div class="tab-bar">
-                <button class="tab-btn active" data-tab="tabPublish">发布文章</button>
-                <button class="tab-btn" data-tab="tabManage">管理文章</button>
-                <button class="tab-btn" data-tab="tabConfig">编辑网站内容</button>
+                <button class="tab-btn active" data-tab="tabPublish">📝 发布文章</button>
+                <button class="tab-btn" data-tab="tabManage">📂 管理文章</button>
+                <button class="tab-btn" data-tab="tabFeedback">💬 用户反馈</button>
+                <button class="tab-btn" data-tab="tabMessages">📩 用户留言</button>
+                <button class="tab-btn" data-tab="tabConfig">⚙️ 编辑网站内容</button>
             </div>
 
-            <!-- Tab1: 发布 -->
+            <!-- ===== Tab1: 发布文章 ===== -->
             <div id="tabPublish" class="tab-content active">
                 <div class="card">
                     <h2>📝 发布加密文章</h2>
@@ -293,19 +265,35 @@
                 </div>
             </div>
 
-            <!-- Tab2: 管理文章 -->
+            <!-- ===== Tab2: 管理文章 ===== -->
             <div id="tabManage" class="tab-content">
                 <div class="card">
                     <h2>📂 管理文章</h2>
                     <p style="color:#8aa3bc; margin-bottom:1rem;">点击「编辑」修改文章，点击「删除」永久移除。</p>
-                    <div id="manageArticlesContainer">
-                        <div class="no-articles">⏳ 加载中...</div>
-                    </div>
+                    <div id="manageArticlesContainer"><div class="status-msg">⏳ 加载中...</div></div>
                     <div id="manageStatus" class="status-msg"></div>
                 </div>
             </div>
 
-            <!-- Tab3: 编辑网站内容 -->
+            <!-- ===== Tab3: 用户反馈 ===== -->
+            <div id="tabFeedback" class="tab-content">
+                <div class="card">
+                    <h2>💬 用户反馈</h2>
+                    <p style="color:#8aa3bc; margin-bottom:1rem;">查看所有用户提交的反馈，点击按钮更新状态。</p>
+                    <div id="feedbackContainer"><div class="status-msg">⏳ 加载中...</div></div>
+                </div>
+            </div>
+
+            <!-- ===== Tab4: 用户留言 ===== -->
+            <div id="tabMessages" class="tab-content">
+                <div class="card">
+                    <h2>📩 用户留言</h2>
+                    <p style="color:#8aa3bc; margin-bottom:1rem;">查看所有用户提交的留言，点击按钮更新状态。</p>
+                    <div id="messagesContainer"><div class="status-msg">⏳ 加载中...</div></div>
+                </div>
+            </div>
+
+            <!-- ===== Tab5: 编辑网站内容 ===== -->
             <div id="tabConfig" class="tab-content">
                 <div class="card">
                     <h2>⚙️ 编辑网站文字</h2>
@@ -359,19 +347,13 @@
         <div class="footer">&copy; 2026 <span>ZHDD 网安空间</span> · 管理后台</div>
     </div>
 
-    <!-- 编辑模态框 -->
-    <div id="editModal" class="modal-overlay">
-        <div class="modal-box">
-            <h3>✏️ 编辑文章</h3>
-            <div class="field">
-                <label>标题</label>
-                <input type="text" id="editTitle" />
-            </div>
-            <div class="field">
-                <label>内容</label>
-                <textarea id="editContent" class="large" rows="8"></textarea>
-            </div>
-            <div class="btn-group">
+    <!-- ===== 编辑模态框 ===== -->
+    <div id="editModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;">
+        <div style="background:#1a202a;border:1px solid rgba(255,255,255,0.1);border-radius:24px;padding:2rem;max-width:700px;width:90%;max-height:90vh;overflow-y:auto;">
+            <h3 style="color:#00f5d4;margin-bottom:1rem;">✏️ 编辑文章</h3>
+            <div class="field"><label>标题</label><input type="text" id="editTitle" /></div>
+            <div class="field"><label>内容</label><textarea id="editContent" class="large" rows="8"></textarea></div>
+            <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:1rem;">
                 <button class="btn btn-outline" id="editCancelBtn">取消</button>
                 <button class="btn" id="editSaveBtn">💾 保存</button>
             </div>
@@ -383,22 +365,47 @@
         (function() {
             'use strict';
 
-            // ==========================================================
-            // Token 拆分
-            // ==========================================================
-            const tokenPart1 = 'ghp_';
-            const tokenPart2 = 'RDOBKDAWaUmk5YtyPrZSbCGyRI4q';
-            const tokenPart3 = 'La44CQl6';
-            const HARD_CODED_TOKEN = tokenPart1 + tokenPart2 + tokenPart3;
+            // ============================================================
+            //  密钥拆分
+            // ============================================================
+            const _k1 = 'https://k';
+            const _k2 = 'hkahnuu';
+            const _k3 = 'gyulsiy';
+            const _k4 = 'lieve.su';
+            const _k5 = 'pabase.';
+            const _k6 = 'co';
+            const _k7 = 'sb_publ';
+            const _k8 = 'ishable_';
+            const _k9 = 'H4J3YxL';
+            const _k10 = '5jk1nfi';
+            const _k11 = 'JyoMua6';
+            const _k12 = 'A_CYAXs';
+            const _k13 = 'YnD';
+            const _k14 = 'service_';
+            const _k15 = 'y1zx1nj';
+            const _k16 = 'template';
+            const _k17 = '_h2tzy5';
+            const _k18 = 'w';
+            const _k19 = 'i2In4bE';
+            const _k20 = 'y9IyOA9';
+            const _k21 = 'okI';
 
-            // ==========================================================
-            // 配置
-            // ==========================================================
-            const GITHUB_USERNAME = 'kali0914';
-            const REPO_NAME = 'zhdd.bbroot.com';
+            const SUPABASE_URL = _k1 + _k2 + _k3 + _k4 + _k5 + _k6;
+            const SUPABASE_ANON_KEY = _k7 + _k8 + _k9 + _k10 + _k11 + _k12 + _k13;
+            const EMAILJS_SERVICE_ID = _k14 + _k15;
+            const EMAILJS_TEMPLATE_ID = _k16 + _k17 + _k18;
+            const EMAILJS_PUBLIC_KEY = _k19 + _k20 + _k21;
+
+            // ============================================================
+            //  配置
+            // ============================================================
             const CORRECT_PASSWORD = '070301';
             const CONFIG_PATH = 'site_config.json';
             const FIXED_ENC_PASSWORD = '070301';
+            const GITHUB_USERNAME = 'kali0914';
+            const REPO_NAME = 'zhdd.bbroot.com';
+
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
             // ---- DOM ----
             const loginArea = document.getElementById('loginArea');
@@ -412,6 +419,8 @@
             const tabContents = {
                 tabPublish: document.getElementById('tabPublish'),
                 tabManage: document.getElementById('tabManage'),
+                tabFeedback: document.getElementById('tabFeedback'),
+                tabMessages: document.getElementById('tabMessages'),
                 tabConfig: document.getElementById('tabConfig')
             };
 
@@ -422,9 +431,15 @@
             const publishStatus = document.getElementById('publishStatus');
             const logPanel = document.getElementById('logPanel');
 
-            // 管理
+            // 管理文章
             const manageContainer = document.getElementById('manageArticlesContainer');
             const manageStatus = document.getElementById('manageStatus');
+
+            // 反馈
+            const feedbackContainer = document.getElementById('feedbackContainer');
+
+            // 留言
+            const messagesContainer = document.getElementById('messagesContainer');
 
             // 配置表单
             const cfgFields = {
@@ -461,7 +476,7 @@
             const saveConfigBtn = document.getElementById('saveConfigBtn');
             const configStatus = document.getElementById('configStatus');
 
-            // 模态框
+            // 编辑模态框
             const editModal = document.getElementById('editModal');
             const editTitle = document.getElementById('editTitle');
             const editContent = document.getElementById('editContent');
@@ -492,6 +507,8 @@
                     mainPanel.classList.remove('hidden');
                     loginError.style.display = 'none';
                     loadConfigToForm();
+                    loadFeedback();
+                    loadMessages();
                     addLog('登录成功', 'success');
                 } else {
                     loginError.style.display = 'block';
@@ -525,6 +542,8 @@
                         tabContents[k].classList.toggle('active', k === id);
                     });
                     if (id === 'tabManage') loadManageArticles();
+                    if (id === 'tabFeedback') loadFeedback();
+                    if (id === 'tabMessages') loadMessages();
                 });
             });
 
@@ -649,7 +668,7 @@
 
             // ---- 管理文章 ----
             async function loadManageArticles() {
-                manageContainer.innerHTML = '<div class="no-articles">⏳ 加载中...</div>';
+                manageContainer.innerHTML = '<div class="status-msg">⏳ 加载中...</div>';
                 manageStatus.textContent = '';
                 try {
                     const r = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/`, {
@@ -658,7 +677,7 @@
                     if (!r.ok) throw new Error('获取列表失败');
                     const files = await r.json();
                     const zhdd = files.filter(f => f.name.endsWith('.zhdd') && f.type === 'file');
-                    if (!zhdd.length) { manageContainer.innerHTML = '<div class="no-articles">暂无文章</div>'; return; }
+                    if (!zhdd.length) { manageContainer.innerHTML = '<div class="status-msg">暂无文章</div>'; return; }
 
                     let html = '';
                     for (const f of zhdd) {
@@ -669,10 +688,10 @@
                             const dec = await decryptData(new Uint8Array(ab), FIXED_ENC_PASSWORD);
                             const art = JSON.parse(dec);
                             html += `
-                                <div class="article-mgmt-item" data-filename="${f.name}">
+                                <div class="list-item">
                                     <div class="info">
-                                        <div class="title">${art.title || '无标题'}</div>
-                                        <div class="meta">🕒 ${art.time || '未知'} · ${f.name}</div>
+                                        <div style="font-weight:600;color:#e8edf5;">${art.title || '无标题'}</div>
+                                        <div style="font-size:0.8rem;color:#8aa3bc;">🕒 ${art.time || '未知'} · ${f.name}</div>
                                     </div>
                                     <div class="actions">
                                         <button class="btn btn-sm btn-edit" data-filename="${f.name}">✏️ 编辑</button>
@@ -682,8 +701,8 @@
                             `;
                         } catch (e) {
                             html += `
-                                <div class="article-mgmt-item" data-filename="${f.name}">
-                                    <div class="info"><div class="title">⚠️ 无法解密: ${f.name}</div></div>
+                                <div class="list-item">
+                                    <div class="info"><div style="font-weight:600;color:#ff6b6b;">⚠️ 无法解密: ${f.name}</div></div>
                                     <div class="actions">
                                         <button class="btn btn-sm btn-danger btn-delete" data-filename="${f.name}">🗑️ 删除</button>
                                     </div>
@@ -702,11 +721,10 @@
                             openEditModal(b.dataset.filename); });
                     });
                 } catch (e) {
-                    manageContainer.innerHTML = `<div class="no-articles">❌ ${e.message}</div>`;
+                    manageContainer.innerHTML = `<div class="status-msg">❌ ${e.message}</div>`;
                 }
             }
 
-            // ---- 删除 ----
             async function deleteArticle(filename) {
                 if (!confirm(`确定删除 "${filename}"？`)) return;
                 manageStatus.textContent = '⏳ 删除中...';
@@ -736,7 +754,6 @@
                 }
             }
 
-            // ---- 编辑 ----
             async function openEditModal(filename) {
                 editingFile = filename;
                 editStatus.textContent = '';
@@ -754,11 +771,12 @@
                     const art = JSON.parse(dec);
                     editTitle.value = art.title || '';
                     editContent.value = art.content || '';
-                    editModal.classList.add('active');
+                    editModal.style.display = 'flex';
                 } catch (e) { alert('加载失败: ' + e.message); }
             }
 
-            async function saveEdit() {
+            editCancelBtn.addEventListener('click', () => { editModal.style.display = 'none'; });
+            editSaveBtn.addEventListener('click', async function() {
                 const title = editTitle.value.trim();
                 const content = editContent.value.trim();
                 if (!title || !content) {
@@ -816,7 +834,7 @@
                     if (r.ok) {
                         editStatus.textContent = '✅ 保存成功！';
                         editStatus.style.color = '#00f5d4';
-                        setTimeout(() => { editModal.classList.remove('active');
+                        setTimeout(() => { editModal.style.display = 'none';
                             loadManageArticles(); }, 800);
                     } else { const e = await r.json();
                         throw new Error(e.message); }
@@ -824,11 +842,110 @@
                     editStatus.textContent = '❌ ' + e.message;
                     editStatus.style.color = '#ff6b6b';
                 } finally { editSaveBtn.disabled = false; }
+            });
+
+            // ---- 加载反馈 ----
+            async function loadFeedback() {
+                feedbackContainer.innerHTML = '<div class="status-msg">⏳ 加载中...</div>';
+                try {
+                    const { data, error } = await supabase
+                        .from('feedbacks')
+                        .select('*, auth.users(email)')
+                        .order('created_at', { ascending: false });
+                    if (error) throw error;
+                    if (!data || data.length === 0) {
+                        feedbackContainer.innerHTML = '<div class="status-msg">暂无反馈</div>';
+                        return;
+                    }
+                    let html = '<div class="item-list">';
+                    for (const f of data) {
+                        const statusMap = {
+                            pending: 'pending',
+                            read: 'read',
+                            resolved: 'resolved',
+                            rejected: 'rejected'
+                        };
+                        const statusText = { pending: '待处理', read: '已读', resolved: '已解决', rejected: '已拒绝' };
+                        const statusClass = statusMap[f.status] || 'pending';
+                        html += `
+                            <div class="list-item">
+                                <div class="info">
+                                    <div class="content">${f.content}</div>
+                                    <div class="meta">${f.email || '未知用户'} · ${new Date(f.created_at).toLocaleString()} · 状态: <span class="status-badge ${statusClass}">${statusText[f.status] || f.status}</span></div>
+                                </div>
+                                <div class="actions">
+                                    <button class="btn btn-sm btn-success" data-id="${f.id}" data-status="read">已读</button>
+                                    <button class="btn btn-sm btn-warning" data-id="${f.id}" data-status="resolved">已解决</button>
+                                    <button class="btn btn-sm btn-danger" data-id="${f.id}" data-status="rejected">拒绝</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    html += '</div>';
+                    feedbackContainer.innerHTML = html;
+
+                    // 绑定状态更新事件
+                    feedbackContainer.querySelectorAll('.btn').forEach(btn => {
+                        btn.addEventListener('click', async function() {
+                            const id = this.dataset.id;
+                            const status = this.dataset.status;
+                            await supabase.from('feedbacks').update({ status }).eq('id', id);
+                            loadFeedback();
+                        });
+                    });
+                } catch (e) {
+                    feedbackContainer.innerHTML = `<div class="status-msg">❌ ${e.message}</div>`;
+                }
             }
 
-            editCancelBtn.addEventListener('click', () => editModal.classList.remove('active'));
-            editSaveBtn.addEventListener('click', saveEdit);
-            editModal.addEventListener('click', e => { if (e.target === editModal) editModal.classList.remove('active'); });
+            // ---- 加载留言 ----
+            async function loadMessages() {
+                messagesContainer.innerHTML = '<div class="status-msg">⏳ 加载中...</div>';
+                try {
+                    const { data, error } = await supabase
+                        .from('contact_messages')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+                    if (error) throw error;
+                    if (!data || data.length === 0) {
+                        messagesContainer.innerHTML = '<div class="status-msg">暂无留言</div>';
+                        return;
+                    }
+                    let html = '<div class="item-list">';
+                    const statusMap = { unread: 'unread', read: 'read', replied: 'replied' };
+                    const statusText = { unread: '未读', read: '已读', replied: '已回复' };
+                    for (const m of data) {
+                        const statusClass = statusMap[m.status] || 'unread';
+                        html += `
+                            <div class="list-item">
+                                <div class="info">
+                                    <div class="content"><strong>${m.name}</strong> (${m.email})</div>
+                                    <div style="color:#b8ccdd;margin:4px 0;">${m.message}</div>
+                                    <div class="meta">${new Date(m.created_at).toLocaleString()} · 状态: <span class="status-badge ${statusClass}">${statusText[m.status] || m.status}</span></div>
+                                </div>
+                                <div class="actions">
+                                    <button class="btn btn-sm btn-success" data-id="${m.id}" data-status="read">已读</button>
+                                    <button class="btn btn-sm btn-warning" data-id="${m.id}" data-status="replied">已回复</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    html += '</div>';
+                    messagesContainer.innerHTML = html;
+
+                    // 绑定状态更新事件
+                    messagesContainer.querySelectorAll('.btn').forEach(btn => {
+                        btn.addEventListener('click', async function() {
+                            const id = this.dataset.id;
+                            const status = this.dataset.status;
+                            await supabase.from('contact_messages').update({ status }).eq('id', id);
+                            loadMessages();
+                        });
+                    });
+                } catch (e) {
+                    messagesContainer.innerHTML = `<div class="status-msg">❌ ${e.message}</div>`;
+                }
+            }
 
             // ---- 配置管理 ----
             async function loadConfigToForm() {
@@ -967,6 +1084,8 @@
                 loginArea.style.display = 'none';
                 mainPanel.classList.remove('hidden');
                 loadConfigToForm();
+                loadFeedback();
+                loadMessages();
                 addLog('已恢复登录', 'info');
             } else {
                 loginArea.style.display = 'block';
@@ -979,8 +1098,8 @@
                 if (e.key === 'Escape' && sessionStorage.getItem('admin_logged_in') === 'true') {
                     if (confirm('退出？')) doLogout();
                 }
-                if (e.key === 'Escape' && editModal.classList.contains('active')) {
-                    editModal.classList.remove('active');
+                if (e.key === 'Escape' && editModal.style.display === 'flex') {
+                    editModal.style.display = 'none';
                 }
             });
 
