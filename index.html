@@ -663,10 +663,10 @@
         <section id="page-articles" class="page">
             <div class="articles-header">
                 <h2 class="section-title" style="margin-bottom:0;">📄 文章列表</h2>
-                <input type="text" id="articleSearch" class="search-box" placeholder="🔍 搜索..." />
+                <input type="text" id="articleSearch" class="search-box" placeholder="搜索标题..." />
             </div>
             <div id="articlesContainer">
-                <div class="articles-loading">加载文章中...</div>
+                <div class="articles-loading">⏳ 加载文章中...</div>
             </div>
         </section>
 
@@ -704,9 +704,9 @@
             const articlesContainer = document.getElementById('articlesContainer');
             const searchInput = document.getElementById('articleSearch');
 
-            let allArticles = []; // 缓存文章列表 { title, time, content, filename }
+            let allArticles = [];
 
-            // ---- 工具：Base64 ----
+            // ---- 工具：Base64转Uint8Array ----
             function base64ToUint8Array(base64) {
                 const binary = atob(base64);
                 const bytes = new Uint8Array(binary.length);
@@ -716,7 +716,7 @@
                 return bytes;
             }
 
-            // ---- 解密（与 admin 一致） ----
+            // ---- 解密（与admin一致） ----
             async function decryptData(data, password) {
                 if (!password || password.length < 6) throw new Error('密码至少6位');
                 if (!data || data.length < 28) throw new Error('无效的加密数据');
@@ -790,7 +790,6 @@
                             console.warn('解密失败:', file.name, e);
                         }
                     }
-                    // 按时间倒序
                     articles.sort((a, b) => (a.time < b.time ? 1 : -1));
                     allArticles = articles;
                     renderArticles(articles);
@@ -819,7 +818,6 @@
                     `;
                 }
                 articlesContainer.innerHTML = html;
-                // 点击展开
                 document.querySelectorAll('.article-item').forEach(item => {
                     item.addEventListener('click', function() {
                         this.classList.toggle('expanded');
@@ -838,7 +836,7 @@
                 }
             });
 
-            // ---- 渲染主页面配置（原有功能） ----
+            // ---- 渲染主页面配置 ----
             function renderConfig(config) {
                 document.getElementById('homeTitle').textContent = config.home.title;
                 document.getElementById('homeSubtitle').textContent = config.home.subtitle;
@@ -935,7 +933,6 @@
                     if (btn.dataset.page === pageId) btn.classList.add('active');
                 });
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-                // 切换到文章页时加载列表
                 if (pageId === 'articles') {
                     loadArticles();
                 }
