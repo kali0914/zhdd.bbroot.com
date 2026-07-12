@@ -5,15 +5,15 @@
     "description": "<span>ZHDD网安空间</span> 专注于网络安全攻防与信息化建设，为政企客户提供<strong>渗透测试</strong>、<strong>安全加固</strong>、<strong>应急响应</strong>及<strong>等保合规</strong>一站式服务。以技术为盾，以创新为矛，捍卫每一寸数字疆域。",
     "badges": [
       {
-        "number": "7×24",
+        "number": "null",
         "label": "应急响应"
       },
       {
-        "number": "10+",
+        "number": "null",
         "label": "服务客户"
       },
       {
-        "number": "0.09%",
+        "number": "null",
         "label": "威胁拦截率"
       }
     ]
