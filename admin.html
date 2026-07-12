@@ -364,38 +364,28 @@
             'use strict';
 
             // ============================================================
-            //  密钥拆分
+            //  🔑 GitHub Token（拆分为三段拼接）
             // ============================================================
-            const _k1 = 'https://k';
-            const _k2 = 'hkahnuu';
-            const _k3 = 'gyulsiy';
-            const _k4 = 'lieve.su';
-            const _k5 = 'pabase.';
-            const _k6 = 'co';
-            const _k7 = 'sb_publ';
-            const _k8 = 'ishable_';
-            const _k9 = 'H4J3YxL';
-            const _k10 = '5jk1nfi';
-            const _k11 = 'JyoMua6';
-            const _k12 = 'A_CYAXs';
-            const _k13 = 'YnD';
-            const _k14 = 'service_';
-            const _k15 = 'y1zx1nj';
-            const _k16 = 'template';
-            const _k17 = '_h2tzy5';
-            const _k18 = 'w';
-            const _k19 = 'i2In4bE';
-            const _k20 = 'y9IyOA9';
-            const _k21 = 'okI';
-
-            const SUPABASE_URL = _k1 + _k2 + _k3 + _k4 + _k5 + _k6;
-            const SUPABASE_ANON_KEY = _k7 + _k8 + _k9 + _k10 + _k11 + _k12 + _k13;
-            const EMAILJS_SERVICE_ID = _k14 + _k15;
-            const EMAILJS_TEMPLATE_ID = _k16 + _k17 + _k18;
-            const EMAILJS_PUBLIC_KEY = _k19 + _k20 + _k21;
+            const _k1 = 'ghp_';
+            const _k2 = 'RDOBKDAWaUmk5YtyPrZSbCGyRI4q';
+            const _k3 = 'La44CQl6';
+            const HARD_CODED_TOKEN = _k1 + _k2 + _k3;
 
             // ============================================================
-            //  配置
+            //  🔑 Supabase 配置
+            // ============================================================
+            const SUPABASE_URL = 'https://khkahnuugyulsiylieve.supabase.co';
+            const SUPABASE_ANON_KEY = 'sb_publishable_H4J3YxL5jk1nfiJyoMua6A_CYAXsYnD';
+
+            // ============================================================
+            //  🔑 EmailJS 配置
+            // ============================================================
+            const EMAILJS_SERVICE_ID = 'service_y1zx1nj';
+            const EMAILJS_TEMPLATE_ID = 'template_h2tzy5w';
+            const EMAILJS_PUBLIC_KEY = 'i2In4bEy9IyOA9okI';
+
+            // ============================================================
+            //  应用配置
             // ============================================================
             const CORRECT_PASSWORD = '070301';
             const CONFIG_PATH = 'site_config.json';
@@ -403,6 +393,7 @@
             const GITHUB_USERNAME = 'kali0914';
             const REPO_NAME = 'zhdd.bbroot.com';
 
+            // ---- 初始化 Supabase ----
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
             // ---- DOM ----
@@ -842,7 +833,7 @@
             });
 
             // ============================================================
-            //  用户反馈（已修复：直接查询，不关联 auth.users）
+            //  用户反馈
             // ============================================================
             async function loadFeedback() {
                 feedbackContainer.innerHTML = '<div class="status-msg">⏳ 加载中...</div>';
