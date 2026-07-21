@@ -64,10 +64,10 @@
   },
   "contact": {
     "title": "📬 联系 我们",
-    "subtitle": "测试",
+    "subtitle": "联系我们",
     "info": {
-      "address": "地址",
-      "phone": "电话",
+      "address": "null",
+      "phone": "null",
       "email": "kali0914@yeah.net",
       "website": "www.zhdd.bbroot.com"
     },
