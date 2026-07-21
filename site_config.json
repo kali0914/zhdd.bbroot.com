@@ -72,7 +72,7 @@
       "website": "www.zhdd.bbroot.com"
     },
     "form_title": "✍️ 留言咨询",
-    "form_name_label": "",
+    "form_name_label": "昵称",
     "form_email_label": "邮箱",
     "form_message_label": "留言",
     "form_submit_label": "提交"
