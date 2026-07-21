@@ -66,16 +66,16 @@
     "title": "📬 联系 我们",
     "subtitle": "测试",
     "info": {
-      "address": "测试",
-      "phone": "null",
+      "address": "地址",
+      "phone": "电话",
       "email": "kali0914@yeah.net",
       "website": "www.zhdd.bbroot.com"
     },
     "form_title": "✍️ 留言咨询",
     "form_name_label": "",
-    "form_email_label": "测试",
-    "form_message_label": "测试",
-    "form_submit_label": "测试"
+    "form_email_label": "邮箱",
+    "form_message_label": "留言",
+    "form_submit_label": "提交"
   },
   "footer": {
     "copyright": "© 2026 ZHDD 网安空间 — 站长QQ:1361264462"
