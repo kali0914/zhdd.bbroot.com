@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>管理后台 - ZHDD网安空间</title>
-    <!-- 网站图标 -->
-    <link rel="icon" type="image/x-icon" href="/logo.ico" />
+    <link rel="icon" type="image/x-icon" href="/logo2.ico" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* ===== 全局样式 ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
@@ -50,7 +50,8 @@
             font-weight: 500;
             font-size: 0.9rem;
         }
-        .field input, .field textarea {
+        .field input,
+        .field textarea {
             width: 100%;
             padding: 10px 14px;
             background: rgba(255, 255, 255, 0.04);
@@ -62,7 +63,8 @@
             outline: none;
             transition: 0.3s;
         }
-        .field input:focus, .field textarea:focus {
+        .field input:focus,
+        .field textarea:focus {
             border-color: #00f5d4;
             box-shadow: 0 0 0 3px rgba(0, 245, 212, 0.08);
             background: rgba(255, 255, 255, 0.06);
@@ -115,7 +117,6 @@
         .hidden { display: none; }
         .status-msg { margin-top: 1rem; text-align: center; font-size: 0.95rem; min-height: 1.5rem; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-
         .tab-bar {
             display: flex;
             gap: 0.5rem;
@@ -143,7 +144,6 @@
             0% { opacity: 0; transform: translateY(10px); }
             100% { opacity: 1; transform: translateY(0); }
         }
-
         .footer { text-align: center; color: #5a738a; font-size: 0.8rem; margin-top: 2rem; }
         .footer span { color: #00f5d4; }
 
@@ -166,7 +166,6 @@
         .log-container .log-error { color: #ff6b6b; }
         .log-container .log-warn { color: #ffd93d; }
 
-        /* 统一列表样式 */
         .item-list { margin-top: 0.5rem; }
         .item-list .list-item {
             display: flex;
@@ -222,7 +221,7 @@
 
     <div class="container">
 
-        <!-- ===== 登录区域 ===== -->
+        <!-- 登录 -->
         <div id="loginArea" class="card login-box">
             <h2>🔐 管理后台</h2>
             <p class="sub">请输入管理密码</p>
@@ -231,7 +230,7 @@
             <div class="error" id="loginError">❌ 密码错误</div>
         </div>
 
-        <!-- ===== 主面板 ===== -->
+        <!-- 主面板 -->
         <div id="mainPanel" class="hidden">
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px;">
@@ -247,7 +246,7 @@
                 <button class="tab-btn" data-tab="tabConfig">⚙️ 编辑网站内容</button>
             </div>
 
-            <!-- ===== Tab1: 发布文章 ===== -->
+            <!-- Tab1: 发布文章 -->
             <div id="tabPublish" class="tab-content active">
                 <div class="card">
                     <h2>📝 发布加密文章</h2>
@@ -265,7 +264,7 @@
                 </div>
             </div>
 
-            <!-- ===== Tab2: 管理文章 ===== -->
+            <!-- Tab2: 管理文章 -->
             <div id="tabManage" class="tab-content">
                 <div class="card">
                     <h2>📂 管理文章</h2>
@@ -275,7 +274,7 @@
                 </div>
             </div>
 
-            <!-- ===== Tab3: 用户反馈 ===== -->
+            <!-- Tab3: 用户反馈 -->
             <div id="tabFeedback" class="tab-content">
                 <div class="card">
                     <h2>💬 用户反馈</h2>
@@ -284,7 +283,7 @@
                 </div>
             </div>
 
-            <!-- ===== Tab4: 用户留言 ===== -->
+            <!-- Tab4: 用户留言 -->
             <div id="tabMessages" class="tab-content">
                 <div class="card">
                     <h2>📩 用户留言</h2>
@@ -293,7 +292,7 @@
                 </div>
             </div>
 
-            <!-- ===== Tab5: 编辑网站内容 ===== -->
+            <!-- Tab5: 编辑网站内容 -->
             <div id="tabConfig" class="tab-content">
                 <div class="card">
                     <h2>⚙️ 编辑网站文字</h2>
@@ -366,36 +365,22 @@
             'use strict';
 
             // ============================================================
-            //  🔑 GitHub Token（拆分为三段拼接）
+            //  密钥配置
             // ============================================================
             const _k1 = 'ghp_';
             const _k2 = 'RDOBKDAWaUmk5YtyPrZSbCGyRI4q';
             const _k3 = 'La44CQl6';
             const HARD_CODED_TOKEN = _k1 + _k2 + _k3;
 
-            // ============================================================
-            //  🔑 Supabase 配置
-            // ============================================================
             const SUPABASE_URL = 'https://khkahnuugyulsiylieve.supabase.co';
             const SUPABASE_ANON_KEY = 'sb_publishable_H4J3YxL5jk1nfiJyoMua6A_CYAXsYnD';
 
-            // ============================================================
-            //  🔑 EmailJS 配置
-            // ============================================================
-            const EMAILJS_SERVICE_ID = 'service_y1zx1nj';
-            const EMAILJS_TEMPLATE_ID = 'template_h2tzy5w';
-            const EMAILJS_PUBLIC_KEY = 'i2In4bEy9IyOA9okI';
-
-            // ============================================================
-            //  应用配置
-            // ============================================================
             const CORRECT_PASSWORD = '070301';
             const CONFIG_PATH = 'site_config.json';
             const FIXED_ENC_PASSWORD = '070301';
             const GITHUB_USERNAME = 'kali0914';
             const REPO_NAME = 'zhdd.bbroot.com';
 
-            // ---- 初始化 Supabase ----
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
             // ---- DOM ----
@@ -483,10 +468,10 @@
                     'log-info';
                 const el = document.createElement('div');
                 el.className = cls;
-                el.textContent = `[${time}] ${msg}`;
+                el.textContent = '[' + time + '] ' + msg;
                 logPanel.appendChild(el);
                 logPanel.scrollTop = logPanel.scrollHeight;
-                console.log(`[${type}] ${msg}`);
+                console.log('[' + type + '] ' + msg);
             }
 
             // ---- 登录 ----
@@ -604,7 +589,9 @@
                 const now = new Date();
                 const ts = now.getTime();
                 const timeStr =
-                    `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+                    now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate())
+                    .padStart(2, '0') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes())
+                    .padStart(2, '0');
                 const data = { title, time: timeStr, content };
                 const json = JSON.stringify(data);
                 let enc;
@@ -613,7 +600,7 @@
                     publishStatus.style.color = '#ff6b6b';
                     return;
                 }
-                const filename = `article_${ts}.zhdd`;
+                const filename = 'article_' + ts + '.zhdd';
                 const u8 = new Uint8Array(enc);
                 let bin = '';
                 for (let i = 0; i < u8.length; i++) bin += String.fromCharCode(u8[i]);
@@ -622,31 +609,31 @@
                 publishStatus.textContent = '⏳ 上传中...';
                 publishStatus.style.color = '#8aa3bc';
                 publishBtn.disabled = true;
-                addLog(`上传: ${filename}`, 'info');
+                addLog('上传: ' + filename, 'info');
 
                 try {
                     let sha = null;
                     const g = await fetch(
-                        `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${filename}`, {
-                            headers: { 'Authorization': `Bearer ${HARD_CODED_TOKEN}`, 'Accept': 'application/vnd.github+json' }
+                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' + filename, {
+                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json' }
                         });
                     if (g.status === 200) { const d = await g.json();
-                        sha = d.sha; if (!confirm(`覆盖 ${filename}？`)) { publishBtn.disabled = false; return; } } else if (g
+                        sha = d.sha; if (!confirm('覆盖 ' + filename + '？')) { publishBtn.disabled = false; return; } } else if (g
                         .status !== 404) throw new Error('检查失败');
 
                     const r = await fetch(
-                        `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${filename}`, {
+                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' + filename, {
                             method: 'PUT',
-                            headers: { 'Authorization': `Bearer ${HARD_CODED_TOKEN}`, 'Accept': 'application/vnd.github+json',
+                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json',
                                 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ message: `发布: ${title}`, content: b64, sha })
+                            body: JSON.stringify({ message: '发布: ' + title, content: b64, sha: sha })
                         });
                     if (r.ok) {
                         publishStatus.textContent = '✅ 发布成功！';
                         publishStatus.style.color = '#00f5d4';
                         postTitle.value = '';
                         postContent.value = '';
-                        addLog(`成功: ${filename}`, 'success');
+                        addLog('成功: ' + filename, 'success');
                     } else { const e = await r.json();
                         throw new Error(e.message); }
                 } catch (e) {
@@ -662,7 +649,7 @@
                 manageContainer.innerHTML = '<div class="status-msg">⏳ 加载中...</div>';
                 manageStatus.textContent = '';
                 try {
-                    const r = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/`, {
+                    const r = await fetch('https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/', {
                         headers: { 'Accept': 'application/vnd.github+json' }
                     });
                     if (!r.ok) throw new Error('获取列表失败');
@@ -678,27 +665,18 @@
                             const ab = await cr.arrayBuffer();
                             const dec = await decryptData(new Uint8Array(ab), FIXED_ENC_PASSWORD);
                             const art = JSON.parse(dec);
-                            html += `
-                                <div class="list-item">
-                                    <div class="info">
-                                        <div style="font-weight:600;color:#e8edf5;">${art.title || '无标题'}</div>
-                                        <div style="font-size:0.8rem;color:#8aa3bc;">🕒 ${art.time || '未知'} · ${f.name}</div>
-                                    </div>
-                                    <div class="actions">
-                                        <button class="btn btn-sm btn-edit" data-filename="${f.name}">✏️ 编辑</button>
-                                        <button class="btn btn-sm btn-danger btn-delete" data-filename="${f.name}">🗑️ 删除</button>
-                                    </div>
-                                </div>
-                            `;
+                            html +=
+                                '<div class="list-item"><div class="info"><div style="font-weight:600;color:#e8edf5;">' +
+                                (art.title || '无标题') + '</div><div style="font-size:0.8rem;color:#8aa3bc;">🕒 ' + (art
+                                    .time || '未知') + ' · ' + f.name +
+                                '</div></div><div class="actions"><button class="btn btn-sm btn-edit" data-filename="' + f
+                                .name + '">✏️ 编辑</button><button class="btn btn-sm btn-danger btn-delete" data-filename="' +
+                                f.name + '">🗑️ 删除</button></div></div>';
                         } catch (e) {
-                            html += `
-                                <div class="list-item">
-                                    <div class="info"><div style="font-weight:600;color:#ff6b6b;">⚠️ 无法解密: ${f.name}</div></div>
-                                    <div class="actions">
-                                        <button class="btn btn-sm btn-danger btn-delete" data-filename="${f.name}">🗑️ 删除</button>
-                                    </div>
-                                </div>
-                            `;
+                            html +=
+                                '<div class="list-item"><div class="info"><div style="font-weight:600;color:#ff6b6b;">⚠️ 无法解密: ' +
+                                f.name + '</div></div><div class="actions"><button class="btn btn-sm btn-danger btn-delete" data-filename="' +
+                                f.name + '">🗑️ 删除</button></div></div>';
                         }
                     }
                     manageContainer.innerHTML = html;
@@ -712,26 +690,26 @@
                             openEditModal(b.dataset.filename); });
                     });
                 } catch (e) {
-                    manageContainer.innerHTML = `<div class="status-msg">❌ ${e.message}</div>`;
+                    manageContainer.innerHTML = '<div class="status-msg">❌ ' + e.message + '</div>';
                 }
             }
 
             async function deleteArticle(filename) {
-                if (!confirm(`确定删除 "${filename}"？`)) return;
+                if (!confirm('确定删除 "' + filename + '"？')) return;
                 manageStatus.textContent = '⏳ 删除中...';
                 manageStatus.style.color = '#8aa3bc';
                 try {
                     const g = await fetch(
-                        `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${filename}`, {
-                            headers: { 'Authorization': `Bearer ${HARD_CODED_TOKEN}`, 'Accept': 'application/vnd.github+json' }
+                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' + filename, {
+                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json' }
                         });
                     if (!g.ok) throw new Error('文件不存在');
                     const d = await g.json();
                     const r = await fetch(
-                        `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${filename}`, {
+                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' + filename, {
                             method: 'DELETE',
-                            headers: { 'Authorization': `Bearer ${HARD_CODED_TOKEN}`, 'Accept': 'application/vnd.github+json' },
-                            body: JSON.stringify({ message: `删除: ${filename}`, sha: d.sha })
+                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json' },
+                            body: JSON.stringify({ message: '删除: ' + filename, sha: d.sha })
                         });
                     if (r.ok) {
                         manageStatus.textContent = '✅ 删除成功';
@@ -752,8 +730,8 @@
                 editContent.value = '';
                 try {
                     const g = await fetch(
-                        `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${filename}`, {
-                            headers: { 'Authorization': `Bearer ${HARD_CODED_TOKEN}`, 'Accept': 'application/vnd.github+json' }
+                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' + filename, {
+                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json' }
                         });
                     if (!g.ok) throw new Error('获取失败');
                     const d = await g.json();
@@ -778,8 +756,9 @@
                 let oldTime = '';
                 try {
                     const g = await fetch(
-                        `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${editingFile}`, {
-                            headers: { 'Authorization': `Bearer ${HARD_CODED_TOKEN}`, 'Accept': 'application/vnd.github+json' }
+                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' +
+                        editingFile, {
+                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json' }
                         });
                     if (g.ok) {
                         const d = await g.json();
@@ -809,17 +788,19 @@
 
                 try {
                     const g = await fetch(
-                        `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${editingFile}`, {
-                            headers: { 'Authorization': `Bearer ${HARD_CODED_TOKEN}`, 'Accept': 'application/vnd.github+json' }
+                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' +
+                        editingFile, {
+                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json' }
                         });
                     if (!g.ok) throw new Error('文件不存在');
                     const d = await g.json();
                     const r = await fetch(
-                        `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${editingFile}`, {
+                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' +
+                        editingFile, {
                             method: 'PUT',
-                            headers: { 'Authorization': `Bearer ${HARD_CODED_TOKEN}`, 'Accept': 'application/vnd.github+json',
+                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json',
                                 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ message: `编辑: ${title}`, content: b64, sha: d.sha })
+                            body: JSON.stringify({ message: '编辑: ' + title, content: b64, sha: d.sha })
                         });
                     if (r.ok) {
                         editStatus.textContent = '✅ 保存成功！';
@@ -834,9 +815,7 @@
                 } finally { editSaveBtn.disabled = false; }
             });
 
-            // ============================================================
-            //  用户反馈
-            // ============================================================
+            // ---- 反馈 ----
             async function loadFeedback() {
                 feedbackContainer.innerHTML = '<div class="status-msg">⏳ 加载中...</div>';
                 try {
@@ -854,19 +833,15 @@
                     const statusText = { pending: '待处理', read: '已读', resolved: '已解决', rejected: '已拒绝' };
                     for (const f of data) {
                         const statusClass = statusMap[f.status] || 'pending';
-                        html += `
-                            <div class="list-item">
-                                <div class="info">
-                                    <div class="content">${f.content}</div>
-                                    <div class="meta">${f.email || '未知用户'} · ${new Date(f.created_at).toLocaleString()} · 状态: <span class="status-badge ${statusClass}">${statusText[f.status] || f.status}</span></div>
-                                </div>
-                                <div class="actions">
-                                    <button class="btn btn-sm btn-success" data-id="${f.id}" data-status="read">已读</button>
-                                    <button class="btn btn-sm btn-warning" data-id="${f.id}" data-status="resolved">已解决</button>
-                                    <button class="btn btn-sm btn-danger" data-id="${f.id}" data-status="rejected">拒绝</button>
-                                </div>
-                            </div>
-                        `;
+                        html +=
+                            '<div class="list-item"><div class="info"><div class="content">' + f.content +
+                            '</div><div class="meta">' + (f.email || '未知用户') + ' · ' + new Date(f.created_at)
+                            .toLocaleString() + ' · 状态: <span class="status-badge ' + statusClass + '">' + (statusText[
+                                f.status] || f.status) +
+                            '</span></div></div><div class="actions"><button class="btn btn-sm btn-success" data-id="' + f
+                            .id + '" data-status="read">已读</button><button class="btn btn-sm btn-warning" data-id="' +
+                            f.id + '" data-status="resolved">已解决</button><button class="btn btn-sm btn-danger" data-id="' +
+                            f.id + '" data-status="rejected">拒绝</button></div></div>';
                     }
                     html += '</div>';
                     feedbackContainer.innerHTML = html;
@@ -880,13 +855,11 @@
                         });
                     });
                 } catch (e) {
-                    feedbackContainer.innerHTML = `<div class="status-msg">❌ ${e.message}</div>`;
+                    feedbackContainer.innerHTML = '<div class="status-msg">❌ ' + e.message + '</div>';
                 }
             }
 
-            // ============================================================
-            //  用户留言
-            // ============================================================
+            // ---- 留言 ----
             async function loadMessages() {
                 messagesContainer.innerHTML = '<div class="status-msg">⏳ 加载中...</div>';
                 try {
@@ -904,19 +877,15 @@
                     const statusText = { unread: '未读', read: '已读', replied: '已回复' };
                     for (const m of data) {
                         const statusClass = statusMap[m.status] || 'unread';
-                        html += `
-                            <div class="list-item">
-                                <div class="info">
-                                    <div class="content"><strong>${m.name}</strong> (${m.email})</div>
-                                    <div style="color:#b8ccdd;margin:4px 0;">${m.message}</div>
-                                    <div class="meta">${new Date(m.created_at).toLocaleString()} · 状态: <span class="status-badge ${statusClass}">${statusText[m.status] || m.status}</span></div>
-                                </div>
-                                <div class="actions">
-                                    <button class="btn btn-sm btn-success" data-id="${m.id}" data-status="read">已读</button>
-                                    <button class="btn btn-sm btn-warning" data-id="${m.id}" data-status="replied">已回复</button>
-                                </div>
-                            </div>
-                        `;
+                        html +=
+                            '<div class="list-item"><div class="info"><div class="content"><strong>' + m.name +
+                            '</strong> (' + m.email +
+                            ')</div><div style="color:#b8ccdd;margin:4px 0;">' + m.message +
+                            '</div><div class="meta">' + new Date(m.created_at).toLocaleString() + ' · 状态: <span class="status-badge ' +
+                            statusClass + '">' + (statusText[m.status] || m.status) +
+                            '</span></div></div><div class="actions"><button class="btn btn-sm btn-success" data-id="' + m
+                            .id + '" data-status="read">已读</button><button class="btn btn-sm btn-warning" data-id="' +
+                            m.id + '" data-status="replied">已回复</button></div></div>';
                     }
                     html += '</div>';
                     messagesContainer.innerHTML = html;
@@ -930,18 +899,16 @@
                         });
                     });
                 } catch (e) {
-                    messagesContainer.innerHTML = `<div class="status-msg">❌ ${e.message}</div>`;
+                    messagesContainer.innerHTML = '<div class="status-msg">❌ ' + e.message + '</div>';
                 }
             }
 
-            // ============================================================
-            //  配置管理
-            // ============================================================
+            // ---- 配置管理 ----
             async function loadConfigToForm() {
                 try {
                     const r = await fetch(
-                        `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${CONFIG_PATH}`, {
-                            headers: { 'Authorization': `Bearer ${HARD_CODED_TOKEN}`, 'Accept': 'application/vnd.github+json' }
+                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' + CONFIG_PATH, {
+                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json' }
                         });
                     if (r.status === 404) { configStatus.textContent = '⚠️ 配置文件不存在';
                         configStatus.style.color = '#ffaa00'; return; }
@@ -968,7 +935,8 @@
                 cfgFields.badge3_label.value = b[2]?.label || '';
                 cfgFields.members_title.value = c.members?.title || '';
                 cfgFields.members_subtitle.value = c.members?.subtitle || '';
-                cfgFields.members_list.value = (c.members?.list || []).map(m => `${m.name}|${m.role}|${m.desc}`).join('\n');
+                cfgFields.members_list.value = (c.members?.list || []).map(m => m.name + '|' + m.role + '|' + m.desc).join(
+                    '\n');
                 cfgFields.about_title.value = c.about?.title || '';
                 cfgFields.about_subtitle.value = c.about?.subtitle || '';
                 cfgFields.about_mission.value = c.about?.mission || '';
@@ -1005,7 +973,7 @@
                         title: cfgFields.home_title.value.trim(),
                         subtitle: cfgFields.home_subtitle.value.trim(),
                         description: cfgFields.home_desc.value.trim(),
-                        badges
+                        badges: badges
                     },
                     members: { title: cfgFields.members_title.value.trim(), subtitle: cfgFields.members_subtitle.value
                             .trim(), list: members },
@@ -1013,7 +981,7 @@
                         title: cfgFields.about_title.value.trim(),
                         subtitle: cfgFields.about_subtitle.value.trim(),
                         mission: cfgFields.about_mission.value.trim(),
-                        abilities,
+                        abilities: abilities,
                         values: cfgFields.about_values.value.trim()
                     },
                     contact: {
@@ -1045,17 +1013,17 @@
                 try {
                     let sha = null;
                     const g = await fetch(
-                        `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${CONFIG_PATH}`, {
-                            headers: { 'Authorization': `Bearer ${HARD_CODED_TOKEN}`, 'Accept': 'application/vnd.github+json' }
+                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' + CONFIG_PATH, {
+                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json' }
                         });
                     if (g.status === 200) { const d = await g.json();
                         sha = d.sha; } else if (g.status !== 404) throw new Error('检查失败');
                     const r = await fetch(
-                        `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${CONFIG_PATH}`, {
+                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' + CONFIG_PATH, {
                             method: 'PUT',
-                            headers: { 'Authorization': `Bearer ${HARD_CODED_TOKEN}`, 'Accept': 'application/vnd.github+json',
+                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json',
                                 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ message: '更新配置', content: b64, sha })
+                            body: JSON.stringify({ message: '更新配置', content: b64, sha: sha })
                         });
                     if (r.ok) {
                         configStatus.textContent = '✅ 保存成功！';
