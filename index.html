@@ -625,7 +625,7 @@
             margin-top: 0.5rem;
         }
         .profile-sidebar {
-            width: 200px;
+            width: 220px;
             flex-shrink: 0;
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.06);
@@ -681,6 +681,22 @@
             border-left-color: #00f5d4;
             background: rgba(0, 245, 212, 0.05);
         }
+        /* 危险操作（注销账号）红色 */
+        .profile-sidebar .sidebar-menu .danger-item {
+            color: #ff6b6b !important;
+            border-left-color: #ff6b6b !important;
+        }
+        .profile-sidebar .sidebar-menu .danger-item:hover {
+            background: rgba(255, 107, 107, 0.08) !important;
+            color: #ff4444 !important;
+        }
+        body.light-mode .profile-sidebar .sidebar-menu .danger-item {
+            color: #e53e3e !important;
+        }
+        body.light-mode .profile-sidebar .sidebar-menu .danger-item:hover {
+            background: rgba(229, 62, 62, 0.08) !important;
+        }
+
         .profile-sidebar .logout-btn {
             display: block;
             width: 100%;
@@ -759,12 +775,11 @@
         }
         .profile-content .panel .btn:hover { transform: scale(1.02); box-shadow: 0 8px 30px rgba(0, 245, 212, 0.25); }
         .profile-content .panel .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-        .profile-content .panel .btn-outline {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #8aa3bc;
+        .profile-content .panel .btn-danger {
+            background: #ef4444 !important;
+            color: #fff !important;
         }
-        .profile-content .panel .btn-outline:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: none; }
+        .profile-content .panel .btn-danger:hover { background: #dc2626 !important; }
         .log-item {
             padding: 0.6rem 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
@@ -804,6 +819,18 @@
             transform: scale(1.03);
             box-shadow: 0 8px 30px rgba(0, 245, 212, 0.25);
         }
+        /* 管理后台链接（管理员可见） */
+        .footer .admin-link {
+            display: inline-block;
+            margin-top: 8px;
+            color: #5a738a;
+            font-size: 0.85rem;
+            transition: 0.3s;
+            border-bottom: 1px dashed #5a738a;
+        }
+        .footer .admin-link:hover { color: #00f5d4; border-bottom-color: #00f5d4; }
+        .footer .admin-link.hidden { display: none; }
+
         .footer {
             text-align: center;
             padding: 2rem 1.5rem 1.5rem;
@@ -815,15 +842,7 @@
             backdrop-filter: blur(8px);
         }
         .footer span { color: #00f5d4; }
-        .footer .admin-link {
-            display: inline-block;
-            margin-top: 8px;
-            color: #5a738a;
-            font-size: 0.85rem;
-            transition: 0.3s;
-            border-bottom: 1px dashed #5a738a;
-        }
-        .footer .admin-link:hover { color: #00f5d4; border-bottom-color: #00f5d4; }
+
         .loading-mask {
             position: fixed;
             top: 0;
@@ -1093,6 +1112,7 @@
                         <li data-panel="feedback">💬 我的反馈</li>
                         <li data-panel="my-messages">📩 我的留言</li>
                         <li data-panel="theme">🎨 主题偏好</li>
+                        <li class="danger-item" data-panel="delete-account">🗑️ 注销账号</li>
                     </ul>
                     <button class="logout-btn" id="logoutBtn">🚪 退出登录</button>
                 </div>
@@ -1154,19 +1174,28 @@
                         </div>
                         <div id="themeMessage" class="status-msg"></div>
                     </div>
+                    <!-- 注销账号 -->
+                    <div class="panel" id="panel-delete-account">
+                        <h3 style="color:#ff6b6b;">🗑️ 注销账号</h3>
+                        <p style="color:#ff6b6b;margin-bottom:1rem;">⚠️ 此操作将<strong>永久删除</strong>您的账号及所有关联数据（包括个人资料、操作记录、留言、反馈等），且<strong>无法恢复</strong>。</p>
+                        <p style="color:#8aa3bc;margin-bottom:1.5rem;">如果您确定要注销，请点击下方按钮。</p>
+                        <button class="btn btn-danger" id="deleteAccountBtn">确认注销账号</button>
+                        <div id="deleteAccountStatus" class="status-msg"></div>
+                    </div>
                 </div>
             </div>
         </section>
 
     </div>
 
-    <!-- 页脚 -->
+    <!-- ===== 页脚 ===== -->
     <footer class="footer">
         <span id="footerCopyright"></span>
         <br />
-        <a href="admin.html" class="admin-link">🔧 管理后台</a>
+        <a href="admin.html" class="admin-link" id="adminLink">🔧 管理后台</a>
     </footer>
 
+    <!-- ============================================================ -->
     <script>
         (function() {
             'use strict';
@@ -1203,26 +1232,7 @@
             const EMAILJS_PUBLIC_KEY = _k19 + _k20 + _k21;
 
             // ============================================================
-            //  主题管理
-            // ============================================================
-            function applySystemTheme() {
-                const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-                if (prefersLight) {
-                    document.body.classList.add('light-mode');
-                } else {
-                    document.body.classList.remove('light-mode');
-                }
-            }
-
-            const systemThemeMedia = window.matchMedia('(prefers-color-scheme: light)');
-            systemThemeMedia.addEventListener('change', function() {
-                if (!currentUser) {
-                    applySystemTheme();
-                }
-            });
-
-            // ============================================================
-            //  初始化
+            //  初始化 Supabase 和 EmailJS
             // ============================================================
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             emailjs.init(EMAILJS_PUBLIC_KEY);
@@ -1244,6 +1254,7 @@
             const articlesContainer = document.getElementById('articlesContainer');
             const searchInput = document.getElementById('articleSearch');
             const logoutBtn = document.getElementById('logoutBtn');
+            const adminLink = document.getElementById('adminLink');
 
             const loginRequiredMsg = document.getElementById('loginRequiredMsg');
             const contactForm = document.getElementById('contactForm');
@@ -1258,12 +1269,35 @@
             const feedbackList = document.getElementById('feedbackList');
             const myMessagesContainer = document.getElementById('myMessagesContainer');
             const themeMessage = document.getElementById('themeMessage');
+            const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+            const deleteAccountStatus = document.getElementById('deleteAccountStatus');
 
             let allArticles = [];
             let currentUser = null;
             let currentUserProfile = null;
 
-            // ---- 日志 ----
+            // ============================================================
+            //  主题管理
+            // ============================================================
+            function applySystemTheme() {
+                const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+                if (prefersLight) {
+                    document.body.classList.add('light-mode');
+                } else {
+                    document.body.classList.remove('light-mode');
+                }
+            }
+
+            const systemThemeMedia = window.matchMedia('(prefers-color-scheme: light)');
+            systemThemeMedia.addEventListener('change', function() {
+                if (!currentUser) {
+                    applySystemTheme();
+                }
+            });
+
+            // ============================================================
+            //  日志记录
+            // ============================================================
             async function logAction(action, details = '') {
                 if (!currentUser) return;
                 try {
@@ -1275,32 +1309,9 @@
                 } catch (e) { console.warn('日志记录失败:', e); }
             }
 
-            // ---- 主题切换 ----
-            document.getElementById('themeDark').addEventListener('click', async function() {
-                if (!currentUser) return;
-                document.body.classList.remove('light-mode');
-                await supabase.from('profiles')
-                    .update({ theme_preference: 'dark', updated_at: new Date().toISOString() })
-                    .eq('id', currentUser.id);
-                if (currentUserProfile) currentUserProfile.theme_preference = 'dark';
-                themeMessage.textContent = '✅ 已切换到暗色模式';
-                themeMessage.className = 'status-msg success';
-                await logAction('切换主题', '暗色模式');
-            });
-
-            document.getElementById('themeLight').addEventListener('click', async function() {
-                if (!currentUser) return;
-                document.body.classList.add('light-mode');
-                await supabase.from('profiles')
-                    .update({ theme_preference: 'light', updated_at: new Date().toISOString() })
-                    .eq('id', currentUser.id);
-                if (currentUserProfile) currentUserProfile.theme_preference = 'light';
-                themeMessage.textContent = '✅ 已切换到亮色模式';
-                themeMessage.className = 'status-msg success';
-                await logAction('切换主题', '亮色模式');
-            });
-
-            // ---- 认证 ----
+            // ============================================================
+            //  认证状态管理
+            // ============================================================
             async function checkAuth() {
                 const { data: { session } } = await supabase.auth.getSession();
                 if (session) {
@@ -1308,11 +1319,13 @@
                     await loadUserProfile();
                     showLoggedInUI();
                     updateContactFormVisibility();
+                    updateAdminLinkVisibility();
                 } else {
                     currentUser = null;
                     currentUserProfile = null;
                     showLoggedOutUI();
                     updateContactFormVisibility();
+                    updateAdminLinkVisibility();
                     applySystemTheme();
                 }
                 loadingMask.classList.add('hidden');
@@ -1321,6 +1334,21 @@
                 }
             }
 
+            // ============================================================
+            //  管理后台权限控制
+            // ============================================================
+            function updateAdminLinkVisibility() {
+                // 只有登录且邮箱为 kali0914@yeah.net 才显示管理后台入口
+                if (currentUser && currentUser.email === 'kali0914@yeah.net') {
+                    adminLink.classList.remove('hidden');
+                } else {
+                    adminLink.classList.add('hidden');
+                }
+            }
+
+            // ============================================================
+            //  加载用户资料
+            // ============================================================
             async function loadUserProfile() {
                 if (!currentUser) return;
                 const { data, error } = await supabase
@@ -1388,7 +1416,71 @@
                 }
             }
 
-            // ---- 登录/注册 ----
+            // ============================================================
+            //  注销账号（使用 Database Function）
+            // ============================================================
+            deleteAccountBtn.addEventListener('click', async function() {
+                if (!currentUser) {
+                    alert('请先登录');
+                    return;
+                }
+                if (!confirm('⚠️ 确定要永久注销账号吗？此操作不可恢复！')) return;
+                if (!confirm('再次确认：您的所有数据将被永久删除，确定继续？')) return;
+
+                this.disabled = true;
+                deleteAccountStatus.textContent = '⏳ 正在处理...';
+                deleteAccountStatus.className = 'status-msg';
+
+                try {
+                    const { data, error } = await supabase.rpc('delete_user');
+                    if (error) throw error;
+                    if (data && data.success) {
+                        deleteAccountStatus.textContent = '✅ ' + (data.message || '账号已成功注销');
+                        deleteAccountStatus.className = 'status-msg success';
+                        await supabase.auth.signOut();
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        throw new Error(data?.error || '注销失败');
+                    }
+                } catch (err) {
+                    deleteAccountStatus.textContent = '❌ ' + err.message;
+                    deleteAccountStatus.className = 'status-msg error';
+                    this.disabled = false;
+                }
+            });
+
+            // ============================================================
+            //  主题切换
+            // ============================================================
+            document.getElementById('themeDark').addEventListener('click', async function() {
+                if (!currentUser) return;
+                document.body.classList.remove('light-mode');
+                await supabase.from('profiles')
+                    .update({ theme_preference: 'dark', updated_at: new Date().toISOString() })
+                    .eq('id', currentUser.id);
+                if (currentUserProfile) currentUserProfile.theme_preference = 'dark';
+                themeMessage.textContent = '✅ 已切换到暗色模式';
+                themeMessage.className = 'status-msg success';
+                await logAction('切换主题', '暗色模式');
+            });
+
+            document.getElementById('themeLight').addEventListener('click', async function() {
+                if (!currentUser) return;
+                document.body.classList.add('light-mode');
+                await supabase.from('profiles')
+                    .update({ theme_preference: 'light', updated_at: new Date().toISOString() })
+                    .eq('id', currentUser.id);
+                if (currentUserProfile) currentUserProfile.theme_preference = 'light';
+                themeMessage.textContent = '✅ 已切换到亮色模式';
+                themeMessage.className = 'status-msg success';
+                await logAction('切换主题', '亮色模式');
+            });
+
+            // ============================================================
+            //  登录/注册（与之前一致）
+            // ============================================================
             const tabLogin = document.getElementById('tabLogin');
             const tabRegister = document.getElementById('tabRegister');
             const loginForm = document.getElementById('loginForm');
@@ -1590,7 +1682,9 @@
                 });
             });
 
-            // ---- 导航 ----
+            // ============================================================
+            //  导航
+            // ============================================================
             function switchPage(pageId) {
                 Object.values(pages).forEach(p => p && p.classList.remove('active'));
                 if (pages[pageId]) pages[pageId].classList.add('active');
@@ -1631,7 +1725,9 @@
                 }
             });
 
-            // ---- 文章 ----
+            // ============================================================
+            //  文章
+            // ============================================================
             function base64ToUint8Array(base64) {
                 const binary = atob(base64);
                 const bytes = new Uint8Array(binary.length);
@@ -1712,7 +1808,9 @@
                 else renderArticles(allArticles.filter(art => art.title.toLowerCase().includes(keyword)));
             });
 
-            // ---- 个人中心数据 ----
+            // ============================================================
+            //  个人中心
+            // ============================================================
             async function loadProfileData() {
                 if (!currentUser) return;
                 await loadLogs();
@@ -1891,7 +1989,9 @@
                 } finally { this.disabled = false; }
             });
 
-            // ---- 联系留言 ----
+            // ============================================================
+            //  联系留言
+            // ============================================================
             window.handleSubmit = async function(e) {
                 e.preventDefault();
                 if (!currentUser) {
@@ -1936,7 +2036,9 @@
             document.getElementById('contactFormSubmitBtn').dataset.originalText = document.getElementById(
                 'contactFormSubmitBtn').textContent;
 
-            // ---- 加载配置 ----
+            // ============================================================
+            //  加载配置
+            // ============================================================
             function renderConfig(config) {
                 document.getElementById('homeTitle').textContent = config.home.title;
                 document.getElementById('homeSubtitle').textContent = config.home.subtitle;
@@ -2008,7 +2110,9 @@
                     .catch(() => loadingMask.classList.add('hidden'));
             }
 
-            // ---- Hash 路由 ----
+            // ============================================================
+            //  Hash 路由
+            // ============================================================
             function handleHash() {
                 const hash = window.location.hash.slice(1) || 'home';
                 if (pages[hash]) switchPage(hash);
@@ -2018,7 +2122,9 @@
             else switchPage('home');
             window.switchPage = switchPage;
 
-            // ---- 启动 ----
+            // ============================================================
+            //  启动
+            // ============================================================
             checkAuth();
             loadConfig();
 
