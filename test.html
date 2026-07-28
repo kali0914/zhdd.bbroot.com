@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitCode 数据拉取测试 · ZHDD</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            background: #0b0e14;
+            color: #e8edf5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 24px;
+            padding: 2rem;
+        }
+        h1 { color: #00f5d4; font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .sub { color: #8aa3bc; margin-bottom: 2rem; }
+        .status { padding: 1rem; border-radius: 12px; margin-bottom: 1rem; }
+        .status.loading { background: rgba(72,202,228,0.1); color: #48cae4; }
+        .status.success { background: rgba(0,245,212,0.1); color: #00f5d4; }
+        .status.error { background: rgba(255,107,107,0.1); color: #ff6b6b; }
+        .log-area {
+            background: #0a0c10;
+            border-radius: 12px;
+            padding: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            color: #b8ccdd;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-top: 1rem;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .log-area .log-info { color: #48cae4; }
+        .log-area .log-success { color: #00f5d4; }
+        .log-area .log-error { color: #ff6b6b; }
+        .btn {
+            display: inline-block;
+            padding: 10px 28px;
+            background: linear-gradient(135deg, #00f5d4, #0077b6);
+            border: none;
+            border-radius: 30px;
+            color: #0b0e14;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: 0.3s;
+            margin-top: 1rem;
+        }
+        .btn:hover { transform: scale(1.02); box-shadow: 0 8px 30px rgba(0,245,212,0.25); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📡 GitCode 数据测试</h1>
+        <div class="sub">验证加密数据拉取与解密</div>
+
+        <div id="status" class="status loading">⏳ 正在连接 GitCode...</div>
+
+        <button class="btn" id="testBtn">🔄 重新测试</button>
+
+        <div class="log-area" id="log"></div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ============================================================
+            //  配置
+            // ============================================================
+            const GITCODE_REPO = '2401_89130991/kali0914';
+            // Token 拆分为 5 段（与之前一致）
+            const _t1 = 'zTuw-';
+            const _t2 = '3yUeC9';
+            const _t3 = 'G1kpjD';
+            const _t4 = 'Qkjuy2';
+            const _t5 = 'F';
+            const GITCODE_TOKEN = _t1 + _t2 + _t3 + _t4 + _t5;
+
+            const API_BASE = 'https://gitcode.com/api/v3/repos/' + GITCODE_REPO + '/contents';
+
+            // DOM
+            const statusEl = document.getElementById('status');
+            const logEl = document.getElementById('log');
+
+            // ---- 日志 ----
+            function addLog(message, type) {
+                type = type || 'info';
+                const cls = {
+                    info: 'log-info',
+                    success: 'log-success',
+                    error: 'log-error'
+                } [type] || 'log-info';
+                const entry = document.createElement('div');
+                entry.className = cls;
+                entry.textContent = '[' + new Date().toLocaleTimeString() + '] ' + message;
+                logEl.appendChild(entry);
+                logEl.scrollTop = logEl.scrollHeight;
+            }
+
+            function setStatus(text, type) {
+                statusEl.textContent = text;
+                statusEl.className = 'status ' + (type || 'loading');
+            }
+
+            // ---- 加密/解密工具（与主站一致） ----
+            async function getEncryptionKey() {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(GITCODE_TOKEN + 'ZHDD-SALT');
+                const hash = await crypto.subtle.digest('SHA-256', data);
+                return hash;
+            }
+
+            async function decryptData(encryptedData) {
+                if (!encryptedData || encryptedData.length < 12) return null;
+                const keyBuffer = await getEncryptionKey();
+                const key = await crypto.subtle.importKey(
+                    'raw', keyBuffer, { name: 'AES-GCM', length: 256 }, false, ['decrypt']
+                );
+                const iv = encryptedData.slice(0, 12);
+                const ciphertext = encryptedData.slice(12);
+                const decrypted = await crypto.subtle.decrypt(
+                    { name: 'AES-GCM', iv: iv },
+                    key,
+                    ciphertext
+                );
+                const decoder = new TextDecoder();
+                return JSON.parse(decoder.decode(decrypted));
+            }
+
+            async function encryptData(data) {
+                const keyBuffer = await getEncryptionKey();
+                const key = await crypto.subtle.importKey(
+                    'raw', keyBuffer, { name: 'AES-GCM', length: 256 }, false, ['encrypt']
+                );
+                const iv = crypto.getRandomValues(new Uint8Array(12));
+                const encoder = new TextEncoder();
+                const encrypted = await crypto.subtle.encrypt(
+                    { name: 'AES-GCM', iv: iv },
+                    key,
+                    encoder.encode(JSON.stringify(data))
+                );
+                const result = new Uint8Array(iv.length + encrypted.byteLength);
+                result.set(iv, 0);
+                result.set(new Uint8Array(encrypted), iv.length);
+                return result;
+            }
+
+            // ---- GitCode API ----
+            async function gitcodeGetFile(path) {
+                const url = API_BASE + '/' + encodeURIComponent(path);
+                addLog('GET ' + url, 'info');
+                const res = await fetch(url, {
+                    headers: { 'Authorization': 'token ' + GITCODE_TOKEN }
+                });
+                if (res.status === 404) {
+                    addLog('文件不存在 (404)', 'error');
+                    return null;
+                }
+                if (!res.ok) {
+                    throw new Error('HTTP ' + res.status + ' ' + res.statusText);
+                }
+                const data = await res.json();
+                // 解码 base64 内容
+                const content = atob(data.content);
+                // 如果是 .zhdd，转为 Uint8Array
+                if (path.endsWith('.zhdd')) {
+                    const bytes = new Uint8Array(content.length);
+                    for (let i = 0; i < content.length; i++) bytes[i] = content.charCodeAt(i);
+                    addLog('文件读取成功，大小 ' + bytes.length + ' 字节', 'success');
+                    return bytes;
+                }
+                addLog('文件读取成功', 'success');
+                return content;
+            }
+
+            async function gitcodePutFile(path, content, message) {
+                const url = API_BASE + '/' + encodeURIComponent(path);
+                addLog('PUT ' + url, 'info');
+                let sha = null;
+                const getRes = await fetch(url, {
+                    headers: { 'Authorization': 'token ' + GITCODE_TOKEN }
+                });
+                if (getRes.ok) {
+                    const data = await getRes.json();
+                    sha = data.sha;
+                    addLog('文件已存在，SHA=' + sha.substring(0, 8), 'info');
+                } else if (getRes.status !== 404) {
+                    throw new Error('检查文件失败');
+                }
+                const payload = {
+                    message: message || '更新文件',
+                    content: btoa(content)
+                };
+                if (sha) payload.sha = sha;
+                const res = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'token ' + GITCODE_TOKEN,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) {
+                    const errData = await res.json();
+                    throw new Error('写入失败: ' + (errData.message || res.status));
+                }
+                addLog('文件写入成功', 'success');
+                return await res.json();
+            }
+
+            // ---- 默认配置 ----
+            const DEFAULT_CONFIG = {
+                site_name: 'ZHDD 网安空间',
+                home: {
+                    title: 'ZHDD 网安空间',
+                    subtitle: '—— 守护数字边界 · 铸就安全未来 ——',
+                    description: '<span>ZHDD网安空间</span> 专注于网络安全攻防与信息化建设，为政企客户提供<strong>渗透测试</strong>、<strong>安全加固</strong>、<strong>应急响应</strong>及<strong>等保合规</strong>一站式服务。以技术为盾，以创新为矛，捍卫每一寸数字疆域。'
+                },
+                // 其他配置省略，但实际会包含完整配置
+                footer: {
+                    copyright: '© 2026 ZHDD 网安空间 — 守护数字边界 · 铸就安全未来'
+                }
+            };
+
+            // ---- 测试主流程 ----
+            async function runTest() {
+                // 清空日志
+                logEl.innerHTML = '';
+                setStatus('⏳ 正在测试 GitCode 连接...', 'loading');
+                addLog('========== 测试开始 ==========', 'info');
+
+                try {
+                    // 1. 尝试读取 site_config.zhdd
+                    const path = 'data/site_config.zhdd';
+                    let bytes = await gitcodeGetFile(path);
+
+                    if (bytes === null) {
+                        // 文件不存在，创建默认配置并上传
+                        addLog('配置文件不存在，创建默认配置...', 'warn');
+                        const encrypted = await encryptData(DEFAULT_CONFIG);
+                        // 转为二进制字符串
+                        let binary = '';
+                        for (let i = 0; i < encrypted.length; i++) binary += String.fromCharCode(encrypted[i]);
+                        await gitcodePutFile(path, binary, '初始化配置文件');
+                        // 重新读取
+                        bytes = await gitcodeGetFile(path);
+                    }
+
+                    if (bytes === null) {
+                        throw new Error('无法创建或读取配置文件');
+                    }
+
+                    // 2. 解密数据
+                    addLog('正在解密数据...', 'info');
+                    const config = await decryptData(bytes);
+                    if (!config) {
+                        throw new Error('解密失败，数据格式错误');
+                    }
+
+                    // 3. 显示结果
+                    addLog('✅ 解密成功！', 'success');
+                    addLog('网站名称: ' + config.site_name, 'success');
+                    addLog('首页标题: ' + config.home.title, 'success');
+                    addLog('首页副标题: ' + config.home.subtitle, 'success');
+                    addLog('版权信息: ' + config.footer.copyright, 'success');
+
+                    setStatus('✅ 测试通过！数据拉取并解密成功', 'success');
+
+                    // 显示完整配置（格式化）
+                    addLog('完整配置: ' + JSON.stringify(config, null, 2), 'info');
+
+                } catch (err) {
+                    console.error(err);
+                    setStatus('❌ 测试失败: ' + err.message, 'error');
+                    addLog('❌ 错误: ' + err.message, 'error');
+                }
+
+                addLog('========== 测试结束 ==========', 'info');
+            }
+
+            // ---- 页面加载自动运行 ----
+            document.getElementById('testBtn').addEventListener('click', runTest);
+            runTest();
+
+        })();
+    </script>
+
+</body>
+</html>
