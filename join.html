@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>加入我们 · ZHDD网安空间</title>
+    <link rel="icon" type="image/x-icon" href="/logo.ico" />
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Segoe UI','PingFang SC',Roboto,'Helvetica Neue',sans-serif; background:#0b0e14; color:#e8edf5; min-height:100vh; display:flex; flex-direction:column; }
+        a { text-decoration:none; color:inherit; }
+        .navbar { background:rgba(13,18,28,0.92); backdrop-filter:blur(12px); border-bottom:1px solid rgba(0,255,200,0.15); padding:0 2rem; height:72px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow:0 4px 30px rgba(0,0,0,0.5); }
+        .logo { display:flex; align-items:center; gap:10px; font-size:1.5rem; font-weight:700; letter-spacing:1px; color:#00f5d4; text-shadow:0 0 20px rgba(0,245,212,0.2); }
+        .logo-icon { width:36px; height:36px; background:linear-gradient(135deg,#00f5d4,#0077b6); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:800; color:#0b0e14; box-shadow:0 0 20px rgba(0,245,212,0.25); }
+        .nav-links { display:flex; gap:4px; list-style:none; align-items:center; }
+        .nav-links li { display:inline; }
+        .nav-btn { background:transparent; border:none; color:#a0b4c8; font-size:1rem; font-weight:500; padding:8px 18px; border-radius:30px; cursor:pointer; transition:all .25s ease; font-family:inherit; letter-spacing:.3px; position:relative; }
+        .nav-btn:hover { color:#fff; background:rgba(0,245,212,0.08); }
+        .nav-btn.active { color:#00f5d4; background:rgba(0,245,212,0.12); box-shadow:0 0 20px rgba(0,245,212,0.06); }
+        .nav-btn.active::after { content:''; position:absolute; bottom:2px; left:50%; transform:translateX(-50%); width:20px; height:2px; background:#00f5d4; border-radius:4px; box-shadow:0 0 12px #00f5d4; }
+        .nav-btn a { display:block; }
+        .user-area { display:flex; align-items:center; gap:12px; }
+        .btn-login { padding:8px 24px; background:linear-gradient(135deg,#00f5d4,#0077b6); border:none; border-radius:30px; color:#0b0e14; font-weight:700; font-size:.95rem; cursor:pointer; transition:.3s; font-family:inherit; box-shadow:0 4px 20px rgba(0,245,212,0.15); }
+        .btn-login:hover { transform:scale(1.03); box-shadow:0 8px 30px rgba(0,245,212,0.25); }
+        .btn-login a { color:#0b0e14; }
+        .user-avatar { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#00f5d4,#0077b6); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; color:#0b0e14; cursor:pointer; transition:.3s; box-shadow:0 0 20px rgba(0,245,212,0.15); flex-shrink:0; }
+        .user-avatar:hover { transform:scale(1.05); box-shadow:0 0 30px rgba(0,245,212,0.3); }
+        .user-avatar.hidden { display:none; }
+        .btn-login.hidden { display:none; }
+        .main-container { flex:1; max-width:1200px; margin:0 auto; padding:2rem 1.5rem 3rem; width:100%; }
+        .section-title { font-size:2rem; font-weight:700; margin-bottom:.5rem; color:#e8edf5; letter-spacing:1px; }
+        .section-title .highlight { color:#00f5d4; }
+        .section-sub { color:#8aa3bc; margin-bottom:2rem; font-size:1rem; }
+        .join-wrapper { display:grid; grid-template-columns:1fr 1fr; gap:2.5rem; margin-top:1rem; }
+        .join-info { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:24px; padding:2rem 2.2rem; }
+        .join-info h3 { font-size:1.3rem; color:#00f5d4; margin-bottom:1.5rem; }
+        .join-info p { line-height:1.8; color:#b8ccdd; }
+        .join-form { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:24px; padding:2rem 2.2rem; }
+        .join-form h3 { font-size:1.3rem; color:#00f5d4; margin-bottom:1.5rem; }
+        .form-group { margin-bottom:1.2rem; }
+        .form-group label { display:block; font-size:.9rem; color:#8aa3bc; margin-bottom:4px; font-weight:500; }
+        .form-group input,.form-group textarea { width:100%; padding:12px 16px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:14px; color:#e8edf5; font-size:.98rem; font-family:inherit; transition:.3s; outline:none; }
+        .form-group input:focus,.form-group textarea:focus { border-color:#00f5d4; box-shadow:0 0 0 3px rgba(0,245,212,0.08); background:rgba(255,255,255,0.06); }
+        .form-group textarea { resize:vertical; min-height:80px; }
+        .submit-btn { background:linear-gradient(135deg,#00f5d4,#0077b6); border:none; color:#0b0e14; font-weight:700; font-size:1rem; padding:12px 32px; border-radius:30px; cursor:pointer; transition:.3s; font-family:inherit; letter-spacing:.5px; box-shadow:0 4px 20px rgba(0,245,212,0.15); }
+        .submit-btn:hover { transform:scale(1.02); box-shadow:0 8px 30px rgba(0,245,212,0.25); }
+        .submit-btn:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+        .login-required { text-align:center; padding:2rem; color:#8aa3bc; font-size:1rem; }
+        .login-required .btn-login-prompt { display:inline-block; margin-top:.5rem; padding:8px 24px; background:linear-gradient(135deg,#00f5d4,#0077b6); border:none; border-radius:30px; color:#0b0e14; font-weight:700; cursor:pointer; font-family:inherit; font-size:.95rem; transition:.3s; }
+        .login-required .btn-login-prompt:hover { transform:scale(1.03); box-shadow:0 8px 30px rgba(0,245,212,0.25); }
+        .message { margin-top:1rem; text-align:center; font-size:.95rem; min-height:1.5rem; color:#8aa3bc; }
+        .message.error { color:#ff6b6b; }
+        .message.success { color:#00f5d4; }
+        .footer { text-align:center; padding:2rem 1.5rem 1.5rem; border-top:1px solid rgba(255,255,255,0.04); color:#5a738a; font-size:.85rem; letter-spacing:.5px; background:rgba(13,18,28,0.6); backdrop-filter:blur(8px); }
+        .footer span { color:#00f5d4; }
+        .footer .admin-link { display:inline-block; margin-top:8px; color:#5a738a; font-size:.85rem; transition:.3s; border-bottom:1px dashed #5a738a; }
+        .footer .admin-link:hover { color:#00f5d4; border-bottom-color:#00f5d4; }
+        @media (max-width:820px) { .navbar { padding:0 1.2rem; height:64px; flex-wrap:wrap; } .logo { font-size:1.2rem; } .logo-icon { width:30px; height:30px; font-size:14px; } .nav-links { gap:2px; } .nav-btn { font-size:.8rem; padding:6px 12px; } .join-wrapper { grid-template-columns:1fr; gap:1.5rem; } .user-area .btn-login { padding:6px 16px; font-size:.85rem; } .user-area .user-avatar { width:34px; height:34px; font-size:.9rem; } }
+        @media (max-width:480px) { .navbar { padding:0 .8rem; height:58px; } .nav-btn { font-size:.7rem; padding:4px 8px; } .logo { font-size:1rem; } .logo-icon { width:26px; height:26px; font-size:12px; } .join-wrapper { grid-template-columns:1fr; } .user-area .btn-login { padding:4px 12px; font-size:.75rem; } .user-area .user-avatar { width:30px; height:30px; font-size:.8rem; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo"><span class="logo-icon">Z</span><span id="brandName">ZHDD 网安空间</span></div>
+        <ul class="nav-links">
+            <li><a href="index.html"><button class="nav-btn" id="navHome">首页</button></a></li>
+            <li><a href="members.html"><button class="nav-btn" id="navMembers">成员</button></a></li>
+            <li><a href="about.html"><button class="nav-btn" id="navAbout">简介</button></a></li>
+            <li><a href="join.html"><button class="nav-btn active" id="navJoin">加入我们</button></a></li>
+            <li><a href="articles.html"><button class="nav-btn" id="navArticles">文章</button></a></li>
+        </ul>
+        <div class="user-area">
+            <button class="btn-login" id="loginNavBtn"><a href="login.html" id="loginLink">登录 / 注册</a></button>
+            <div class="user-avatar hidden" id="userAvatar" title="个人中心"></div>
+        </div>
+    </nav>
+    <div class="main-container">
+        <h2 class="section-title" id="joinTitle">🤝 加入我们</h2>
+        <p class="section-sub" id="joinSub">欢迎志同道合的伙伴加入 ZHDD 团队</p>
+        <div class="join-wrapper">
+            <div class="join-info"><h3 id="joinInfoTitle">团队介绍</h3><p id="joinInfoContent">ZHDD 网安空间致力于网络安全攻防与信息化建设，我们欢迎有热情、有技术的伙伴加入。</p></div>
+            <div class="join-form">
+                <h3 id="joinFormTitle">申请加入</h3>
+                <div id="loginRequiredMsg" class="login-required" style="display:none;"><p id="loginRequiredText">🔒 请先登录后再提交申请</p><a href="login.html"><button class="btn-login-prompt" id="loginPromptBtn">去登录</button></a></div>
+                <form id="joinForm" style="display:none;">
+                    <div class="form-group"><label id="joinNameLabel" for="name">您的姓名</label><input type="text" id="name" placeholder="请输入姓名" required /></div>
+                    <div class="form-group"><label id="joinEmailLabel" for="email">邮箱地址</label><input type="email" id="email" placeholder="请输入邮箱" required /></div>
+                    <div class="form-group"><label id="joinBioLabel" for="bio">个人简介（技能、经历等）</label><textarea id="bio" placeholder="请简要介绍自己…" required></textarea></div>
+                    <div class="form-group"><label id="joinAvatarLabel" for="avatar">头像（图片URL）</label><input type="url" id="avatar" placeholder="https://example.com/avatar.jpg" /></div>
+                    <button type="submit" class="submit-btn" id="joinSubmitBtn">提交申请</button>
+                    <div id="joinMessage" class="message"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        <span id="footerCopyright">&copy; 2026 ZHDD 网安空间 — 守护数字边界 · 铸就安全未来</span><br />
+        <a href="admin.html" class="admin-link" id="adminLink">🔧 管理后台</a>
+    </footer>
+    <script src="utils.js"></script>
+    <script>
+        const EMAILJS_SERVICE_ID = 'service_y1zx1nj';
+        const EMAILJS_TEMPLATE_ID = 'template_generic';
+        const EMAILJS_PUBLIC_KEY = 'i2In4bEy9IyOA9okI';
+        const ADMIN_EMAIL = 'kali0914@yeah.net';
+        emailjs.init(EMAILJS_PUBLIC_KEY);
+        let config = null, currentUser = null;
+
+        async function loadConfig() {
+            config = await loadSiteConfig();
+            if (!config) return;
+            if (config.site_name) { document.title = config.site_name + ' · 加入我们'; document.getElementById('brandName').textContent = config.site_name; }
+            if (config.nav) {
+                document.getElementById('navHome').textContent = config.nav.home || '首页';
+                document.getElementById('navMembers').textContent = config.nav.members || '成员';
+                document.getElementById('navAbout').textContent = config.nav.about || '简介';
+                document.getElementById('navJoin').textContent = config.nav.join || '加入我们';
+                document.getElementById('navArticles').textContent = config.nav.articles || '文章';
+                document.getElementById('loginLink').textContent = config.nav.login || '登录 / 注册';
+                document.getElementById('adminLink').textContent = config.nav.admin || '🔧 管理后台';
+            }
+            const join = config.join || {};
+            document.getElementById('joinTitle').textContent = join.title || '🤝 加入我们';
+            document.getElementById('joinSub').textContent = join.subtitle || '欢迎志同道合的伙伴加入 ZHDD 团队';
+            document.getElementById('joinInfoTitle').textContent = join.info_title || '团队介绍';
+            document.getElementById('joinInfoContent').textContent = join.info_content || 'ZHDD 网安空间致力于网络安全攻防与信息化建设，我们欢迎有热情、有技术的伙伴加入。';
+            document.getElementById('joinFormTitle').textContent = join.form_title || '申请加入';
+            document.getElementById('joinNameLabel').textContent = join.form_name_label || '您的姓名';
+            document.getElementById('joinEmailLabel').textContent = join.form_email_label || '邮箱地址';
+            document.getElementById('joinBioLabel').textContent = join.form_bio_label || '个人简介（技能、经历等）';
+            document.getElementById('joinAvatarLabel').textContent = join.form_avatar_label || '头像（图片URL）';
+            document.getElementById('joinSubmitBtn').textContent = join.form_submit_label || '提交申请';
+            document.getElementById('loginRequiredText').textContent = join.login_required_message || '🔒 请先登录后再提交申请';
+            document.getElementById('loginPromptBtn').textContent = config.nav?.login || '去登录';
+            if (config.footer) { document.getElementById('footerCopyright').innerHTML = config.footer.copyright || ''; }
+        }
+
+        function checkAuth() {
+            const stored = sessionStorage.getItem('currentUser');
+            if (stored) {
+                try { currentUser = JSON.parse(stored); document.getElementById('loginNavBtn').classList.add('hidden'); const avatar = document.getElementById('userAvatar'); avatar.classList.remove('hidden'); avatar.textContent = (currentUser.display_name || currentUser.username || 'U').charAt(0).toUpperCase(); document.getElementById('loginRequiredMsg').style.display = 'none'; document.getElementById('joinForm').style.display = 'block'; } catch (e) {}
+            } else { document.getElementById('loginRequiredMsg').style.display = 'block'; document.getElementById('joinForm').style.display = 'none'; }
+        }
+
+        document.getElementById('joinForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (!currentUser) { alert('请先登录'); return; }
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const bio = document.getElementById('bio').value.trim();
+            const avatar = document.getElementById('avatar').value.trim();
+            const msg = document.getElementById('joinMessage');
+            msg.textContent = ''; msg.className = 'message';
+            if (!name || !email || !bio) { msg.textContent = '⚠️ 请完整填写所有字段'; msg.className = 'message error'; return; }
+            const btn = document.getElementById('joinSubmitBtn');
+            btn.disabled = true; btn.textContent = '⏳ 提交中...';
+            msg.textContent = '⏳ 提交中...'; msg.className = 'message';
+            try {
+                const requests = await loadZhddFile('data/join_requests.zhdd', []);
+                requests.push({ id: Date.now().toString(), username: currentUser.username, name, email, bio, avatar, status: 'pending', created_at: new Date().toISOString() });
+                await saveZhddFile('data/join_requests.zhdd', requests, '新加入申请');
+                const rawTemplate = await fetchEmailTemplate('join_notify');
+                const htmlContent = renderTemplate(rawTemplate, { name, email, bio });
+                await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { to_email: ADMIN_EMAIL, htmlContent: htmlContent });
+                msg.textContent = '✅ 申请已提交，我们将尽快审核并通知您。';
+                msg.className = 'message success';
+                this.reset();
+            } catch (err) { msg.textContent = '❌ ' + err.message; msg.className = 'message error'; }
+            finally { btn.disabled = false; btn.textContent = document.getElementById('joinSubmitBtn').dataset.originalText || '提交申请'; }
+        });
+        document.getElementById('joinSubmitBtn').dataset.originalText = document.getElementById('joinSubmitBtn').textContent;
+        checkAuth();
+        loadConfig();
+    </script>
+</body>
+</html>
