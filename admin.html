@@ -3,1071 +3,1072 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>管理后台 - ZHDD网安空间</title>
-    <link rel="icon" type="image/x-icon" href="/logo2.ico" />
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>管理后台 · ZHDD网安空间</title>
+    <link rel="icon" type="image/x-icon" href="/logo.ico" />
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ===== 全局样式 ===== */
+        * { margin:0; padding:0; box-sizing:border-box; }
         body {
-            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
-            background: #0b0e14;
-            color: #e8edf5;
-            min-height: 100vh;
-            padding: 2rem 1rem;
+            font-family: 'Segoe UI','PingFang SC',Roboto,'Helvetica Neue',sans-serif;
+            background:#0b0e14; color:#e8edf5;
+            min-height:100vh; display:flex; flex-direction:column;
         }
-        a { color: #00f5d4; text-decoration: none; }
-        .back-link {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            color: #5a738a;
-            font-size: 0.9rem;
-            transition: 0.3s;
-            z-index: 10;
+        a { text-decoration:none; color:inherit; }
+        .hidden { display:none !important; }
+
+        /* ===== 导航栏 ===== */
+        .navbar {
+            background:rgba(13,18,28,0.92);
+            backdrop-filter:blur(12px);
+            border-bottom:1px solid rgba(0,255,200,0.15);
+            padding:0 2rem;
+            height:72px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            position:sticky;
+            top:0;
+            z-index:100;
+            box-shadow:0 4px 30px rgba(0,0,0,0.5);
         }
-        .back-link:hover { color: #00f5d4; }
-        .container { max-width: 1100px; margin: 0 auto; }
-        .card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 24px;
-            padding: 2rem;
-            margin-bottom: 2rem;
+        .logo {
+            display:flex;
+            align-items:center;
+            gap:10px;
+            font-size:1.5rem;
+            font-weight:700;
+            letter-spacing:1px;
+            color:#00f5d4;
+            text-shadow:0 0 20px rgba(0,245,212,0.2);
         }
-        .card h2 {
-            color: #00f5d4;
-            margin-bottom: 1rem;
-            font-size: 1.6rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            padding-bottom: 0.5rem;
+        .logo-icon {
+            width:36px; height:36px;
+            background:linear-gradient(135deg,#00f5d4,#0077b6);
+            border-radius:8px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:18px;
+            font-weight:800;
+            color:#0b0e14;
+            box-shadow:0 0 20px rgba(0,245,212,0.25);
         }
-        .field { margin-bottom: 1.2rem; }
-        .field label {
-            display: block;
-            color: #8aa3bc;
-            margin-bottom: 4px;
-            font-weight: 500;
-            font-size: 0.9rem;
+        .nav-links {
+            display:flex;
+            gap:4px;
+            list-style:none;
+            align-items:center;
         }
-        .field input, .field textarea {
-            width: 100%;
-            padding: 10px 14px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            color: #e8edf5;
-            font-size: 0.95rem;
-            font-family: inherit;
-            outline: none;
-            transition: 0.3s;
+        .nav-links li { display:inline; }
+        .nav-btn {
+            background:transparent;
+            border:none;
+            color:#a0b4c8;
+            font-size:1rem;
+            font-weight:500;
+            padding:8px 18px;
+            border-radius:30px;
+            cursor:pointer;
+            transition:all .25s ease;
+            font-family:inherit;
+            letter-spacing:.3px;
+            position:relative;
         }
-        .field input:focus, .field textarea:focus {
-            border-color: #00f5d4;
-            box-shadow: 0 0 0 3px rgba(0, 245, 212, 0.08);
-            background: rgba(255, 255, 255, 0.06);
+        .nav-btn:hover { color:#fff; background:rgba(0,245,212,0.08); }
+        .nav-btn.active {
+            color:#00f5d4;
+            background:rgba(0,245,212,0.12);
+            box-shadow:0 0 20px rgba(0,245,212,0.06);
         }
-        .field textarea { min-height: 60px; resize: vertical; }
-        .field textarea.large { min-height: 200px; }
-        .btn {
-            background: linear-gradient(135deg, #00f5d4, #0077b6);
-            border: none;
-            color: #0b0e14;
-            font-weight: 700;
-            padding: 10px 28px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: 0.3s;
-            font-family: inherit;
+        .nav-btn.active::after {
+            content:''; position:absolute; bottom:2px; left:50%;
+            transform:translateX(-50%); width:20px; height:2px;
+            background:#00f5d4; border-radius:4px;
+            box-shadow:0 0 12px #00f5d4;
         }
-        .btn:hover { transform: scale(1.02); box-shadow: 0 8px 30px rgba(0, 245, 212, 0.25); }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-        .btn-outline {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #8aa3bc;
+        .user-area { display:flex; align-items:center; gap:12px; }
+        .btn-logout {
+            padding:6px 18px;
+            background:rgba(255,107,107,0.15);
+            border:1px solid rgba(255,107,107,0.2);
+            border-radius:20px;
+            color:#ff6b6b;
+            cursor:pointer;
+            transition:.3s;
+            font-family:inherit;
+            font-size:.9rem;
         }
-        .btn-outline:hover { border-color: #ff6b6b; color: #ff6b6b; box-shadow: none; }
-        .btn-danger { background: #ef4444; color: #fff; }
-        .btn-danger:hover { background: #dc2626; }
-        .btn-sm { padding: 4px 14px; font-size: 0.85rem; border-radius: 20px; }
-        .btn-success { background: #22c55e; color: #fff; }
-        .btn-success:hover { background: #16a34a; }
-        .btn-warning { background: #f59e0b; color: #fff; }
-        .btn-warning:hover { background: #d97706; }
-        .login-box { max-width: 400px; margin: 3rem auto; text-align: center; }
-        .login-box h2 { color: #00f5d4; margin-bottom: 0.5rem; }
-        .login-box .sub { color: #8aa3bc; margin-bottom: 1.5rem; }
-        .login-box input[type="password"] {
-            width: 100%;
-            padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 14px;
-            color: #e8edf5;
-            font-size: 1rem;
-            margin-bottom: 1rem;
-            outline: none;
+        .btn-logout:hover { background:rgba(255,107,107,0.25); }
+
+        /* ===== 主容器 ===== */
+        .main-container {
+            flex:1;
+            max-width:1200px;
+            margin:0 auto;
+            padding:2rem 1.5rem 3rem;
+            width:100%;
         }
-        .login-box input[type="password"]:focus { border-color: #00f5d4; }
-        .login-box .error { color: #ff6b6b; margin-top: 0.5rem; display: none; }
-        .hidden { display: none; }
-        .status-msg { margin-top: 1rem; text-align: center; font-size: 0.95rem; min-height: 1.5rem; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+        /* ===== 登录页 ===== */
+        .login-box {
+            max-width:400px;
+            margin:3rem auto;
+            background:rgba(255,255,255,0.03);
+            border:1px solid rgba(255,255,255,0.06);
+            border-radius:24px;
+            padding:2.5rem 2rem;
+            text-align:center;
+        }
+        .login-box h2 { color:#00f5d4; margin-bottom:.5rem; }
+        .login-box .sub { color:#8aa3bc; margin-bottom:1.5rem; }
+        .login-box input {
+            width:100%; padding:12px 16px;
+            background:rgba(255,255,255,0.05);
+            border:1px solid rgba(255,255,255,0.1);
+            border-radius:14px;
+            color:#e8edf5;
+            font-size:1rem;
+            margin-bottom:1rem;
+            outline:none;
+        }
+        .login-box input:focus { border-color:#00f5d4; }
+        .login-box .btn {
+            width:100%; padding:12px;
+            background:linear-gradient(135deg,#00f5d4,#0077b6);
+            border:none;
+            border-radius:30px;
+            color:#0b0e14;
+            font-weight:700;
+            font-size:1rem;
+            cursor:pointer;
+            transition:.3s;
+        }
+        .login-box .btn:hover { transform:scale(1.02); box-shadow:0 8px 30px rgba(0,245,212,0.25); }
+        .login-box .error { color:#ff6b6b; margin-top:.5rem; display:none; }
+
+        /* ===== 管理面板 ===== */
+        .panel { display:none; }
+        .panel.active { display:block; }
         .tab-bar {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            padding-bottom: 0.5rem;
-            flex-wrap: wrap;
+            display:flex;
+            gap:.5rem;
+            margin-bottom:1.5rem;
+            border-bottom:1px solid rgba(255,255,255,0.06);
+            padding-bottom:.5rem;
+            flex-wrap:wrap;
         }
         .tab-btn {
-            background: transparent;
-            border: none;
-            color: #8aa3bc;
-            padding: 8px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            transition: 0.3s;
-            font-family: inherit;
+            background:transparent;
+            border:none;
+            color:#8aa3bc;
+            padding:8px 20px;
+            border-radius:20px;
+            cursor:pointer;
+            font-size:.95rem;
+            transition:.3s;
+            font-family:inherit;
         }
-        .tab-btn.active { background: rgba(0, 245, 212, 0.12); color: #00f5d4; }
-        .tab-btn:hover { color: #e8edf5; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeUp 0.3s ease; }
-        @keyframes fadeUp {
-            0% { opacity: 0; transform: translateY(10px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-        .footer { text-align: center; color: #5a738a; font-size: 0.8rem; margin-top: 2rem; }
-        .footer span { color: #00f5d4; }
+        .tab-btn.active { background:rgba(0,245,212,0.12); color:#00f5d4; }
+        .tab-btn:hover { color:#e8edf5; }
 
-        .log-container {
-            background: #0a0c10;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            padding: 1rem;
-            max-height: 300px;
-            overflow-y: auto;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 0.85rem;
-            color: #b8ccdd;
-            white-space: pre-wrap;
-            word-break: break-all;
-            margin-top: 1rem;
+        .card {
+            background:rgba(255,255,255,0.03);
+            border:1px solid rgba(255,255,255,0.06);
+            border-radius:20px;
+            padding:1.5rem;
+            margin-bottom:1.5rem;
         }
-        .log-container .log-info { color: #48cae4; }
-        .log-container .log-success { color: #00f5d4; }
-        .log-container .log-error { color: #ff6b6b; }
-        .log-container .log-warn { color: #ffd93d; }
+        .card h3 { color:#00f5d4; margin-bottom:1rem; font-size:1.2rem; }
+        .card .field { margin-bottom:.8rem; }
+        .card .field label { display:block; color:#8aa3bc; font-size:.9rem; margin-bottom:4px; }
+        .card .field input,.card .field textarea,.card .field select {
+            width:100%;
+            padding:8px 12px;
+            background:rgba(255,255,255,0.04);
+            border:1px solid rgba(255,255,255,0.08);
+            border-radius:10px;
+            color:#e8edf5;
+            font-size:.95rem;
+            font-family:inherit;
+            outline:none;
+            transition:.3s;
+        }
+        .card .field input:focus,.card .field textarea:focus,.card .field select:focus {
+            border-color:#00f5d4;
+            box-shadow:0 0 0 3px rgba(0,245,212,0.08);
+        }
+        .card .field textarea { min-height:60px; resize:vertical; }
+        .card .field select option { background:#0b0e14; }
+        .btn {
+            background:linear-gradient(135deg,#00f5d4,#0077b6);
+            border:none;
+            color:#0b0e14;
+            font-weight:700;
+            padding:8px 20px;
+            border-radius:30px;
+            cursor:pointer;
+            font-size:.9rem;
+            transition:.3s;
+            font-family:inherit;
+        }
+        .btn:hover { transform:scale(1.02); box-shadow:0 8px 30px rgba(0,245,212,0.25); }
+        .btn-danger { background:#ef4444; color:#fff; }
+        .btn-danger:hover { background:#dc2626; }
+        .btn-sm { padding:4px 12px; font-size:.8rem; }
+        .btn-success { background:#22c55e; color:#fff; }
+        .btn-success:hover { background:#16a34a; }
+        .btn-warning { background:#f59e0b; color:#fff; }
+        .btn-warning:hover { background:#d97706; }
 
-        .item-list { margin-top: 0.5rem; }
-        .item-list .list-item {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            padding: 0.8rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            gap: 1rem;
-            flex-wrap: wrap;
+        .item-list { margin-top:.5rem; }
+        .item-list .item {
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            padding:.6rem 0;
+            border-bottom:1px solid rgba(255,255,255,0.04);
+            gap:.5rem;
+            flex-wrap:wrap;
         }
-        .item-list .list-item:last-child { border-bottom: none; }
-        .item-list .list-item .info {
-            flex: 1;
-            min-width: 200px;
-        }
-        .item-list .list-item .info .content {
-            color: #e8edf5;
-            font-size: 0.95rem;
-        }
-        .item-list .list-item .info .meta {
-            font-size: 0.8rem;
-            color: #8aa3bc;
-            margin-top: 4px;
-        }
-        .item-list .list-item .status-badge {
-            display: inline-block;
-            padding: 2px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        .item-list .list-item .status-badge.pending { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
-        .item-list .list-item .status-badge.read { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
-        .item-list .list-item .status-badge.resolved { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
-        .item-list .list-item .status-badge.rejected { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
-        .item-list .list-item .status-badge.unread { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
-        .item-list .list-item .status-badge.replied { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
-        .item-list .list-item .actions { display: flex; gap: 4px; flex-wrap: wrap; }
-        .item-list .list-item .actions .btn { font-size: 0.75rem; padding: 2px 10px; }
+        .item-list .item:last-child { border-bottom:none; }
+        .item-list .item .info { flex:1; min-width:150px; }
+        .item-list .item .info .title { font-weight:600; }
+        .item-list .item .info .meta { font-size:.8rem; color:#8aa3bc; }
+        .item-list .item .actions { display:flex; gap:4px; flex-wrap:wrap; }
 
-        @media (max-width: 700px) {
-            .grid-2 { grid-template-columns: 1fr; }
-            .card { padding: 1.2rem; }
-            .back-link { top: 10px; left: 10px; font-size: 0.8rem; }
-            .list-item { flex-direction: column; align-items: stretch; }
-            .list-item .actions { justify-content: flex-end; }
+        .status-msg { margin-top:.5rem; font-size:.9rem; color:#8aa3bc; }
+        .status-msg.success { color:#00f5d4; }
+        .status-msg.error { color:#ff6b6b; }
+
+        .footer {
+            text-align:center;
+            padding:1.5rem;
+            border-top:1px solid rgba(255,255,255,0.04);
+            color:#5a738a;
+            font-size:.85rem;
+        }
+        .footer span { color:#00f5d4; }
+
+        /* ===== 编辑器模态框 ===== */
+        .modal-overlay {
+            display:none;
+            position:fixed;
+            top:0;left:0;right:0;bottom:0;
+            background:rgba(0,0,0,0.7);
+            backdrop-filter:blur(4px);
+            z-index:1000;
+            align-items:center;
+            justify-content:center;
+        }
+        .modal-overlay.active { display:flex; }
+        .modal-box {
+            background:#1a202a;
+            border:1px solid rgba(255,255,255,0.1);
+            border-radius:24px;
+            padding:2rem;
+            max-width:700px;
+            width:90%;
+            max-height:90vh;
+            overflow-y:auto;
+        }
+        .modal-box h3 { color:#00f5d4; margin-bottom:1rem; }
+        .modal-box .field { margin-bottom:1rem; }
+        .modal-box .btn-group { display:flex; gap:10px; justify-content:flex-end; margin-top:1rem; }
+
+        @media (max-width:700px) {
+            .navbar { padding:0 1rem; height:60px; }
+            .nav-btn { font-size:.8rem; padding:6px 12px; }
+            .tab-bar { gap:.3rem; }
+            .tab-btn { font-size:.8rem; padding:6px 12px; }
+            .modal-box { padding:1.2rem; }
         }
     </style>
 </head>
 <body>
 
-    <a href="index.html" class="back-link">← 返回主页</a>
+    <!-- ===== 导航栏 ===== -->
+    <nav class="navbar">
+        <div class="logo"><span class="logo-icon">Z</span><span id="brandName">ZHDD 管理</span></div>
+        <ul class="nav-links">
+            <li><a href="index.html"><button class="nav-btn">返回网站</button></a></li>
+        </ul>
+        <div class="user-area">
+            <span id="adminUser" style="color:#8aa3bc;font-size:.9rem;display:none;"></span>
+            <button class="btn-logout" id="logoutBtn" style="display:none;">退出</button>
+        </div>
+    </nav>
 
-    <div class="container">
+    <!-- ===== 主容器 ===== -->
+    <div class="main-container">
 
-        <!-- ===== 登录区域（仅密码） ===== -->
-        <div id="loginArea" class="card login-box">
+        <!-- ===== 登录页 ===== -->
+        <div id="loginPage" class="login-box">
             <h2>🔐 管理后台</h2>
-            <p class="sub">请输入管理密码</p>
-            <input type="password" id="adminPassword" placeholder="密码" autofocus />
-            <button class="btn" id="loginBtn" style="width:100%;">登录</button>
-            <div class="error" id="loginError">❌ 密码错误</div>
+            <p class="sub">请输入超管账号密码</p>
+            <input type="text" id="adminEmail" placeholder="邮箱" value="kali0914@yeah.net" />
+            <input type="password" id="adminPassword" placeholder="密码" />
+            <button class="btn" id="loginBtn">登录</button>
+            <div class="error" id="loginError">❌ 账号或密码错误</div>
         </div>
 
-        <!-- ===== 主面板 ===== -->
-        <div id="mainPanel" class="hidden">
-
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px;">
-                <h1 style="color:#00f5d4; font-size:1.8rem;">📋 管理面板</h1>
-                <button class="btn btn-outline" id="logoutBtn">退出登录</button>
-            </div>
-
+        <!-- ===== 管理面板 ===== -->
+        <div id="adminPanel" style="display:none;">
             <div class="tab-bar">
-                <button class="tab-btn active" data-tab="tabPublish">📝 发布文章</button>
-                <button class="tab-btn" data-tab="tabManage">📂 管理文章</button>
-                <button class="tab-btn" data-tab="tabFeedback">💬 用户反馈</button>
-                <button class="tab-btn" data-tab="tabMessages">📩 用户留言</button>
-                <button class="tab-btn" data-tab="tabConfig">⚙️ 编辑网站内容</button>
+                <button class="tab-btn active" data-tab="tabUsers">👤 用户</button>
+                <button class="tab-btn" data-tab="tabArticles">📝 文章</button>
+                <button class="tab-btn" data-tab="tabJoins">📩 申请</button>
+                <button class="tab-btn" data-tab="tabConfig">⚙️ 配置</button>
+                <button class="tab-btn" data-tab="tabTemplates">📧 邮件模板</button>
+                <button class="tab-btn" data-tab="tabFriends">🔗 友链</button>
             </div>
 
-            <!-- Tab1: 发布文章 -->
-            <div id="tabPublish" class="tab-content active">
+            <!-- 用户管理 -->
+            <div id="tabUsers" class="panel active">
                 <div class="card">
-                    <h2>📝 发布加密文章</h2>
-                    <div class="field">
-                        <label for="postTitle">文章标题</label>
-                        <input type="text" id="postTitle" placeholder="输入文章标题" />
-                    </div>
-                    <div class="field">
-                        <label for="postContent">文章内容（支持 HTML / Markdown）</label>
-                        <textarea id="postContent" class="large" placeholder="输入正文"></textarea>
-                    </div>
-                    <button class="btn" id="publishBtn">🔒 加密并发布</button>
-                    <div class="status-msg" id="publishStatus"></div>
-                    <div id="logPanel" class="log-container">📋 操作日志将显示在这里...</div>
+                    <h3>👤 用户管理</h3>
+                    <div id="userList" class="item-list">加载中...</div>
                 </div>
             </div>
 
-            <!-- Tab2: 管理文章 -->
-            <div id="tabManage" class="tab-content">
+            <!-- 文章管理 -->
+            <div id="tabArticles" class="panel">
                 <div class="card">
-                    <h2>📂 管理文章</h2>
-                    <p style="color:#8aa3bc; margin-bottom:1rem;">点击「编辑」修改文章，点击「删除」永久移除。</p>
-                    <div id="manageArticlesContainer"><div class="status-msg">⏳ 加载中...</div></div>
-                    <div id="manageStatus" class="status-msg"></div>
+                    <h3>📝 所有文章</h3>
+                    <div id="articleList" class="item-list">加载中...</div>
                 </div>
             </div>
 
-            <!-- Tab3: 用户反馈 -->
-            <div id="tabFeedback" class="tab-content">
+            <!-- 加入申请 -->
+            <div id="tabJoins" class="panel">
                 <div class="card">
-                    <h2>💬 用户反馈</h2>
-                    <p style="color:#8aa3bc; margin-bottom:1rem;">查看所有用户提交的反馈，点击按钮更新状态。</p>
-                    <div id="feedbackContainer"><div class="status-msg">⏳ 加载中...</div></div>
+                    <h3>📩 加入申请</h3>
+                    <div id="joinList" class="item-list">加载中...</div>
                 </div>
             </div>
 
-            <!-- Tab4: 用户留言 -->
-            <div id="tabMessages" class="tab-content">
+            <!-- 网站配置 -->
+            <div id="tabConfig" class="panel">
                 <div class="card">
-                    <h2>📩 用户留言</h2>
-                    <p style="color:#8aa3bc; margin-bottom:1rem;">查看所有用户提交的留言，点击按钮更新状态。</p>
-                    <div id="messagesContainer"><div class="status-msg">⏳ 加载中...</div></div>
-                </div>
-            </div>
-
-            <!-- Tab5: 编辑网站内容 -->
-            <div id="tabConfig" class="tab-content">
-                <div class="card">
-                    <h2>⚙️ 编辑网站文字</h2>
-                    <p style="color:#8aa3bc; margin-bottom:1.2rem;">修改后点击"保存配置"更新网站内容</p>
+                    <h3>⚙️ 网站配置</h3>
                     <form id="configForm">
-                        <h3 style="color:#00f5d4; margin:1.5rem 0 0.5rem;">🏠 首页</h3>
-                        <div class="field"><label>标题</label><input type="text" id="cfg_home_title" /></div>
-                        <div class="field"><label>副标题</label><input type="text" id="cfg_home_subtitle" /></div>
-                        <div class="field"><label>描述（支持HTML）</label><textarea id="cfg_home_desc" class="large"></textarea></div>
-                        <div class="grid-2">
-                            <div class="field"><label>徽章1 数字</label><input type="text" id="cfg_badge1_num" /></div>
-                            <div class="field"><label>徽章1 标签</label><input type="text" id="cfg_badge1_label" /></div>
-                            <div class="field"><label>徽章2 数字</label><input type="text" id="cfg_badge2_num" /></div>
-                            <div class="field"><label>徽章2 标签</label><input type="text" id="cfg_badge2_label" /></div>
-                            <div class="field"><label>徽章3 数字</label><input type="text" id="cfg_badge3_num" /></div>
-                            <div class="field"><label>徽章3 标签</label><input type="text" id="cfg_badge3_label" /></div>
-                        </div>
-                        <h3 style="color:#00f5d4; margin:1.5rem 0 0.5rem;">👥 成员页面</h3>
-                        <div class="field"><label>标题</label><input type="text" id="cfg_members_title" /></div>
-                        <div class="field"><label>副标题</label><input type="text" id="cfg_members_subtitle" /></div>
-                        <div class="field"><label>成员列表（每行一个，格式：姓名|角色|描述）</label>
-                            <textarea id="cfg_members_list" class="large" rows="6"></textarea>
-                        </div>
-                        <h3 style="color:#00f5d4; margin:1.5rem 0 0.5rem;">📌 关于页面</h3>
-                        <div class="field"><label>标题</label><input type="text" id="cfg_about_title" /></div>
-                        <div class="field"><label>副标题</label><input type="text" id="cfg_about_subtitle" /></div>
-                        <div class="field"><label>使命（支持HTML）</label><textarea id="cfg_about_mission" class="large"></textarea></div>
-                        <div class="field"><label>核心能力（每行一个）</label><textarea id="cfg_about_abilities" class="large" rows="5"></textarea></div>
-                        <div class="field"><label>价值观（支持HTML）</label><textarea id="cfg_about_values" class="large"></textarea></div>
-                        <h3 style="color:#00f5d4; margin:1.5rem 0 0.5rem;">📬 联系页面</h3>
-                        <div class="field"><label>标题</label><input type="text" id="cfg_contact_title" /></div>
-                        <div class="field"><label>副标题</label><input type="text" id="cfg_contact_subtitle" /></div>
-                        <div class="field"><label>地址</label><input type="text" id="cfg_contact_address" /></div>
-                        <div class="field"><label>电话</label><input type="text" id="cfg_contact_phone" /></div>
-                        <div class="field"><label>邮箱</label><input type="text" id="cfg_contact_email" /></div>
-                        <div class="field"><label>官网</label><input type="text" id="cfg_contact_website" /></div>
-                        <div class="field"><label>表单标题</label><input type="text" id="cfg_contact_form_title" /></div>
-                        <div class="field"><label>表单-姓名标签</label><input type="text" id="cfg_contact_form_name" /></div>
-                        <div class="field"><label>表单-邮箱标签</label><input type="text" id="cfg_contact_form_email" /></div>
-                        <div class="field"><label>表单-留言标签</label><input type="text" id="cfg_contact_form_message" /></div>
-                        <div class="field"><label>表单-提交按钮文字</label><input type="text" id="cfg_contact_form_submit" /></div>
-                        <h3 style="color:#00f5d4; margin:1.5rem 0 0.5rem;">📄 页脚</h3>
-                        <div class="field"><label>版权信息（支持HTML）</label><input type="text" id="cfg_footer_copyright" /></div>
+                        <div class="field"><label>站点名称</label><input type="text" id="cfg_site_name" /></div>
+                        <div class="field"><label>公告内容</label><input type="text" id="cfg_announcement" /></div>
+                        <div class="field"><label>首页标题</label><input type="text" id="cfg_home_title" /></div>
+                        <div class="field"><label>首页副标题</label><input type="text" id="cfg_home_subtitle" /></div>
+                        <div class="field"><label>首页描述 (HTML)</label><textarea id="cfg_home_desc" rows="3"></textarea></div>
+                        <div class="field"><label>首页徽章 (JSON)</label><textarea id="cfg_home_badges" rows="3">[{"number":"7×24","label":"应急响应"},{"number":"100+","label":"服务客户"},{"number":"99.9%","label":"威胁拦截率"}]</textarea></div>
+                        <div class="field"><label>成员页面标题</label><input type="text" id="cfg_members_title" /></div>
+                        <div class="field"><label>成员列表 (JSON)</label><textarea id="cfg_members_list" rows="5">[{"name":"成员一","role":"安全架构师","desc":"暂无介绍…","avatar":""}]</textarea></div>
+                        <div class="field"><label>关于页面标题</label><input type="text" id="cfg_about_title" /></div>
+                        <div class="field"><label>关于页面副标题</label><input type="text" id="cfg_about_subtitle" /></div>
+                        <div class="field"><label>使命 (HTML)</label><textarea id="cfg_about_mission" rows="3"></textarea></div>
+                        <div class="field"><label>核心能力 (JSON数组)</label><textarea id="cfg_about_abilities" rows="3">["渗透测试 & 红蓝对抗","安全运营 & 态势感知"]</textarea></div>
+                        <div class="field"><label>价值观 (HTML)</label><textarea id="cfg_about_values" rows="3"></textarea></div>
+                        <div class="field"><label>加入我们标题</label><input type="text" id="cfg_join_title" /></div>
+                        <div class="field"><label>加入我们副标题</label><input type="text" id="cfg_join_subtitle" /></div>
+                        <div class="field"><label>加入我们介绍</label><textarea id="cfg_join_info" rows="3"></textarea></div>
+                        <div class="field"><label>加入表单标题</label><input type="text" id="cfg_join_form_title" /></div>
+                        <div class="field"><label>文章列表标题</label><input type="text" id="cfg_articles_title" /></div>
+                        <div class="field"><label>页脚版权</label><input type="text" id="cfg_footer_copyright" /></div>
                         <button type="button" class="btn" id="saveConfigBtn">💾 保存配置</button>
-                        <div class="status-msg" id="configStatus"></div>
+                        <div id="configStatus" class="status-msg"></div>
                     </form>
                 </div>
             </div>
+
+            <!-- 邮件模板 -->
+            <div id="tabTemplates" class="panel">
+                <div class="card">
+                    <h3>📧 邮件模板</h3>
+                    <div id="templateList" class="item-list">加载中...</div>
+                </div>
+            </div>
+
+            <!-- 友链 -->
+            <div id="tabFriends" class="panel">
+                <div class="card">
+                    <h3>🔗 友链管理</h3>
+                    <div class="field"><label>添加友链 (格式: 名称|URL)</label><input type="text" id="newFriend" placeholder="ZHDD|https://zhdd.bbroot.com" /></div>
+                    <button class="btn" id="addFriendBtn">添加</button>
+                    <div id="friendList" class="item-list" style="margin-top:1rem;">加载中...</div>
+                </div>
+            </div>
+
         </div>
 
-        <div class="footer">&copy; 2026 <span>ZHDD 网安空间</span> · 管理后台</div>
     </div>
+
+    <!-- ===== 页脚 ===== -->
+    <footer class="footer">
+        <span>ZHDD 网安空间</span> · 管理后台
+    </footer>
 
     <!-- ===== 编辑模态框 ===== -->
-    <div id="editModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;">
-        <div style="background:#1a202a;border:1px solid rgba(255,255,255,0.1);border-radius:24px;padding:2rem;max-width:700px;width:90%;max-height:90vh;overflow-y:auto;">
-            <h3 style="color:#00f5d4;margin-bottom:1rem;">✏️ 编辑文章</h3>
-            <div class="field"><label>标题</label><input type="text" id="editTitle" /></div>
-            <div class="field"><label>内容</label><textarea id="editContent" class="large" rows="8"></textarea></div>
-            <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:1rem;">
-                <button class="btn btn-outline" id="editCancelBtn">取消</button>
-                <button class="btn" id="editSaveBtn">💾 保存</button>
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-box">
+            <h3 id="editModalTitle">编辑</h3>
+            <div id="editModalBody"></div>
+            <div class="btn-group">
+                <button class="btn btn-sm" id="editModalCancel">取消</button>
+                <button class="btn btn-sm btn-success" id="editModalSave">保存</button>
             </div>
-            <div id="editStatus" class="status-msg"></div>
+            <div id="editModalStatus" class="status-msg"></div>
         </div>
     </div>
 
+    <script src="utils.js"></script>
     <script>
         (function() {
             'use strict';
 
             // ============================================================
-            //  密钥配置
+            //  超管配置
             // ============================================================
-            const _k1 = 'ghp_';
-            const _k2 = 'RDOBKDAWaUmk5YtyPrZSbCGyRI4q';
-            const _k3 = 'La44CQl6';
-            const HARD_CODED_TOKEN = _k1 + _k2 + _k3;
+            const ADMIN_EMAIL = 'kali0914@yeah.net';
+            // 超管密码存储在 admin.zhdd 中，默认密码（首次运行）
+            const DEFAULT_ADMIN_PASS = 'admin123';
+            const ADMIN_FILE = 'data/admin.zhdd';
 
-            const SUPABASE_URL = 'https://khkahnuugyulsiylieve.supabase.co';
-            const SUPABASE_ANON_KEY = 'sb_publishable_H4J3YxL5jk1nfiJyoMua6A_CYAXsYnD';
+            // EmailJS（用于发送审批通知）
+            const EMAILJS_SERVICE_ID = 'service_y1zx1nj';
+            const EMAILJS_TEMPLATE_ID = 'template_generic';
+            const EMAILJS_PUBLIC_KEY = 'i2In4bEy9IyOA9okI';
+            emailjs.init(EMAILJS_PUBLIC_KEY);
 
-            const CORRECT_PASSWORD = '070301';
-            const CONFIG_PATH = 'site_config.json';
-            const FIXED_ENC_PASSWORD = '070301';
-            const GITHUB_USERNAME = 'kali0914';
-            const REPO_NAME = 'zhdd.bbroot.com';
-
-            // ---- 初始化 Supabase（用于反馈/留言等功能） ----
-            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-            // ---- DOM ----
-            const loginArea = document.getElementById('loginArea');
-            const mainPanel = document.getElementById('mainPanel');
-            const passwordInput = document.getElementById('adminPassword');
+            // ============================================================
+            //  DOM 引用
+            // ============================================================
+            const loginPage = document.getElementById('loginPage');
+            const adminPanel = document.getElementById('adminPanel');
+            const adminEmail = document.getElementById('adminEmail');
+            const adminPassword = document.getElementById('adminPassword');
             const loginBtn = document.getElementById('loginBtn');
             const loginError = document.getElementById('loginError');
             const logoutBtn = document.getElementById('logoutBtn');
+            const adminUser = document.getElementById('adminUser');
 
             const tabBtns = document.querySelectorAll('.tab-btn');
-            const tabContents = {
-                tabPublish: document.getElementById('tabPublish'),
-                tabManage: document.getElementById('tabManage'),
-                tabFeedback: document.getElementById('tabFeedback'),
-                tabMessages: document.getElementById('tabMessages'),
-                tabConfig: document.getElementById('tabConfig')
+            const panels = {
+                tabUsers: document.getElementById('tabUsers'),
+                tabArticles: document.getElementById('tabArticles'),
+                tabJoins: document.getElementById('tabJoins'),
+                tabConfig: document.getElementById('tabConfig'),
+                tabTemplates: document.getElementById('tabTemplates'),
+                tabFriends: document.getElementById('tabFriends'),
             };
 
-            // 发布
-            const postTitle = document.getElementById('postTitle');
-            const postContent = document.getElementById('postContent');
-            const publishBtn = document.getElementById('publishBtn');
-            const publishStatus = document.getElementById('publishStatus');
-            const logPanel = document.getElementById('logPanel');
-
-            // 管理文章
-            const manageContainer = document.getElementById('manageArticlesContainer');
-            const manageStatus = document.getElementById('manageStatus');
-
-            // 反馈
-            const feedbackContainer = document.getElementById('feedbackContainer');
-
-            // 留言
-            const messagesContainer = document.getElementById('messagesContainer');
-
-            // 配置表单
-            const cfgFields = {
-                home_title: document.getElementById('cfg_home_title'),
-                home_subtitle: document.getElementById('cfg_home_subtitle'),
-                home_desc: document.getElementById('cfg_home_desc'),
-                badge1_num: document.getElementById('cfg_badge1_num'),
-                badge1_label: document.getElementById('cfg_badge1_label'),
-                badge2_num: document.getElementById('cfg_badge2_num'),
-                badge2_label: document.getElementById('cfg_badge2_label'),
-                badge3_num: document.getElementById('cfg_badge3_num'),
-                badge3_label: document.getElementById('cfg_badge3_label'),
-                members_title: document.getElementById('cfg_members_title'),
-                members_subtitle: document.getElementById('cfg_members_subtitle'),
-                members_list: document.getElementById('cfg_members_list'),
-                about_title: document.getElementById('cfg_about_title'),
-                about_subtitle: document.getElementById('cfg_about_subtitle'),
-                about_mission: document.getElementById('cfg_about_mission'),
-                about_abilities: document.getElementById('cfg_about_abilities'),
-                about_values: document.getElementById('cfg_about_values'),
-                contact_title: document.getElementById('cfg_contact_title'),
-                contact_subtitle: document.getElementById('cfg_contact_subtitle'),
-                contact_address: document.getElementById('cfg_contact_address'),
-                contact_phone: document.getElementById('cfg_contact_phone'),
-                contact_email: document.getElementById('cfg_contact_email'),
-                contact_website: document.getElementById('cfg_contact_website'),
-                contact_form_title: document.getElementById('cfg_contact_form_title'),
-                contact_form_name: document.getElementById('cfg_contact_form_name'),
-                contact_form_email: document.getElementById('cfg_contact_form_email'),
-                contact_form_message: document.getElementById('cfg_contact_form_message'),
-                contact_form_submit: document.getElementById('cfg_contact_form_submit'),
-                footer_copyright: document.getElementById('cfg_footer_copyright'),
-            };
-            const saveConfigBtn = document.getElementById('saveConfigBtn');
-            const configStatus = document.getElementById('configStatus');
-
-            // 编辑模态框
-            const editModal = document.getElementById('editModal');
-            const editTitle = document.getElementById('editTitle');
-            const editContent = document.getElementById('editContent');
-            const editCancelBtn = document.getElementById('editCancelBtn');
-            const editSaveBtn = document.getElementById('editSaveBtn');
-            const editStatus = document.getElementById('editStatus');
-            let editingFile = null;
-
-            // ---- 登录逻辑 ----
-            function doLogin() {
-                const pwd = passwordInput.value.trim();
-                if (pwd === CORRECT_PASSWORD) {
-                    sessionStorage.setItem('admin_logged_in', 'true');
-                    loginArea.style.display = 'none';
-                    mainPanel.classList.remove('hidden');
-                    loginError.style.display = 'none';
-                    // 加载数据
-                    loadConfigToForm();
-                    loadFeedback();
-                    loadMessages();
-                    addLog('登录成功', 'success');
-                } else {
-                    loginError.style.display = 'block';
-                    passwordInput.value = '';
-                    passwordInput.focus();
-                    addLog('登录失败：密码错误', 'error');
+            // ============================================================
+            //  超管登录
+            // ============================================================
+            async function verifyAdmin(email, password) {
+                // 从 admin.zhdd 读取超管信息
+                let adminData = await loadZhddFile(ADMIN_FILE, null);
+                if (!adminData) {
+                    // 首次运行，创建默认超管
+                    const salt = Math.random().toString(36).substring(2, 15);
+                    const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(DEFAULT_ADMIN_PASS + salt));
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    const passwordHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                    adminData = {
+                        email: ADMIN_EMAIL,
+                        password_hash: passwordHash,
+                        salt: salt,
+                        created_at: new Date().toISOString()
+                    };
+                    await saveZhddFile(ADMIN_FILE, adminData, '初始化超管账号');
                 }
+                if (email !== adminData.email) return false;
+                const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(password + adminData.salt));
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const inputHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                return inputHash === adminData.password_hash;
             }
 
-            function doLogout() {
-                sessionStorage.removeItem('admin_logged_in');
-                loginArea.style.display = 'block';
-                mainPanel.classList.add('hidden');
-                passwordInput.value = '';
+            loginBtn.addEventListener('click', async function() {
+                const email = adminEmail.value.trim();
+                const password = adminPassword.value.trim();
+                if (!email || !password) { loginError.style.display = 'block'; loginError.textContent = '❌ 请填写完整'; return; }
                 loginError.style.display = 'none';
-                passwordInput.focus();
-                addLog('已退出', 'warn');
+                this.disabled = true;
+                this.textContent = '⏳ 验证中...';
+                try {
+                    const ok = await verifyAdmin(email, password);
+                    if (ok) {
+                        sessionStorage.setItem('admin_logged_in', 'true');
+                        sessionStorage.setItem('admin_email', email);
+                        showAdminPanel(email);
+                    } else {
+                        loginError.style.display = 'block';
+                        loginError.textContent = '❌ 账号或密码错误';
+                    }
+                } catch (e) {
+                    loginError.style.display = 'block';
+                    loginError.textContent = '❌ ' + e.message;
+                } finally {
+                    this.disabled = false;
+                    this.textContent = '登录';
+                }
+            });
+
+            function showAdminPanel(email) {
+                loginPage.style.display = 'none';
+                adminPanel.style.display = 'block';
+                adminUser.style.display = 'inline';
+                adminUser.textContent = '👤 ' + email;
+                logoutBtn.style.display = 'inline-block';
+                // 加载所有数据
+                loadUsers();
+                loadAllArticles();
+                loadJoins();
+                loadConfig();
+                loadTemplates();
+                loadFriends();
             }
 
-            loginBtn.addEventListener('click', doLogin);
-            passwordInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') doLogin();
+            logoutBtn.addEventListener('click', function() {
+                sessionStorage.removeItem('admin_logged_in');
+                sessionStorage.removeItem('admin_email');
+                loginPage.style.display = 'block';
+                adminPanel.style.display = 'none';
+                adminUser.style.display = 'none';
+                logoutBtn.style.display = 'none';
+                loginError.style.display = 'none';
+                adminPassword.value = '';
             });
-            logoutBtn.addEventListener('click', doLogout);
 
-            // ---- Tab 切换 ----
-            tabBtns.forEach(function(btn) {
+            // ============================================================
+            //  Tab 切换
+            // ============================================================
+            tabBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
-                    tabBtns.forEach(function(b) { b.classList.remove('active'); });
+                    tabBtns.forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
-                    var id = this.dataset.tab;
-                    Object.keys(tabContents).forEach(function(k) {
-                        tabContents[k].classList.toggle('active', k === id);
+                    const tabId = this.dataset.tab;
+                    Object.keys(panels).forEach(key => {
+                        panels[key].classList.toggle('active', key === tabId);
                     });
-                    if (id === 'tabManage') loadManageArticles();
-                    if (id === 'tabFeedback') loadFeedback();
-                    if (id === 'tabMessages') loadMessages();
+                    // 按需刷新
+                    if (tabId === 'tabUsers') loadUsers();
+                    if (tabId === 'tabArticles') loadAllArticles();
+                    if (tabId === 'tabJoins') loadJoins();
+                    if (tabId === 'tabConfig') loadConfig();
+                    if (tabId === 'tabTemplates') loadTemplates();
+                    if (tabId === 'tabFriends') loadFriends();
                 });
             });
 
-            // ---- 日志函数 ----
-            function addLog(msg, type) {
-                type = type || 'info';
-                var time = new Date().toLocaleTimeString();
-                var cls = {
-                    info: 'log-info',
-                    success: 'log-success',
-                    error: 'log-error',
-                    warn: 'log-warn'
-                } [type] || 'log-info';
-                var el = document.createElement('div');
-                el.className = cls;
-                el.textContent = '[' + time + '] ' + msg;
-                logPanel.appendChild(el);
-                logPanel.scrollTop = logPanel.scrollHeight;
-                console.log('[' + type + '] ' + msg);
-            }
-
-            // ---- Base64 工具 ----
-            function unicodeToBase64(str) {
-                var u8 = new TextEncoder().encode(str);
-                var bin = '';
-                for (var i = 0; i < u8.length; i++) bin += String.fromCharCode(u8[i]);
-                return btoa(bin);
-            }
-
-            function base64ToUnicode(b64) {
-                var bin = atob(b64);
-                var u8 = new Uint8Array(bin.length);
-                for (var i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
-                return new TextDecoder('utf-8').decode(u8);
-            }
-
-            function base64ToUint8Array(b64) {
-                var bin = atob(b64);
-                var u8 = new Uint8Array(bin.length);
-                for (var i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
-                return u8;
-            }
-
-            // ---- 加密/解密 ----
-            async function encryptText(text, password) {
-                if (!password || password.length < 6) throw new Error('密码至少6位');
-                var enc = new TextEncoder();
-                var salt = crypto.getRandomValues(new Uint8Array(16));
-                var iv = crypto.getRandomValues(new Uint8Array(12));
-                var km = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
-                var key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: salt, iterations: 200000, hash: 'SHA-256' },
-                    km, { name: 'AES-GCM', length: 256 }, false, ['encrypt']);
-                var encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, enc.encode(text));
-                var c = new Uint8Array(encrypted);
-                var r = new Uint8Array(salt.length + iv.length + c.length);
-                r.set(salt, 0);
-                r.set(iv, salt.length);
-                r.set(c, salt.length + iv.length);
-                return r;
-            }
-
-            async function decryptData(data, password) {
-                if (!password || password.length < 6) throw new Error('密码至少6位');
-                if (!data || data.length < 28) throw new Error('无效数据');
-                var salt = data.slice(0, 16);
-                var iv = data.slice(16, 28);
-                var ct = data.slice(28);
-                var enc = new TextEncoder();
-                var km = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
-                var key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: salt, iterations: 200000, hash: 'SHA-256' },
-                    km, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
-                var dec = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, ct);
-                return new TextDecoder().decode(dec);
-            }
-
-            // ---- 发布文章 ----
-            async function publishArticle() {
-                var title = postTitle.value.trim();
-                var content = postContent.value.trim();
-                if (!title || !content) {
-                    publishStatus.textContent = '⚠️ 请填写标题和内容';
-                    publishStatus.style.color = '#ff6b6b';
-                    return;
-                }
-                var now = new Date();
-                var ts = now.getTime();
-                var timeStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate())
-                    .padStart(2, '0') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes())
-                    .padStart(2, '0');
-                var data = { title: title, time: timeStr, content: content };
-                var json = JSON.stringify(data);
-                var enc;
-                try { enc = await encryptText(json, FIXED_ENC_PASSWORD); } catch (e) {
-                    publishStatus.textContent = '❌ 加密失败';
-                    publishStatus.style.color = '#ff6b6b';
-                    return;
-                }
-                var filename = 'article_' + ts + '.zhdd';
-                var u8 = new Uint8Array(enc);
-                var bin = '';
-                for (var i = 0; i < u8.length; i++) bin += String.fromCharCode(u8[i]);
-                var b64 = btoa(bin);
-
-                publishStatus.textContent = '⏳ 上传中...';
-                publishStatus.style.color = '#8aa3bc';
-                publishBtn.disabled = true;
-                addLog('上传: ' + filename, 'info');
-
+            // ============================================================
+            //  ===== 用户管理 =====
+            // ============================================================
+            async function loadUsers() {
+                const container = document.getElementById('userList');
+                container.innerHTML = '加载中...';
                 try {
-                    var sha = null;
-                    var g = await fetch(
-                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' + filename, {
-                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json' }
+                    const users = await getAllUsers();
+                    if (users.length === 0) { container.innerHTML = '暂无用户'; return; }
+                    let html = '';
+                    for (const u of users) {
+                        const profile = u.profile;
+                        html += `<div class="item" data-username="${u.username}">
+                            <div class="info">
+                                <div class="title">${profile.display_name || u.username}</div>
+                                <div class="meta">${profile.email} · 角色: ${profile.role || 'member'} · 成员: ${profile.is_member ? '✅' : '❌'}</div>
+                            </div>
+                            <div class="actions">
+                                <button class="btn btn-sm btn-edit-user" data-username="${u.username}">编辑</button>
+                                <button class="btn btn-sm btn-danger btn-del-user" data-username="${u.username}">删除</button>
+                            </div>
+                        </div>`;
+                    }
+                    container.innerHTML = html;
+                    // 编辑用户
+                    container.querySelectorAll('.btn-edit-user').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const username = this.dataset.username;
+                            openEditUser(username);
                         });
-                    if (g.status === 200) { var d = await g.json();
-                        sha = d.sha; if (!confirm('覆盖 ' + filename + '？')) { publishBtn.disabled = false; return; } } else if (g
-                        .status !== 404) throw new Error('检查失败');
-
-                    var r = await fetch(
-                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' + filename, {
-                            method: 'PUT',
-                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json',
-                                'Content-Type': 'application/json' },
-                            body: JSON.stringify({ message: '发布: ' + title, content: b64, sha: sha })
-                        });
-                    if (r.ok) {
-                        publishStatus.textContent = '✅ 发布成功！';
-                        publishStatus.style.color = '#00f5d4';
-                        postTitle.value = '';
-                        postContent.value = '';
-                        addLog('成功: ' + filename, 'success');
-                    } else { var e = await r.json();
-                        throw new Error(e.message); }
-                } catch (e) {
-                    publishStatus.textContent = '❌ ' + e.message;
-                    publishStatus.style.color = '#ff6b6b';
-                    addLog('失败: ' + e.message, 'error');
-                } finally { publishBtn.disabled = false; }
-            }
-            publishBtn.addEventListener('click', publishArticle);
-
-            // ---- 管理文章 ----
-            async function loadManageArticles() {
-                manageContainer.innerHTML = '<div class="status-msg">⏳ 加载中...</div>';
-                manageStatus.textContent = '';
-                try {
-                    var r = await fetch('https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/', {
-                        headers: { 'Accept': 'application/vnd.github+json' }
                     });
-                    if (!r.ok) throw new Error('获取列表失败');
-                    var files = await r.json();
-                    var zhdd = files.filter(function(f) { return f.name.endsWith('.zhdd') && f.type === 'file'; });
-                    if (!zhdd.length) { manageContainer.innerHTML = '<div class="status-msg">暂无文章</div>'; return; }
+                    // 删除用户
+                    container.querySelectorAll('.btn-del-user').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const username = this.dataset.username;
+                            if (confirm('确定要删除用户 "' + username + '" 及其所有数据吗？')) {
+                                deleteUser(username);
+                            }
+                        });
+                    });
+                } catch (e) {
+                    container.innerHTML = '加载失败: ' + e.message;
+                }
+            }
 
-                    var html = '';
-                    for (var i = 0; i < zhdd.length; i++) {
-                        var f = zhdd[i];
-                        try {
-                            var cr = await fetch(f.download_url);
-                            if (!cr.ok) continue;
-                            var ab = await cr.arrayBuffer();
-                            var dec = await decryptData(new Uint8Array(ab), FIXED_ENC_PASSWORD);
-                            var art = JSON.parse(dec);
-                            html +=
-                                '<div class="list-item"><div class="info"><div style="font-weight:600;color:#e8edf5;">' +
-                                (art.title || '无标题') + '</div><div style="font-size:0.8rem;color:#8aa3bc;">🕒 ' + (art
-                                    .time || '未知') + ' · ' + f.name +
-                                '</div></div><div class="actions"><button class="btn btn-sm btn-edit" data-filename="' + f
-                                .name + '">✏️ 编辑</button><button class="btn btn-sm btn-danger btn-delete" data-filename="' +
-                                f.name + '">🗑️ 删除</button></div></div>';
-                        } catch (e) {
-                            html +=
-                                '<div class="list-item"><div class="info"><div style="font-weight:600;color:#ff6b6b;">⚠️ 无法解密: ' +
-                                f.name + '</div></div><div class="actions"><button class="btn btn-sm btn-danger btn-delete" data-filename="' +
-                                f.name + '">🗑️ 删除</button></div></div>';
+            async function getAllUsers() {
+                const dir = 'data/users';
+                const url = API_BASE + '/contents/' + encodeURIComponent(dir);
+                const res = await fetch(url);
+                if (!res.ok) return [];
+                const data = await res.json();
+                const users = [];
+                for (const item of data) {
+                    if (item.type !== 'dir') continue;
+                    const profile = await loadUserFile(item.name, 'profile', null);
+                    if (profile) {
+                        users.push({ username: item.name, profile: profile });
+                    }
+                }
+                return users;
+            }
+
+            async function openEditUser(username) {
+                const profile = await loadUserFile(username, 'profile', null);
+                if (!profile) { alert('用户不存在'); return; }
+                const modal = document.getElementById('editModal');
+                const body = document.getElementById('editModalBody');
+                document.getElementById('editModalTitle').textContent = '编辑用户: ' + username;
+                body.innerHTML = `
+                    <div class="field"><label>显示名称</label><input type="text" id="editUserDisplay" value="${profile.display_name || ''}" /></div>
+                    <div class="field"><label>邮箱</label><input type="email" id="editUserEmail" value="${profile.email || ''}" /></div>
+                    <div class="field"><label>角色</label>
+                        <select id="editUserRole">
+                            <option value="member" ${profile.role === 'member' ? 'selected' : ''}>member</option>
+                            <option value="admin" ${profile.role === 'admin' ? 'selected' : ''}>admin</option>
+                        </select>
+                    </div>
+                    <div class="field"><label>成员状态</label>
+                        <select id="editUserMember">
+                            <option value="true" ${profile.is_member ? 'selected' : ''}>正式成员</option>
+                            <option value="false" ${!profile.is_member ? 'selected' : ''}>非成员</option>
+                        </select>
+                    </div>
+                    <div class="field"><label>个人简介</label><textarea id="editUserBio" rows="3">${profile.bio || ''}</textarea></div>
+                    <div class="field"><label>头像 URL</label><input type="url" id="editUserAvatar" value="${profile.avatar_url || ''}" /></div>
+                `;
+                modal.classList.add('active');
+                // 保存
+                document.getElementById('editModalSave').onclick = async function() {
+                    const newDisplay = document.getElementById('editUserDisplay').value.trim();
+                    const newEmail = document.getElementById('editUserEmail').value.trim();
+                    const newRole = document.getElementById('editUserRole').value;
+                    const newMember = document.getElementById('editUserMember').value === 'true';
+                    const newBio = document.getElementById('editUserBio').value.trim();
+                    const newAvatar = document.getElementById('editUserAvatar').value.trim();
+                    if (!newDisplay || !newEmail) { alert('显示名称和邮箱不能为空'); return; }
+                    try {
+                        profile.display_name = newDisplay;
+                        profile.email = newEmail;
+                        profile.role = newRole;
+                        profile.is_member = newMember;
+                        profile.bio = newBio;
+                        profile.avatar_url = newAvatar;
+                        profile.updated_at = new Date().toISOString();
+                        await saveUserFile(username, 'profile', profile, '管理员更新用户资料');
+                        alert('更新成功');
+                        modal.classList.remove('active');
+                        loadUsers();
+                    } catch (e) { alert('保存失败: ' + e.message); }
+                };
+                document.getElementById('editModalCancel').onclick = function() { modal.classList.remove('active'); };
+            }
+
+            async function deleteUser(username) {
+                try {
+                    // 删除用户目录的所有文件（这里简化，只删除整个目录）
+                    // 由于 GitCode API 无法直接删除目录，需要遍历删除文件
+                    // 我们只标记为已删除或直接删除 profile 等
+                    // 简化：清空 profile 并标记 deleted
+                    const profile = await loadUserFile(username, 'profile', null);
+                    if (profile) {
+                        profile.deleted = true;
+                        await saveUserFile(username, 'profile', profile, '管理员删除用户');
+                    }
+                    loadUsers();
+                } catch (e) { alert('删除失败: ' + e.message); }
+            }
+
+            // ============================================================
+            //  ===== 文章管理 =====
+            // ============================================================
+            async function loadAllArticles() {
+                const container = document.getElementById('articleList');
+                container.innerHTML = '加载中...';
+                try {
+                    const users = await getAllUsers();
+                    let allArticles = [];
+                    for (const u of users) {
+                        const articles = await loadUserFile(u.username, 'articles', []);
+                        for (const a of articles) {
+                            a._username = u.username;
+                            allArticles.push(a);
                         }
                     }
-                    manageContainer.innerHTML = html;
-
-                    manageContainer.querySelectorAll('.btn-delete').forEach(function(b) {
-                        b.addEventListener('click', function(e) { e.stopPropagation();
-                            deleteArticle(b.dataset.filename); });
+                    if (allArticles.length === 0) { container.innerHTML = '暂无文章'; return; }
+                    let html = '';
+                    for (const a of allArticles) {
+                        html += `<div class="item" data-id="${a.id}">
+                            <div class="info">
+                                <div class="title">${a.title || '无标题'}</div>
+                                <div class="meta">作者: ${a._username} · ${new Date(a.created_at).toLocaleDateString()}</div>
+                            </div>
+                            <div class="actions">
+                                <button class="btn btn-sm btn-edit-article" data-username="${a._username}" data-id="${a.id}">编辑</button>
+                                <button class="btn btn-sm btn-danger btn-del-article" data-username="${a._username}" data-id="${a.id}">删除</button>
+                            </div>
+                        </div>`;
+                    }
+                    container.innerHTML = html;
+                    // 编辑文章
+                    container.querySelectorAll('.btn-edit-article').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const username = this.dataset.username;
+                            const id = this.dataset.id;
+                            openEditArticle(username, id);
+                        });
                     });
-                    manageContainer.querySelectorAll('.btn-edit').forEach(function(b) {
-                        b.addEventListener('click', function(e) { e.stopPropagation();
-                            openEditModal(b.dataset.filename); });
-                    });
-                } catch (e) {
-                    manageContainer.innerHTML = '<div class="status-msg">❌ ' + e.message + '</div>';
-                }
-            }
-
-            async function deleteArticle(filename) {
-                if (!confirm('确定删除 "' + filename + '"？')) return;
-                manageStatus.textContent = '⏳ 删除中...';
-                manageStatus.style.color = '#8aa3bc';
-                try {
-                    var g = await fetch(
-                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' + filename, {
-                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json' }
-                        });
-                    if (!g.ok) throw new Error('文件不存在');
-                    var d = await g.json();
-                    var r = await fetch(
-                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' + filename, {
-                            method: 'DELETE',
-                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json' },
-                            body: JSON.stringify({ message: '删除: ' + filename, sha: d.sha })
-                        });
-                    if (r.ok) {
-                        manageStatus.textContent = '✅ 删除成功';
-                        manageStatus.style.color = '#00f5d4';
-                        loadManageArticles();
-                    } else { var e = await r.json();
-                        throw new Error(e.message); }
-                } catch (e) {
-                    manageStatus.textContent = '❌ ' + e.message;
-                    manageStatus.style.color = '#ff6b6b';
-                }
-            }
-
-            async function openEditModal(filename) {
-                editingFile = filename;
-                editStatus.textContent = '';
-                editTitle.value = '';
-                editContent.value = '';
-                try {
-                    var g = await fetch(
-                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' + filename, {
-                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json' }
-                        });
-                    if (!g.ok) throw new Error('获取失败');
-                    var d = await g.json();
-                    var raw = base64ToUint8Array(d.content);
-                    var dec = await decryptData(raw, FIXED_ENC_PASSWORD);
-                    var art = JSON.parse(dec);
-                    editTitle.value = art.title || '';
-                    editContent.value = art.content || '';
-                    editModal.style.display = 'flex';
-                } catch (e) { alert('加载失败: ' + e.message); }
-            }
-
-            editCancelBtn.addEventListener('click', function() { editModal.style.display = 'none'; });
-            editSaveBtn.addEventListener('click', async function() {
-                var title = editTitle.value.trim();
-                var content = editContent.value.trim();
-                if (!title || !content) {
-                    editStatus.textContent = '⚠️ 标题和内容不能为空';
-                    editStatus.style.color = '#ff6b6b';
-                    return;
-                }
-                var oldTime = '';
-                try {
-                    var g = await fetch(
-                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' +
-                        editingFile, {
-                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json' }
-                        });
-                    if (g.ok) {
-                        var d = await g.json();
-                        var raw = base64ToUint8Array(d.content);
-                        var dec = await decryptData(raw, FIXED_ENC_PASSWORD);
-                        var art = JSON.parse(dec);
-                        oldTime = art.time || '';
-                    }
-                } catch (e) {}
-                var data = { title: title, time: oldTime || new Date().toISOString().replace('T', ' ').substring(0, 16),
-                    content: content };
-                var json = JSON.stringify(data);
-                var enc;
-                try { enc = await encryptText(json, FIXED_ENC_PASSWORD); } catch (e) {
-                    editStatus.textContent = '❌ 加密失败';
-                    editStatus.style.color = '#ff6b6b';
-                    return;
-                }
-                var u8 = new Uint8Array(enc);
-                var bin = '';
-                for (var i = 0; i < u8.length; i++) bin += String.fromCharCode(u8[i]);
-                var b64 = btoa(bin);
-
-                editStatus.textContent = '⏳ 保存中...';
-                editStatus.style.color = '#8aa3bc';
-                editSaveBtn.disabled = true;
-
-                try {
-                    var g = await fetch(
-                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' +
-                        editingFile, {
-                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json' }
-                        });
-                    if (!g.ok) throw new Error('文件不存在');
-                    var d = await g.json();
-                    var r = await fetch(
-                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' +
-                        editingFile, {
-                            method: 'PUT',
-                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json',
-                                'Content-Type': 'application/json' },
-                            body: JSON.stringify({ message: '编辑: ' + title, content: b64, sha: d.sha })
-                        });
-                    if (r.ok) {
-                        editStatus.textContent = '✅ 保存成功！';
-                        editStatus.style.color = '#00f5d4';
-                        setTimeout(function() { editModal.style.display = 'none';
-                            loadManageArticles(); }, 800);
-                    } else { var e = await r.json();
-                        throw new Error(e.message); }
-                } catch (e) {
-                    editStatus.textContent = '❌ ' + e.message;
-                    editStatus.style.color = '#ff6b6b';
-                } finally { editSaveBtn.disabled = false; }
-            });
-
-            // ---- 加载反馈 ----
-            async function loadFeedback() {
-                feedbackContainer.innerHTML = '<div class="status-msg">⏳ 加载中...</div>';
-                try {
-                    var { data, error } = await supabase
-                        .from('feedbacks')
-                        .select('*')
-                        .order('created_at', { ascending: false });
-                    if (error) throw error;
-                    if (!data || data.length === 0) {
-                        feedbackContainer.innerHTML = '<div class="status-msg">暂无反馈</div>';
-                        return;
-                    }
-                    var html = '<div class="item-list">';
-                    var statusMap = { pending: 'pending', read: 'read', resolved: 'resolved', rejected: 'rejected' };
-                    var statusText = { pending: '待处理', read: '已读', resolved: '已解决', rejected: '已拒绝' };
-                    for (var i = 0; i < data.length; i++) {
-                        var f = data[i];
-                        var statusClass = statusMap[f.status] || 'pending';
-                        html +=
-                            '<div class="list-item"><div class="info"><div class="content">' + f.content +
-                            '</div><div class="meta">' + (f.email || '未知用户') + ' · ' + new Date(f.created_at)
-                            .toLocaleString() + ' · 状态: <span class="status-badge ' + statusClass + '">' + (statusText[
-                                f.status] || f.status) +
-                            '</span></div></div><div class="actions"><button class="btn btn-sm btn-success" data-id="' + f
-                            .id + '" data-status="read">已读</button><button class="btn btn-sm btn-warning" data-id="' +
-                            f.id + '" data-status="resolved">已解决</button><button class="btn btn-sm btn-danger" data-id="' +
-                            f.id + '" data-status="rejected">拒绝</button></div></div>';
-                    }
-                    html += '</div>';
-                    feedbackContainer.innerHTML = html;
-
-                    feedbackContainer.querySelectorAll('.btn').forEach(function(btn) {
-                        btn.addEventListener('click', async function() {
-                            var id = this.dataset.id;
-                            var status = this.dataset.status;
-                            await supabase.from('feedbacks').update({ status: status }).eq('id', id);
-                            loadFeedback();
+                    // 删除文章
+                    container.querySelectorAll('.btn-del-article').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const username = this.dataset.username;
+                            const id = this.dataset.id;
+                            if (confirm('确定删除该文章？')) {
+                                deleteArticle(username, id);
+                            }
                         });
                     });
                 } catch (e) {
-                    feedbackContainer.innerHTML = '<div class="status-msg">❌ ' + e.message + '</div>';
+                    container.innerHTML = '加载失败: ' + e.message;
                 }
             }
 
-            // ---- 加载留言 ----
-            async function loadMessages() {
-                messagesContainer.innerHTML = '<div class="status-msg">⏳ 加载中...</div>';
-                try {
-                    var { data, error } = await supabase
-                        .from('contact_messages')
-                        .select('*')
-                        .order('created_at', { ascending: false });
-                    if (error) throw error;
-                    if (!data || data.length === 0) {
-                        messagesContainer.innerHTML = '<div class="status-msg">暂无留言</div>';
-                        return;
-                    }
-                    var html = '<div class="item-list">';
-                    var statusMap = { unread: 'unread', read: 'read', replied: 'replied' };
-                    var statusText = { unread: '未读', read: '已读', replied: '已回复' };
-                    for (var i = 0; i < data.length; i++) {
-                        var m = data[i];
-                        var statusClass = statusMap[m.status] || 'unread';
-                        html +=
-                            '<div class="list-item"><div class="info"><div class="content"><strong>' + m.name +
-                            '</strong> (' + m.email +
-                            ')</div><div style="color:#b8ccdd;margin:4px 0;">' + m.message +
-                            '</div><div class="meta">' + new Date(m.created_at).toLocaleString() + ' · 状态: <span class="status-badge ' +
-                            statusClass + '">' + (statusText[m.status] || m.status) +
-                            '</span></div></div><div class="actions"><button class="btn btn-sm btn-success" data-id="' + m
-                            .id + '" data-status="read">已读</button><button class="btn btn-sm btn-warning" data-id="' +
-                            m.id + '" data-status="replied">已回复</button></div></div>';
-                    }
-                    html += '</div>';
-                    messagesContainer.innerHTML = html;
-
-                    messagesContainer.querySelectorAll('.btn').forEach(function(btn) {
-                        btn.addEventListener('click', async function() {
-                            var id = this.dataset.id;
-                            var status = this.dataset.status;
-                            await supabase.from('contact_messages').update({ status: status }).eq('id', id);
-                            loadMessages();
-                        });
-                    });
-                } catch (e) {
-                    messagesContainer.innerHTML = '<div class="status-msg">❌ ' + e.message + '</div>';
-                }
-            }
-
-            // ---- 配置管理 ----
-            async function loadConfigToForm() {
-                try {
-                    var r = await fetch(
-                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' + CONFIG_PATH, {
-                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json' }
-                        });
-                    if (r.status === 404) { configStatus.textContent = '⚠️ 配置文件不存在';
-                        configStatus.style.color = '#ffaa00'; return; }
-                    if (!r.ok) throw new Error('读取失败');
-                    var d = await r.json();
-                    var cfg = JSON.parse(base64ToUnicode(d.content));
-                    fillForm(cfg);
-                    configStatus.textContent = '✅ 已加载';
-                    configStatus.style.color = '#00f5d4';
-                } catch (e) { configStatus.textContent = '❌ ' + e.message;
-                    configStatus.style.color = '#ff6b6b'; }
-            }
-
-            function fillForm(c) {
-                cfgFields.home_title.value = c.home?.title || '';
-                cfgFields.home_subtitle.value = c.home?.subtitle || '';
-                cfgFields.home_desc.value = c.home?.description || '';
-                var b = c.home?.badges || [{}, {}, {}];
-                cfgFields.badge1_num.value = b[0]?.number || '';
-                cfgFields.badge1_label.value = b[0]?.label || '';
-                cfgFields.badge2_num.value = b[1]?.number || '';
-                cfgFields.badge2_label.value = b[1]?.label || '';
-                cfgFields.badge3_num.value = b[2]?.number || '';
-                cfgFields.badge3_label.value = b[2]?.label || '';
-                cfgFields.members_title.value = c.members?.title || '';
-                cfgFields.members_subtitle.value = c.members?.subtitle || '';
-                cfgFields.members_list.value = (c.members?.list || []).map(function(m) { return m.name + '|' + m.role + '|' +
-                    m.desc; }).join('\n');
-                cfgFields.about_title.value = c.about?.title || '';
-                cfgFields.about_subtitle.value = c.about?.subtitle || '';
-                cfgFields.about_mission.value = c.about?.mission || '';
-                cfgFields.about_abilities.value = (c.about?.abilities || []).join('\n');
-                cfgFields.about_values.value = c.about?.values || '';
-                var info = c.contact?.info || {};
-                cfgFields.contact_title.value = c.contact?.title || '';
-                cfgFields.contact_subtitle.value = c.contact?.subtitle || '';
-                cfgFields.contact_address.value = info.address || '';
-                cfgFields.contact_phone.value = info.phone || '';
-                cfgFields.contact_email.value = info.email || '';
-                cfgFields.contact_website.value = info.website || '';
-                cfgFields.contact_form_title.value = c.contact?.form_title || '';
-                cfgFields.contact_form_name.value = c.contact?.form_name_label || '';
-                cfgFields.contact_form_email.value = c.contact?.form_email_label || '';
-                cfgFields.contact_form_message.value = c.contact?.form_message_label || '';
-                cfgFields.contact_form_submit.value = c.contact?.form_submit_label || '';
-                cfgFields.footer_copyright.value = c.footer?.copyright || '';
-            }
-
-            function collectConfig() {
-                var badges = [
-                    { number: cfgFields.badge1_num.value.trim(), label: cfgFields.badge1_label.value.trim() },
-                    { number: cfgFields.badge2_num.value.trim(), label: cfgFields.badge2_label.value.trim() },
-                    { number: cfgFields.badge3_num.value.trim(), label: cfgFields.badge3_label.value.trim() }
-                ].filter(function(b) { return b.number || b.label; });
-                var members = cfgFields.members_list.value.split('\n').filter(function(l) { return l.trim(); }).map(
-                function(l) {
-                    var p = l.split('|').map(function(s) { return s.trim(); });
-                    return { name: p[0] || '未命名', role: p[1] || '', desc: p[2] || '' };
-                });
-                var abilities = cfgFields.about_abilities.value.split('\n').filter(function(l) { return l.trim(); });
-                return {
-                    home: {
-                        title: cfgFields.home_title.value.trim(),
-                        subtitle: cfgFields.home_subtitle.value.trim(),
-                        description: cfgFields.home_desc.value.trim(),
-                        badges: badges
-                    },
-                    members: { title: cfgFields.members_title.value.trim(), subtitle: cfgFields.members_subtitle.value
-                            .trim(), list: members },
-                    about: {
-                        title: cfgFields.about_title.value.trim(),
-                        subtitle: cfgFields.about_subtitle.value.trim(),
-                        mission: cfgFields.about_mission.value.trim(),
-                        abilities: abilities,
-                        values: cfgFields.about_values.value.trim()
-                    },
-                    contact: {
-                        title: cfgFields.contact_title.value.trim(),
-                        subtitle: cfgFields.contact_subtitle.value.trim(),
-                        info: {
-                            address: cfgFields.contact_address.value.trim(),
-                            phone: cfgFields.contact_phone.value.trim(),
-                            email: cfgFields.contact_email.value.trim(),
-                            website: cfgFields.contact_website.value.trim()
-                        },
-                        form_title: cfgFields.contact_form_title.value.trim(),
-                        form_name_label: cfgFields.contact_form_name.value.trim(),
-                        form_email_label: cfgFields.contact_form_email.value.trim(),
-                        form_message_label: cfgFields.contact_form_message.value.trim(),
-                        form_submit_label: cfgFields.contact_form_submit.value.trim()
-                    },
-                    footer: { copyright: cfgFields.footer_copyright.value.trim() }
+            async function openEditArticle(username, id) {
+                const articles = await loadUserFile(username, 'articles', []);
+                const article = articles.find(a => a.id === id);
+                if (!article) { alert('文章不存在'); return; }
+                const modal = document.getElementById('editModal');
+                const body = document.getElementById('editModalBody');
+                document.getElementById('editModalTitle').textContent = '编辑文章 (作者: ' + username + ')';
+                body.innerHTML = `
+                    <div class="field"><label>标题</label><input type="text" id="editArticleTitle" value="${article.title || ''}" /></div>
+                    <div class="field"><label>内容</label><textarea id="editArticleContent" rows="8">${article.content || ''}</textarea></div>
+                `;
+                modal.classList.add('active');
+                document.getElementById('editModalSave').onclick = async function() {
+                    const title = document.getElementById('editArticleTitle').value.trim();
+                    const content = document.getElementById('editArticleContent').value.trim();
+                    if (!title) { alert('标题不能为空'); return; }
+                    article.title = title;
+                    article.content = content;
+                    article.updated_at = new Date().toISOString();
+                    try {
+                        await saveUserFile(username, 'articles', articles, '管理员编辑文章');
+                        alert('更新成功');
+                        modal.classList.remove('active');
+                        loadAllArticles();
+                    } catch (e) { alert('保存失败: ' + e.message); }
                 };
+                document.getElementById('editModalCancel').onclick = function() { modal.classList.remove('active'); };
             }
 
-            saveConfigBtn.addEventListener('click', async function() {
-                var cfg = collectConfig();
-                var json = JSON.stringify(cfg, null, 2);
-                var b64 = unicodeToBase64(json);
-                configStatus.textContent = '⏳ 保存中...';
-                configStatus.style.color = '#8aa3bc';
-                saveConfigBtn.disabled = true;
+            async function deleteArticle(username, id) {
+                const articles = await loadUserFile(username, 'articles', []);
+                const idx = articles.findIndex(a => a.id === id);
+                if (idx === -1) return;
+                articles.splice(idx, 1);
+                await saveUserFile(username, 'articles', articles, '管理员删除文章');
+                loadAllArticles();
+            }
+
+            // ============================================================
+            //  ===== 加入申请管理 =====
+            // ============================================================
+            async function loadJoins() {
+                const container = document.getElementById('joinList');
+                container.innerHTML = '加载中...';
                 try {
-                    var sha = null;
-                    var g = await fetch(
-                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' + CONFIG_PATH, {
-                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json' }
+                    const requests = await loadZhddFile('data/join_requests.zhdd', []);
+                    if (requests.length === 0) { container.innerHTML = '暂无申请'; return; }
+                    let html = '';
+                    for (const r of requests) {
+                        const statusMap = { pending: '待审核', approved: '已通过', rejected: '已拒绝' };
+                        html += `<div class="item" data-id="${r.id}">
+                            <div class="info">
+                                <div class="title">${r.name}</div>
+                                <div class="meta">${r.email} · 状态: ${statusMap[r.status] || r.status}</div>
+                            </div>
+                            <div class="actions">
+                                ${r.status === 'pending' ? `<button class="btn btn-sm btn-success btn-approve" data-id="${r.id}">批准</button><button class="btn btn-sm btn-danger btn-reject" data-id="${r.id}">拒绝</button>` : ''}
+                            </div>
+                        </div>`;
+                    }
+                    container.innerHTML = html;
+                    // 批准
+                    container.querySelectorAll('.btn-approve').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const id = this.dataset.id;
+                            approveJoin(id);
                         });
-                    if (g.status === 200) { var d = await g.json();
-                        sha = d.sha; } else if (g.status !== 404) throw new Error('检查失败');
-                    var r = await fetch(
-                        'https://api.github.com/repos/' + GITHUB_USERNAME + '/' + REPO_NAME + '/contents/' + CONFIG_PATH, {
-                            method: 'PUT',
-                            headers: { 'Authorization': 'Bearer ' + HARD_CODED_TOKEN, 'Accept': 'application/vnd.github+json',
-                                'Content-Type': 'application/json' },
-                            body: JSON.stringify({ message: '更新配置', content: b64, sha: sha })
+                    });
+                    // 拒绝
+                    container.querySelectorAll('.btn-reject').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const id = this.dataset.id;
+                            rejectJoin(id);
                         });
-                    if (r.ok) {
-                        configStatus.textContent = '✅ 保存成功！';
-                        configStatus.style.color = '#00f5d4';
-                    } else { var e = await r.json();
-                        throw new Error(e.message); }
+                    });
                 } catch (e) {
-                    configStatus.textContent = '❌ ' + e.message;
-                    configStatus.style.color = '#ff6b6b';
-                } finally { saveConfigBtn.disabled = false; }
-            });
-
-            // ---- 页面初始化 ----
-            if (sessionStorage.getItem('admin_logged_in') === 'true') {
-                loginArea.style.display = 'none';
-                mainPanel.classList.remove('hidden');
-                loadConfigToForm();
-                loadFeedback();
-                loadMessages();
-                addLog('已恢复登录', 'info');
-            } else {
-                loginArea.style.display = 'block';
-                mainPanel.classList.add('hidden');
-                passwordInput.focus();
-                addLog('请登录', 'info');
+                    container.innerHTML = '加载失败: ' + e.message;
+                }
             }
 
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && sessionStorage.getItem('admin_logged_in') === 'true') {
-                    if (confirm('退出？')) doLogout();
+            async function approveJoin(id) {
+                const requests = await loadZhddFile('data/join_requests.zhdd', []);
+                const req = requests.find(r => r.id === id);
+                if (!req) return;
+                req.status = 'approved';
+                await saveZhddFile('data/join_requests.zhdd', requests, '批准加入申请');
+                // 更新用户 profile 的 is_member = true
+                const profile = await loadUserFile(req.username, 'profile', null);
+                if (profile) {
+                    profile.is_member = true;
+                    await saveUserFile(req.username, 'profile', profile, '管理员批准加入');
                 }
-                if (e.key === 'Escape' && editModal.style.display === 'flex') {
-                    editModal.style.display = 'none';
+                // 发送邮件通知申请人
+                try {
+                    const raw = await fetchEmailTemplate('join_approved');
+                    const htmlContent = renderTemplate(raw, { name: req.name });
+                    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+                        to_email: req.email,
+                        htmlContent: htmlContent
+                    });
+                } catch (e) { console.warn('邮件发送失败', e); }
+                loadJoins();
+            }
+
+            async function rejectJoin(id) {
+                const requests = await loadZhddFile('data/join_requests.zhdd', []);
+                const req = requests.find(r => r.id === id);
+                if (!req) return;
+                req.status = 'rejected';
+                await saveZhddFile('data/join_requests.zhdd', requests, '拒绝加入申请');
+                loadJoins();
+            }
+
+            // ============================================================
+            //  ===== 网站配置管理 =====
+            // ============================================================
+            let currentConfig = null;
+
+            async function loadConfig() {
+                try {
+                    const config = await loadSiteConfig();
+                    currentConfig = config;
+                    if (!config) return;
+                    document.getElementById('cfg_site_name').value = config.site_name || '';
+                    document.getElementById('cfg_announcement').value = config.announcement?.content || '';
+                    document.getElementById('cfg_home_title').value = config.home?.title || '';
+                    document.getElementById('cfg_home_subtitle').value = config.home?.subtitle || '';
+                    document.getElementById('cfg_home_desc').value = config.home?.description || '';
+                    document.getElementById('cfg_home_badges').value = JSON.stringify(config.home?.badges || [], null, 2);
+                    document.getElementById('cfg_members_title').value = config.members?.title || '';
+                    document.getElementById('cfg_members_list').value = JSON.stringify(config.members?.list || [], null, 2);
+                    document.getElementById('cfg_about_title').value = config.about?.title || '';
+                    document.getElementById('cfg_about_subtitle').value = config.about?.subtitle || '';
+                    document.getElementById('cfg_about_mission').value = config.about?.mission || '';
+                    document.getElementById('cfg_about_abilities').value = JSON.stringify(config.about?.abilities || [], null, 2);
+                    document.getElementById('cfg_about_values').value = config.about?.values || '';
+                    document.getElementById('cfg_join_title').value = config.join?.title || '';
+                    document.getElementById('cfg_join_subtitle').value = config.join?.subtitle || '';
+                    document.getElementById('cfg_join_info').value = config.join?.info_content || '';
+                    document.getElementById('cfg_join_form_title').value = config.join?.form_title || '';
+                    document.getElementById('cfg_articles_title').value = config.articles?.title || '';
+                    document.getElementById('cfg_footer_copyright').value = config.footer?.copyright || '';
+                } catch (e) {
+                    console.warn('加载配置失败', e);
+                }
+            }
+
+            document.getElementById('saveConfigBtn').addEventListener('click', async function() {
+                const status = document.getElementById('configStatus');
+                status.textContent = '⏳ 保存中...';
+                status.className = 'status-msg';
+                this.disabled = true;
+                try {
+                    const newConfig = {
+                        site_name: document.getElementById('cfg_site_name').value.trim(),
+                        announcement: { content: document.getElementById('cfg_announcement').value.trim() },
+                        home: {
+                            title: document.getElementById('cfg_home_title').value.trim(),
+                            subtitle: document.getElementById('cfg_home_subtitle').value.trim(),
+                            description: document.getElementById('cfg_home_desc').value.trim(),
+                            badges: JSON.parse(document.getElementById('cfg_home_badges').value || '[]')
+                        },
+                        members: {
+                            title: document.getElementById('cfg_members_title').value.trim(),
+                            list: JSON.parse(document.getElementById('cfg_members_list').value || '[]')
+                        },
+                        about: {
+                            title: document.getElementById('cfg_about_title').value.trim(),
+                            subtitle: document.getElementById('cfg_about_subtitle').value.trim(),
+                            mission: document.getElementById('cfg_about_mission').value.trim(),
+                            abilities: JSON.parse(document.getElementById('cfg_about_abilities').value || '[]'),
+                            values: document.getElementById('cfg_about_values').value.trim()
+                        },
+                        join: {
+                            title: document.getElementById('cfg_join_title').value.trim(),
+                            subtitle: document.getElementById('cfg_join_subtitle').value.trim(),
+                            info_content: document.getElementById('cfg_join_info').value.trim(),
+                            form_title: document.getElementById('cfg_join_form_title').value.trim()
+                        },
+                        articles: {
+                            title: document.getElementById('cfg_articles_title').value.trim()
+                        },
+                        footer: {
+                            copyright: document.getElementById('cfg_footer_copyright').value.trim()
+                        }
+                    };
+                    // 保留原有 nav 等
+                    const old = await loadSiteConfig();
+                    if (old) {
+                        newConfig.nav = old.nav || {};
+                        newConfig.auth = old.auth || {};
+                    }
+                    // 写入 GitCode
+                    const content = JSON.stringify(newConfig, null, 2);
+                    await gitcodePutFile('data/site_config.json', btoa(content), '管理员更新网站配置');
+                    status.textContent = '✅ 保存成功！';
+                    status.className = 'status-msg success';
+                } catch (e) {
+                    status.textContent = '❌ ' + e.message;
+                    status.className = 'status-msg error';
+                } finally {
+                    this.disabled = false;
                 }
             });
+
+            // ============================================================
+            //  ===== 邮件模板管理 =====
+            // ============================================================
+            async function loadTemplates() {
+                const container = document.getElementById('templateList');
+                container.innerHTML = '加载中...';
+                try {
+                    const templates = ['register_code', 'reset_password', 'join_notify', 'join_approved'];
+                    let html = '';
+                    for (const t of templates) {
+                        html += `<div class="item" data-template="${t}">
+                            <div class="info">
+                                <div class="title">${t}.html</div>
+                            </div>
+                            <div class="actions">
+                                <button class="btn btn-sm btn-edit-template" data-template="${t}">编辑</button>
+                            </div>
+                        </div>`;
+                    }
+                    container.innerHTML = html;
+                    container.querySelectorAll('.btn-edit-template').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const template = this.dataset.template;
+                            openEditTemplate(template);
+                        });
+                    });
+                } catch (e) {
+                    container.innerHTML = '加载失败: ' + e.message;
+                }
+            }
+
+            async function openEditTemplate(template) {
+                const content = await fetchEmailTemplate(template);
+                const modal = document.getElementById('editModal');
+                const body = document.getElementById('editModalBody');
+                document.getElementById('editModalTitle').textContent = '编辑模板: ' + template + '.html';
+                body.innerHTML = `
+                    <div class="field"><label>HTML 内容</label><textarea id="editTemplateContent" rows="15">${content}</textarea></div>
+                `;
+                modal.classList.add('active');
+                document.getElementById('editModalSave').onclick = async function() {
+                    const newContent = document.getElementById('editTemplateContent').value;
+                    try {
+                        const path = 'data/email_templates/' + template + '.html';
+                        await gitcodePutFile(path, btoa(newContent), '管理员更新模板 ' + template);
+                        alert('保存成功');
+                        modal.classList.remove('active');
+                        loadTemplates();
+                    } catch (e) { alert('保存失败: ' + e.message); }
+                };
+                document.getElementById('editModalCancel').onclick = function() { modal.classList.remove('active'); };
+            }
+
+            // ============================================================
+            //  ===== 友链管理 =====
+            // ============================================================
+            async function loadFriends() {
+                const container = document.getElementById('friendList');
+                container.innerHTML = '加载中...';
+                try {
+                    const friends = await loadZhddFile('data/friends.zhdd', []);
+                    if (friends.length === 0) { container.innerHTML = '暂无友链'; return; }
+                    let html = '';
+                    for (const f of friends) {
+                        html += `<div class="item" data-id="${f.id}">
+                            <div class="info">
+                                <div class="title">${f.name}</div>
+                                <div class="meta">${f.url}</div>
+                            </div>
+                            <div class="actions">
+                                <button class="btn btn-sm btn-danger btn-del-friend" data-id="${f.id}">删除</button>
+                            </div>
+                        </div>`;
+                    }
+                    container.innerHTML = html;
+                    container.querySelectorAll('.btn-del-friend').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const id = this.dataset.id;
+                            deleteFriend(id);
+                        });
+                    });
+                } catch (e) {
+                    container.innerHTML = '加载失败: ' + e.message;
+                }
+            }
+
+            document.getElementById('addFriendBtn').addEventListener('click', async function() {
+                const input = document.getElementById('newFriend');
+                const text = input.value.trim();
+                if (!text) return;
+                const parts = text.split('|');
+                if (parts.length < 2) { alert('格式: 名称|URL'); return; }
+                const name = parts[0].trim();
+                const url = parts[1].trim();
+                if (!name || !url) { alert('请填写完整'); return; }
+                const friends = await loadZhddFile('data/friends.zhdd', []);
+                friends.push({ id: Date.now().toString(), name, url });
+                await saveZhddFile('data/friends.zhdd', friends, '添加友链');
+                input.value = '';
+                loadFriends();
+            });
+
+            async function deleteFriend(id) {
+                const friends = await loadZhddFile('data/friends.zhdd', []);
+                const idx = friends.findIndex(f => f.id === id);
+                if (idx === -1) return;
+                friends.splice(idx, 1);
+                await saveZhddFile('data/friends.zhdd', friends, '删除友链');
+                loadFriends();
+            }
+
+            // ============================================================
+            //  检查登录状态
+            // ============================================================
+            (function init() {
+                const loggedIn = sessionStorage.getItem('admin_logged_in');
+                if (loggedIn === 'true') {
+                    const email = sessionStorage.getItem('admin_email') || ADMIN_EMAIL;
+                    showAdminPanel(email);
+                } else {
+                    loginPage.style.display = 'block';
+                    adminPanel.style.display = 'none';
+                }
+            })();
 
         })();
     </script>
