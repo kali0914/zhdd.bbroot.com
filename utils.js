@@ -15,7 +15,7 @@ const EMAILJS_SERVICE_ID = 'service_y1zx1nj';
 const EMAILJS_TEMPLATE_ID = 'template_h2tzy5w';
 const EMAILJS_PUBLIC_KEY = 'i2In4bEy9IyOA9okI';
 
-// ---------- 安全 Base64 解码（支持 UTF-8） ----------
+// ---------- 安全 Base64 解码/编码 ----------
 function base64ToUtf8(base64) {
     try {
         return decodeURIComponent(escape(atob(base64)));
@@ -52,7 +52,7 @@ function utf8ToBase64(str) {
     }
 }
 
-// ---------- 明文 JSON 配置加载 ----------
+// ---------- 加载配置 ----------
 async function loadSiteConfig() {
     try {
         const content = await gitcodeGetFile(CONFIG_PATH);
@@ -64,7 +64,7 @@ async function loadSiteConfig() {
     }
 }
 
-// ---------- GitCode 文件读取（通过 Worker 代理） ----------
+// ---------- GitCode 文件读取 ----------
 async function gitcodeGetFile(path) {
     try {
         const url = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}`;
@@ -79,29 +79,40 @@ async function gitcodeGetFile(path) {
     }
 }
 
-// ---------- GitCode 文件写入（已修复 400 错误） ----------
+// ---------- GitCode 文件写入（自动选择 POST/PUT） ----------
 async function gitcodePutFile(path, content, message) {
-    // 将 branch 作为 URL 查询参数，符合 GitCode API 规范
-    const url = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}?branch=main`;
-    let sha = null;
+    // 先检查文件是否存在
+    let existingSha = null;
+    let exists = false;
+    const getUrl = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}`;
     try {
-        const getRes = await fetch(url);
+        const getRes = await fetch(getUrl);
         if (getRes.ok) {
             const data = await getRes.json();
-            sha = data.sha;
+            existingSha = data.sha;
+            exists = true;
+        } else if (getRes.status !== 404) {
+            throw new Error(`检查文件失败 (${getRes.status}): ${await getRes.text()}`);
         }
     } catch (e) {
-        console.warn('获取文件 SHA 失败:', e);
+        console.warn('检查文件异常:', e);
     }
-    // 关键修复：始终包含 sha 字段（新建文件传 null）
+
     const payload = {
         message: message || '更新文件',
         content: content,
-        sha: sha || null
+        branch: 'main'
     };
+    if (exists && existingSha) {
+        payload.sha = existingSha;
+    }
+
+    const method = exists ? 'PUT' : 'POST';
+    const url = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}`;
+
     try {
         const res = await fetch(url, {
-            method: 'PUT',
+            method: method,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
