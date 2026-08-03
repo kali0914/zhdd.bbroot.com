@@ -64,7 +64,7 @@ async function loadSiteConfig() {
     }
 }
 
-// ---------- GitCode 文件读取 ----------
+// ---------- GitCode 文件读取（通过 Worker 代理） ----------
 async function gitcodeGetFile(path) {
     try {
         const url = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}`;
@@ -79,7 +79,7 @@ async function gitcodeGetFile(path) {
     }
 }
 
-// ---------- GitCode 文件写入 ----------
+// ---------- GitCode 文件写入（通过 Worker 代理，已修复） ----------
 async function gitcodePutFile(path, content, message) {
     const url = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}`;
     let sha = null;
@@ -89,19 +89,30 @@ async function gitcodePutFile(path, content, message) {
             const data = await getRes.json();
             sha = data.sha;
         }
-    } catch (e) {}
+    } catch (e) {
+        console.warn('获取文件 SHA 失败:', e);
+    }
     const payload = {
         message: message || '更新文件',
-        content: content
+        content: content,
+        branch: 'main'  // 明确指定分支
     };
     if (sha) payload.sha = sha;
-    const res = await fetch(url, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    });
-    if (!res.ok) throw new Error(`写入失败: ${res.status}`);
-    return await res.json();
+    try {
+        const res = await fetch(url, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(`写入失败 (${res.status}): ${errorText}`);
+        }
+        return await res.json();
+    } catch (e) {
+        console.error('gitcodePutFile 错误:', e);
+        throw e;
+    }
 }
 
 // ---------- .zhdd 加密/解密 ----------
@@ -137,13 +148,16 @@ async function decryptData(encryptedData) {
     return JSON.parse(new TextDecoder().decode(decrypted));
 }
 
+// ---------- .zhdd 文件读写 ----------
 async function loadZhddFile(path, defaultVal) {
     try {
         const base64 = await gitcodeGetFile(path);
         if (!base64) return defaultVal;
         const binary = atob(base64);
         const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        for (let i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i);
+        }
         return await decryptData(bytes);
     } catch (e) {
         console.warn('加载 .zhdd 失败:', path, e);
@@ -154,7 +168,9 @@ async function loadZhddFile(path, defaultVal) {
 async function saveZhddFile(path, data, message) {
     const encrypted = await encryptData(data);
     let binary = '';
-    for (let i = 0; i < encrypted.length; i++) binary += String.fromCharCode(encrypted[i]);
+    for (let i = 0; i < encrypted.length; i++) {
+        binary += String.fromCharCode(encrypted[i]);
+    }
     const base64 = btoa(binary);
     await gitcodePutFile(path, base64, message || '更新数据');
 }
