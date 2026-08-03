@@ -7,7 +7,6 @@
     <link rel="icon" type="image/x-icon" href="/logo.ico" />
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
-        /* ===== 全局样式 ===== */
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
             font-family: 'Segoe UI','PingFang SC',Roboto,'Helvetica Neue',sans-serif;
@@ -15,9 +14,7 @@
             min-height:100vh; display:flex; flex-direction:column;
         }
         a { text-decoration:none; color:inherit; }
-        .hidden { display:none !important; }
 
-        /* ===== 导航栏 ===== */
         .navbar {
             background:rgba(13,18,28,0.92);
             backdrop-filter:blur(12px);
@@ -32,159 +29,44 @@
             z-index:100;
             box-shadow:0 4px 30px rgba(0,0,0,0.5);
         }
-        .logo {
-            display:flex;
-            align-items:center;
-            gap:10px;
-            font-size:1.5rem;
-            font-weight:700;
-            letter-spacing:1px;
-            color:#00f5d4;
-            text-shadow:0 0 20px rgba(0,245,212,0.2);
-        }
-        .logo-icon {
-            width:36px; height:36px;
-            background:linear-gradient(135deg,#00f5d4,#0077b6);
-            border-radius:8px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-size:18px;
-            font-weight:800;
-            color:#0b0e14;
-            box-shadow:0 0 20px rgba(0,245,212,0.25);
-        }
-        .nav-links {
-            display:flex;
-            gap:4px;
-            list-style:none;
-            align-items:center;
-        }
+        .logo { display:flex; align-items:center; gap:10px; font-size:1.5rem; font-weight:700; letter-spacing:1px; color:#00f5d4; text-shadow:0 0 20px rgba(0,245,212,0.2); }
+        .logo-icon { width:36px; height:36px; background:linear-gradient(135deg,#00f5d4,#0077b6); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:800; color:#0b0e14; box-shadow:0 0 20px rgba(0,245,212,0.25); }
+        .nav-links { display:flex; gap:4px; list-style:none; align-items:center; }
         .nav-links li { display:inline; }
-        .nav-btn {
-            background:transparent;
-            border:none;
-            color:#a0b4c8;
-            font-size:1rem;
-            font-weight:500;
-            padding:8px 18px;
-            border-radius:30px;
-            cursor:pointer;
-            transition:all .25s ease;
-            font-family:inherit;
-            letter-spacing:.3px;
-            position:relative;
-        }
+        .nav-btn { background:transparent; border:none; color:#a0b4c8; font-size:1rem; font-weight:500; padding:8px 18px; border-radius:30px; cursor:pointer; transition:all .25s ease; font-family:inherit; letter-spacing:.3px; position:relative; }
         .nav-btn:hover { color:#fff; background:rgba(0,245,212,0.08); }
-        .nav-btn.active {
-            color:#00f5d4;
-            background:rgba(0,245,212,0.12);
-            box-shadow:0 0 20px rgba(0,245,212,0.06);
-        }
-        .nav-btn.active::after {
-            content:''; position:absolute; bottom:2px; left:50%;
-            transform:translateX(-50%); width:20px; height:2px;
-            background:#00f5d4; border-radius:4px;
-            box-shadow:0 0 12px #00f5d4;
-        }
+        .nav-btn.active { color:#00f5d4; background:rgba(0,245,212,0.12); box-shadow:0 0 20px rgba(0,245,212,0.06); }
+        .nav-btn.active::after { content:''; position:absolute; bottom:2px; left:50%; transform:translateX(-50%); width:20px; height:2px; background:#00f5d4; border-radius:4px; box-shadow:0 0 12px #00f5d4; }
         .user-area { display:flex; align-items:center; gap:12px; }
-        .btn-logout {
-            padding:6px 18px;
-            background:rgba(255,107,107,0.15);
-            border:1px solid rgba(255,107,107,0.2);
-            border-radius:20px;
-            color:#ff6b6b;
-            cursor:pointer;
-            transition:.3s;
-            font-family:inherit;
-            font-size:.9rem;
-        }
+        .btn-logout { padding:6px 18px; background:rgba(255,107,107,0.15); border:1px solid rgba(255,107,107,0.2); border-radius:20px; color:#ff6b6b; cursor:pointer; transition:.3s; font-family:inherit; font-size:.9rem; }
         .btn-logout:hover { background:rgba(255,107,107,0.25); }
 
-        /* ===== 主容器 ===== */
-        .main-container {
-            flex:1;
-            max-width:1200px;
-            margin:0 auto;
-            padding:2rem 1.5rem 3rem;
-            width:100%;
-        }
+        .main-container { flex:1; max-width:1200px; margin:0 auto; padding:2rem 1.5rem 3rem; width:100%; }
 
-        /* ===== 登录页 ===== */
-        .login-box {
-            max-width:400px;
-            margin:3rem auto;
-            background:rgba(255,255,255,0.03);
-            border:1px solid rgba(255,255,255,0.06);
-            border-radius:24px;
-            padding:2.5rem 2rem;
-            text-align:center;
-        }
+        /* 登录页 */
+        .login-box { max-width:400px; margin:3rem auto; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:24px; padding:2.5rem 2rem; text-align:center; }
         .login-box h2 { color:#00f5d4; margin-bottom:.5rem; }
         .login-box .sub { color:#8aa3bc; margin-bottom:1.5rem; }
-        .login-box input {
-            width:100%; padding:12px 16px;
-            background:rgba(255,255,255,0.05);
-            border:1px solid rgba(255,255,255,0.1);
-            border-radius:14px;
-            color:#e8edf5;
-            font-size:1rem;
-            margin-bottom:1rem;
-            outline:none;
-        }
+        .login-box input { width:100%; padding:12px 16px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:14px; color:#e8edf5; font-size:1rem; margin-bottom:1rem; outline:none; }
         .login-box input:focus { border-color:#00f5d4; }
-        .login-box .btn {
-            width:100%; padding:12px;
-            background:linear-gradient(135deg,#00f5d4,#0077b6);
-            border:none;
-            border-radius:30px;
-            color:#0b0e14;
-            font-weight:700;
-            font-size:1rem;
-            cursor:pointer;
-            transition:.3s;
-        }
+        .login-box .btn { width:100%; padding:12px; background:linear-gradient(135deg,#00f5d4,#0077b6); border:none; border-radius:30px; color:#0b0e14; font-weight:700; font-size:1rem; cursor:pointer; transition:.3s; }
         .login-box .btn:hover { transform:scale(1.02); box-shadow:0 8px 30px rgba(0,245,212,0.25); }
         .login-box .error { color:#ff6b6b; margin-top:.5rem; display:none; }
 
-        /* ===== 管理面板 ===== */
+        /* 面板 */
         .panel { display:none; }
         .panel.active { display:block; }
-        .tab-bar {
-            display:flex;
-            gap:.5rem;
-            margin-bottom:1.5rem;
-            border-bottom:1px solid rgba(255,255,255,0.06);
-            padding-bottom:.5rem;
-            flex-wrap:wrap;
-        }
-        .tab-btn {
-            background:transparent;
-            border:none;
-            color:#8aa3bc;
-            padding:8px 20px;
-            border-radius:20px;
-            cursor:pointer;
-            font-size:.95rem;
-            transition:.3s;
-            font-family:inherit;
-        }
+        .tab-bar { display:flex; gap:.5rem; margin-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:.5rem; flex-wrap:wrap; }
+        .tab-btn { background:transparent; border:none; color:#8aa3bc; padding:8px 20px; border-radius:20px; cursor:pointer; font-size:.95rem; transition:.3s; font-family:inherit; }
         .tab-btn.active { background:rgba(0,245,212,0.12); color:#00f5d4; }
         .tab-btn:hover { color:#e8edf5; }
 
-        .card {
-            background:rgba(255,255,255,0.03);
-            border:1px solid rgba(255,255,255,0.06);
-            border-radius:20px;
-            padding:1.5rem;
-            margin-bottom:1.5rem;
-        }
+        .card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:20px; padding:1.5rem; margin-bottom:1.5rem; }
         .card h3 { color:#00f5d4; margin-bottom:1rem; font-size:1.2rem; }
         .card .field { margin-bottom:.8rem; }
         .card .field label { display:block; color:#8aa3bc; font-size:.9rem; margin-bottom:4px; }
         .card .field input,.card .field textarea,.card .field select {
-            width:100%;
-            padding:8px 12px;
+            width:100%; padding:8px 12px;
             background:rgba(255,255,255,0.04);
             border:1px solid rgba(255,255,255,0.08);
             border-radius:10px;
@@ -200,18 +82,8 @@
         }
         .card .field textarea { min-height:60px; resize:vertical; }
         .card .field select option { background:#0b0e14; }
-        .btn {
-            background:linear-gradient(135deg,#00f5d4,#0077b6);
-            border:none;
-            color:#0b0e14;
-            font-weight:700;
-            padding:8px 20px;
-            border-radius:30px;
-            cursor:pointer;
-            font-size:.9rem;
-            transition:.3s;
-            font-family:inherit;
-        }
+
+        .btn { background:linear-gradient(135deg,#00f5d4,#0077b6); border:none; color:#0b0e14; font-weight:700; padding:8px 20px; border-radius:30px; cursor:pointer; font-size:.9rem; transition:.3s; font-family:inherit; }
         .btn:hover { transform:scale(1.02); box-shadow:0 8px 30px rgba(0,245,212,0.25); }
         .btn-danger { background:#ef4444; color:#fff; }
         .btn-danger:hover { background:#dc2626; }
@@ -222,15 +94,7 @@
         .btn-warning:hover { background:#d97706; }
 
         .item-list { margin-top:.5rem; }
-        .item-list .item {
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            padding:.6rem 0;
-            border-bottom:1px solid rgba(255,255,255,0.04);
-            gap:.5rem;
-            flex-wrap:wrap;
-        }
+        .item-list .item { display:flex; align-items:center; justify-content:space-between; padding:.6rem 0; border-bottom:1px solid rgba(255,255,255,0.04); gap:.5rem; flex-wrap:wrap; }
         .item-list .item:last-child { border-bottom:none; }
         .item-list .item .info { flex:1; min-width:150px; }
         .item-list .item .info .title { font-weight:600; }
@@ -241,16 +105,10 @@
         .status-msg.success { color:#00f5d4; }
         .status-msg.error { color:#ff6b6b; }
 
-        .footer {
-            text-align:center;
-            padding:1.5rem;
-            border-top:1px solid rgba(255,255,255,0.04);
-            color:#5a738a;
-            font-size:.85rem;
-        }
+        .footer { text-align:center; padding:1.5rem; border-top:1px solid rgba(255,255,255,0.04); color:#5a738a; font-size:.85rem; }
         .footer span { color:#00f5d4; }
 
-        /* ===== 编辑器模态框 ===== */
+        /* 模态框 */
         .modal-overlay {
             display:none;
             position:fixed;
@@ -287,7 +145,6 @@
 </head>
 <body>
 
-    <!-- ===== 导航栏 ===== -->
     <nav class="navbar">
         <div class="logo"><span class="logo-icon">Z</span><span id="brandName">ZHDD 管理</span></div>
         <ul class="nav-links">
@@ -299,10 +156,9 @@
         </div>
     </nav>
 
-    <!-- ===== 主容器 ===== -->
     <div class="main-container">
 
-        <!-- ===== 登录页 ===== -->
+        <!-- 登录页 -->
         <div id="loginPage" class="login-box">
             <h2>🔐 管理后台</h2>
             <p class="sub">请输入超管账号密码</p>
@@ -312,39 +168,30 @@
             <div class="error" id="loginError">❌ 账号或密码错误</div>
         </div>
 
-        <!-- ===== 管理面板 ===== -->
+        <!-- 管理面板 -->
         <div id="adminPanel" style="display:none;">
             <div class="tab-bar">
                 <button class="tab-btn active" data-tab="tabUsers">👤 用户</button>
                 <button class="tab-btn" data-tab="tabArticles">📝 文章</button>
                 <button class="tab-btn" data-tab="tabJoins">📩 申请</button>
                 <button class="tab-btn" data-tab="tabConfig">⚙️ 配置</button>
-                <button class="tab-btn" data-tab="tabTemplates">📧 邮件模板</button>
+                <button class="tab-btn" data-tab="tabTemplates">📧 模板</button>
                 <button class="tab-btn" data-tab="tabFriends">🔗 友链</button>
             </div>
 
             <!-- 用户管理 -->
             <div id="tabUsers" class="panel active">
-                <div class="card">
-                    <h3>👤 用户管理</h3>
-                    <div id="userList" class="item-list">加载中...</div>
-                </div>
+                <div class="card"><h3>👤 用户管理</h3><div id="userList" class="item-list">加载中...</div></div>
             </div>
 
             <!-- 文章管理 -->
             <div id="tabArticles" class="panel">
-                <div class="card">
-                    <h3>📝 所有文章</h3>
-                    <div id="articleList" class="item-list">加载中...</div>
-                </div>
+                <div class="card"><h3>📝 所有文章</h3><div id="articleList" class="item-list">加载中...</div></div>
             </div>
 
             <!-- 加入申请 -->
             <div id="tabJoins" class="panel">
-                <div class="card">
-                    <h3>📩 加入申请</h3>
-                    <div id="joinList" class="item-list">加载中...</div>
-                </div>
+                <div class="card"><h3>📩 加入申请</h3><div id="joinList" class="item-list">加载中...</div></div>
             </div>
 
             <!-- 网站配置 -->
@@ -379,10 +226,7 @@
 
             <!-- 邮件模板 -->
             <div id="tabTemplates" class="panel">
-                <div class="card">
-                    <h3>📧 邮件模板</h3>
-                    <div id="templateList" class="item-list">加载中...</div>
-                </div>
+                <div class="card"><h3>📧 邮件模板</h3><div id="templateList" class="item-list">加载中...</div></div>
             </div>
 
             <!-- 友链 -->
@@ -399,12 +243,9 @@
 
     </div>
 
-    <!-- ===== 页脚 ===== -->
-    <footer class="footer">
-        <span>ZHDD 网安空间</span> · 管理后台
-    </footer>
+    <footer class="footer"><span>ZHDD 网安空间</span> · 管理后台</footer>
 
-    <!-- ===== 编辑模态框 ===== -->
+    <!-- 编辑模态框 -->
     <div class="modal-overlay" id="editModal">
         <div class="modal-box">
             <h3 id="editModalTitle">编辑</h3>
@@ -426,14 +267,9 @@
             //  超管配置
             // ============================================================
             const ADMIN_EMAIL = 'kali0914@yeah.net';
-            // 超管密码存储在 admin.zhdd 中，默认密码（首次运行）
             const DEFAULT_ADMIN_PASS = 'admin123';
             const ADMIN_FILE = 'data/admin.zhdd';
 
-            // EmailJS（用于发送审批通知）
-            const EMAILJS_SERVICE_ID = 'service_y1zx1nj';
-            const EMAILJS_TEMPLATE_ID = 'template_generic';
-            const EMAILJS_PUBLIC_KEY = 'i2In4bEy9IyOA9okI';
             emailjs.init(EMAILJS_PUBLIC_KEY);
 
             // ============================================================
@@ -462,20 +298,13 @@
             //  超管登录
             // ============================================================
             async function verifyAdmin(email, password) {
-                // 从 admin.zhdd 读取超管信息
                 let adminData = await loadZhddFile(ADMIN_FILE, null);
                 if (!adminData) {
-                    // 首次运行，创建默认超管
                     const salt = Math.random().toString(36).substring(2, 15);
                     const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(DEFAULT_ADMIN_PASS + salt));
                     const hashArray = Array.from(new Uint8Array(hashBuffer));
                     const passwordHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-                    adminData = {
-                        email: ADMIN_EMAIL,
-                        password_hash: passwordHash,
-                        salt: salt,
-                        created_at: new Date().toISOString()
-                    };
+                    adminData = { email: ADMIN_EMAIL, password_hash: passwordHash, salt: salt, created_at: new Date().toISOString() };
                     await saveZhddFile(ADMIN_FILE, adminData, '初始化超管账号');
                 }
                 if (email !== adminData.email) return false;
@@ -488,7 +317,8 @@
             loginBtn.addEventListener('click', async function() {
                 const email = adminEmail.value.trim();
                 const password = adminPassword.value.trim();
-                if (!email || !password) { loginError.style.display = 'block'; loginError.textContent = '❌ 请填写完整'; return; }
+                if (!email || !password) { loginError.style.display = 'block';
+                    loginError.textContent = '❌ 请填写完整'; return; }
                 loginError.style.display = 'none';
                 this.disabled = true;
                 this.textContent = '⏳ 验证中...';
@@ -517,7 +347,6 @@
                 adminUser.style.display = 'inline';
                 adminUser.textContent = '👤 ' + email;
                 logoutBtn.style.display = 'inline-block';
-                // 加载所有数据
                 loadUsers();
                 loadAllArticles();
                 loadJoins();
@@ -548,7 +377,6 @@
                     Object.keys(panels).forEach(key => {
                         panels[key].classList.toggle('active', key === tabId);
                     });
-                    // 按需刷新
                     if (tabId === 'tabUsers') loadUsers();
                     if (tabId === 'tabArticles') loadAllArticles();
                     if (tabId === 'tabJoins') loadJoins();
@@ -559,7 +387,30 @@
             });
 
             // ============================================================
-            //  ===== 用户管理 =====
+            //  工具 - 获取所有用户
+            // ============================================================
+            async function getAllUsers() {
+                const dir = 'data/users';
+                const url = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(dir)}`;
+                const res = await fetch(url);
+                if (!res.ok) return [];
+                const data = await res.json();
+                const users = [];
+                if (Array.isArray(data)) {
+                    for (const item of data) {
+                        if (item.type === 'dir') {
+                            const profile = await loadUserFile(item.name, 'profile', null);
+                            if (profile) {
+                                users.push({ username: item.name, profile: profile });
+                            }
+                        }
+                    }
+                }
+                return users;
+            }
+
+            // ============================================================
+            //  用户管理
             // ============================================================
             async function loadUsers() {
                 const container = document.getElementById('userList');
@@ -582,42 +433,19 @@
                         </div>`;
                     }
                     container.innerHTML = html;
-                    // 编辑用户
                     container.querySelectorAll('.btn-edit-user').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const username = this.dataset.username;
-                            openEditUser(username);
-                        });
+                        btn.addEventListener('click', function() { openEditUser(this.dataset.username); });
                     });
-                    // 删除用户
                     container.querySelectorAll('.btn-del-user').forEach(btn => {
                         btn.addEventListener('click', function() {
-                            const username = this.dataset.username;
-                            if (confirm('确定要删除用户 "' + username + '" 及其所有数据吗？')) {
-                                deleteUser(username);
+                            if (confirm('确定要删除用户 "' + this.dataset.username + '" 及其所有数据吗？')) {
+                                deleteUser(this.dataset.username);
                             }
                         });
                     });
                 } catch (e) {
                     container.innerHTML = '加载失败: ' + e.message;
                 }
-            }
-
-            async function getAllUsers() {
-                const dir = 'data/users';
-                const url = API_BASE + '/contents/' + encodeURIComponent(dir);
-                const res = await fetch(url);
-                if (!res.ok) return [];
-                const data = await res.json();
-                const users = [];
-                for (const item of data) {
-                    if (item.type !== 'dir') continue;
-                    const profile = await loadUserFile(item.name, 'profile', null);
-                    if (profile) {
-                        users.push({ username: item.name, profile: profile });
-                    }
-                }
-                return users;
             }
 
             async function openEditUser(username) {
@@ -630,22 +458,15 @@
                     <div class="field"><label>显示名称</label><input type="text" id="editUserDisplay" value="${profile.display_name || ''}" /></div>
                     <div class="field"><label>邮箱</label><input type="email" id="editUserEmail" value="${profile.email || ''}" /></div>
                     <div class="field"><label>角色</label>
-                        <select id="editUserRole">
-                            <option value="member" ${profile.role === 'member' ? 'selected' : ''}>member</option>
-                            <option value="admin" ${profile.role === 'admin' ? 'selected' : ''}>admin</option>
-                        </select>
+                        <select id="editUserRole"><option value="member" ${profile.role === 'member' ? 'selected' : ''}>member</option><option value="admin" ${profile.role === 'admin' ? 'selected' : ''}>admin</option></select>
                     </div>
                     <div class="field"><label>成员状态</label>
-                        <select id="editUserMember">
-                            <option value="true" ${profile.is_member ? 'selected' : ''}>正式成员</option>
-                            <option value="false" ${!profile.is_member ? 'selected' : ''}>非成员</option>
-                        </select>
+                        <select id="editUserMember"><option value="true" ${profile.is_member ? 'selected' : ''}>正式成员</option><option value="false" ${!profile.is_member ? 'selected' : ''}>非成员</option></select>
                     </div>
                     <div class="field"><label>个人简介</label><textarea id="editUserBio" rows="3">${profile.bio || ''}</textarea></div>
                     <div class="field"><label>头像 URL</label><input type="url" id="editUserAvatar" value="${profile.avatar_url || ''}" /></div>
                 `;
                 modal.classList.add('active');
-                // 保存
                 document.getElementById('editModalSave').onclick = async function() {
                     const newDisplay = document.getElementById('editUserDisplay').value.trim();
                     const newEmail = document.getElementById('editUserEmail').value.trim();
@@ -673,10 +494,6 @@
 
             async function deleteUser(username) {
                 try {
-                    // 删除用户目录的所有文件（这里简化，只删除整个目录）
-                    // 由于 GitCode API 无法直接删除目录，需要遍历删除文件
-                    // 我们只标记为已删除或直接删除 profile 等
-                    // 简化：清空 profile 并标记 deleted
                     const profile = await loadUserFile(username, 'profile', null);
                     if (profile) {
                         profile.deleted = true;
@@ -687,7 +504,7 @@
             }
 
             // ============================================================
-            //  ===== 文章管理 =====
+            //  文章管理
             // ============================================================
             async function loadAllArticles() {
                 const container = document.getElementById('articleList');
@@ -717,21 +534,13 @@
                         </div>`;
                     }
                     container.innerHTML = html;
-                    // 编辑文章
                     container.querySelectorAll('.btn-edit-article').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const username = this.dataset.username;
-                            const id = this.dataset.id;
-                            openEditArticle(username, id);
-                        });
+                        btn.addEventListener('click', function() { openEditArticle(this.dataset.username, this.dataset.id); });
                     });
-                    // 删除文章
                     container.querySelectorAll('.btn-del-article').forEach(btn => {
                         btn.addEventListener('click', function() {
-                            const username = this.dataset.username;
-                            const id = this.dataset.id;
                             if (confirm('确定删除该文章？')) {
-                                deleteArticle(username, id);
+                                deleteArticle(this.dataset.username, this.dataset.id);
                             }
                         });
                     });
@@ -779,7 +588,7 @@
             }
 
             // ============================================================
-            //  ===== 加入申请管理 =====
+            //  加入申请管理
             // ============================================================
             async function loadJoins() {
                 const container = document.getElementById('joinList');
@@ -788,8 +597,8 @@
                     const requests = await loadZhddFile('data/join_requests.zhdd', []);
                     if (requests.length === 0) { container.innerHTML = '暂无申请'; return; }
                     let html = '';
+                    const statusMap = { pending: '待审核', approved: '已通过', rejected: '已拒绝' };
                     for (const r of requests) {
-                        const statusMap = { pending: '待审核', approved: '已通过', rejected: '已拒绝' };
                         html += `<div class="item" data-id="${r.id}">
                             <div class="info">
                                 <div class="title">${r.name}</div>
@@ -801,19 +610,11 @@
                         </div>`;
                     }
                     container.innerHTML = html;
-                    // 批准
                     container.querySelectorAll('.btn-approve').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const id = this.dataset.id;
-                            approveJoin(id);
-                        });
+                        btn.addEventListener('click', function() { approveJoin(this.dataset.id); });
                     });
-                    // 拒绝
                     container.querySelectorAll('.btn-reject').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const id = this.dataset.id;
-                            rejectJoin(id);
-                        });
+                        btn.addEventListener('click', function() { rejectJoin(this.dataset.id); });
                     });
                 } catch (e) {
                     container.innerHTML = '加载失败: ' + e.message;
@@ -826,13 +627,11 @@
                 if (!req) return;
                 req.status = 'approved';
                 await saveZhddFile('data/join_requests.zhdd', requests, '批准加入申请');
-                // 更新用户 profile 的 is_member = true
                 const profile = await loadUserFile(req.username, 'profile', null);
                 if (profile) {
                     profile.is_member = true;
                     await saveUserFile(req.username, 'profile', profile, '管理员批准加入');
                 }
-                // 发送邮件通知申请人
                 try {
                     const raw = await fetchEmailTemplate('join_approved');
                     const htmlContent = renderTemplate(raw, { name: req.name });
@@ -854,7 +653,7 @@
             }
 
             // ============================================================
-            //  ===== 网站配置管理 =====
+            //  网站配置管理
             // ============================================================
             let currentConfig = null;
 
@@ -926,15 +725,11 @@
                             copyright: document.getElementById('cfg_footer_copyright').value.trim()
                         }
                     };
-                    // 保留原有 nav 等
                     const old = await loadSiteConfig();
-                    if (old) {
-                        newConfig.nav = old.nav || {};
-                        newConfig.auth = old.auth || {};
-                    }
-                    // 写入 GitCode
+                    if (old) { newConfig.nav = old.nav || {};
+                        newConfig.auth = old.auth || {}; }
                     const content = JSON.stringify(newConfig, null, 2);
-                    await gitcodePutFile('data/site_config.json', btoa(content), '管理员更新网站配置');
+                    await gitcodePutFile('data/site_config.json', utf8ToBase64(content), '管理员更新网站配置');
                     status.textContent = '✅ 保存成功！';
                     status.className = 'status-msg success';
                 } catch (e) {
@@ -946,7 +741,7 @@
             });
 
             // ============================================================
-            //  ===== 邮件模板管理 =====
+            //  邮件模板管理
             // ============================================================
             async function loadTemplates() {
                 const container = document.getElementById('templateList');
@@ -956,20 +751,13 @@
                     let html = '';
                     for (const t of templates) {
                         html += `<div class="item" data-template="${t}">
-                            <div class="info">
-                                <div class="title">${t}.html</div>
-                            </div>
-                            <div class="actions">
-                                <button class="btn btn-sm btn-edit-template" data-template="${t}">编辑</button>
-                            </div>
+                            <div class="info"><div class="title">${t}.html</div></div>
+                            <div class="actions"><button class="btn btn-sm btn-edit-template" data-template="${t}">编辑</button></div>
                         </div>`;
                     }
                     container.innerHTML = html;
                     container.querySelectorAll('.btn-edit-template').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const template = this.dataset.template;
-                            openEditTemplate(template);
-                        });
+                        btn.addEventListener('click', function() { openEditTemplate(this.dataset.template); });
                     });
                 } catch (e) {
                     container.innerHTML = '加载失败: ' + e.message;
@@ -981,15 +769,13 @@
                 const modal = document.getElementById('editModal');
                 const body = document.getElementById('editModalBody');
                 document.getElementById('editModalTitle').textContent = '编辑模板: ' + template + '.html';
-                body.innerHTML = `
-                    <div class="field"><label>HTML 内容</label><textarea id="editTemplateContent" rows="15">${content}</textarea></div>
-                `;
+                body.innerHTML = `<div class="field"><label>HTML 内容</label><textarea id="editTemplateContent" rows="15">${content}</textarea></div>`;
                 modal.classList.add('active');
                 document.getElementById('editModalSave').onclick = async function() {
                     const newContent = document.getElementById('editTemplateContent').value;
                     try {
                         const path = 'data/email_templates/' + template + '.html';
-                        await gitcodePutFile(path, btoa(newContent), '管理员更新模板 ' + template);
+                        await gitcodePutFile(path, utf8ToBase64(newContent), '管理员更新模板 ' + template);
                         alert('保存成功');
                         modal.classList.remove('active');
                         loadTemplates();
@@ -999,7 +785,7 @@
             }
 
             // ============================================================
-            //  ===== 友链管理 =====
+            //  友链管理
             // ============================================================
             async function loadFriends() {
                 const container = document.getElementById('friendList');
@@ -1010,21 +796,13 @@
                     let html = '';
                     for (const f of friends) {
                         html += `<div class="item" data-id="${f.id}">
-                            <div class="info">
-                                <div class="title">${f.name}</div>
-                                <div class="meta">${f.url}</div>
-                            </div>
-                            <div class="actions">
-                                <button class="btn btn-sm btn-danger btn-del-friend" data-id="${f.id}">删除</button>
-                            </div>
+                            <div class="info"><div class="title">${f.name}</div><div class="meta">${f.url}</div></div>
+                            <div class="actions"><button class="btn btn-sm btn-danger btn-del-friend" data-id="${f.id}">删除</button></div>
                         </div>`;
                     }
                     container.innerHTML = html;
                     container.querySelectorAll('.btn-del-friend').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            const id = this.dataset.id;
-                            deleteFriend(id);
-                        });
+                        btn.addEventListener('click', function() { deleteFriend(this.dataset.id); });
                     });
                 } catch (e) {
                     container.innerHTML = '加载失败: ' + e.message;
@@ -1057,7 +835,7 @@
             }
 
             // ============================================================
-            //  检查登录状态
+            //  初始化
             // ============================================================
             (function init() {
                 const loggedIn = sessionStorage.getItem('admin_logged_in');
