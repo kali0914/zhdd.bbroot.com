@@ -10,13 +10,16 @@ const CONFIG_PATH = 'data/site_config.json';
 const ENC_KEY_SALT = 'AgiRvAjgzGvMZn1jYEXH8N2sZHDD-SALT';
 const USERS_DIR = 'data/users';
 
+// ---------- EmailJS 配置 ----------
+const EMAILJS_SERVICE_ID = 'service_y1zx1nj';
+const EMAILJS_TEMPLATE_ID = 'template_h2tzy5w';
+const EMAILJS_PUBLIC_KEY = 'i2In4bEy9IyOA9okI';
+
 // ---------- 安全 Base64 解码（支持 UTF-8） ----------
 function base64ToUtf8(base64) {
     try {
-        // 方法1：使用 decodeURIComponent + escape（兼容性最好）
         return decodeURIComponent(escape(atob(base64)));
     } catch (e) {
-        // 方法2：使用 TextDecoder（现代浏览器）
         try {
             const binaryString = atob(base64);
             const bytes = new Uint8Array(binaryString.length);
@@ -31,13 +34,10 @@ function base64ToUtf8(base64) {
     }
 }
 
-// ---------- 安全 Base64 编码（支持 UTF-8） ----------
 function utf8ToBase64(str) {
     try {
-        // 方法1：使用 encodeURIComponent + escape
         return btoa(unescape(encodeURIComponent(str)));
     } catch (e) {
-        // 方法2：使用 TextEncoder
         try {
             const bytes = new TextEncoder().encode(str);
             let binary = '';
@@ -64,7 +64,7 @@ async function loadSiteConfig() {
     }
 }
 
-// ---------- GitCode 文件读取（通过 Worker 代理） ----------
+// ---------- GitCode 文件读取 ----------
 async function gitcodeGetFile(path) {
     try {
         const url = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}`;
@@ -72,7 +72,6 @@ async function gitcodeGetFile(path) {
         if (res.status === 404) return null;
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        // 使用安全解码
         return base64ToUtf8(data.content);
     } catch (e) {
         console.warn('读取文件失败:', path, e);
@@ -80,10 +79,9 @@ async function gitcodeGetFile(path) {
     }
 }
 
-// ---------- GitCode 文件写入（通过 Worker 代理） ----------
+// ---------- GitCode 文件写入 ----------
 async function gitcodePutFile(path, content, message) {
     const url = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}`;
-    // 先获取文件 sha（如果存在）
     let sha = null;
     try {
         const getRes = await fetch(url);
@@ -91,10 +89,7 @@ async function gitcodePutFile(path, content, message) {
             const data = await getRes.json();
             sha = data.sha;
         }
-    } catch (e) {
-        console.warn('获取文件 SHA 失败:', e);
-    }
-    // 内容已经是 base64，直接使用
+    } catch (e) {}
     const payload = {
         message: message || '更新文件',
         content: content
@@ -142,16 +137,13 @@ async function decryptData(encryptedData) {
     return JSON.parse(new TextDecoder().decode(decrypted));
 }
 
-// ---------- .zhdd 文件读写 ----------
 async function loadZhddFile(path, defaultVal) {
     try {
         const base64 = await gitcodeGetFile(path);
         if (!base64) return defaultVal;
         const binary = atob(base64);
         const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) {
-            bytes[i] = binary.charCodeAt(i);
-        }
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
         return await decryptData(bytes);
     } catch (e) {
         console.warn('加载 .zhdd 失败:', path, e);
@@ -162,9 +154,7 @@ async function loadZhddFile(path, defaultVal) {
 async function saveZhddFile(path, data, message) {
     const encrypted = await encryptData(data);
     let binary = '';
-    for (let i = 0; i < encrypted.length; i++) {
-        binary += String.fromCharCode(encrypted[i]);
-    }
+    for (let i = 0; i < encrypted.length; i++) binary += String.fromCharCode(encrypted[i]);
     const base64 = btoa(binary);
     await gitcodePutFile(path, base64, message || '更新数据');
 }
@@ -194,7 +184,6 @@ async function fetchEmailTemplate(templateName) {
         if (!content) throw new Error('模板不存在');
         return content;
     } catch (e) {
-        // 内置默认模板（硬编码，避免网络问题）
         const defaults = {
             'register_code': `<h2>验证码</h2><p>您的验证码是：<strong>{{code}}</strong></p>`,
             'reset_password': `<h2>重置密码</h2><p>点击链接重置密码：<a href="{{reset_link}}">重置密码</a></p>`,
@@ -212,21 +201,3 @@ function renderTemplate(html, vars) {
     }
     return result;
 }
-
-// ---------- 导出（如果使用 ES Modules） ----------
-// export {
-//     API_BASE,
-//     CONFIG_PATH,
-//     base64ToUtf8,
-//     utf8ToBase64,
-//     loadSiteConfig,
-//     gitcodeGetFile,
-//     gitcodePutFile,
-//     loadZhddFile,
-//     saveZhddFile,
-//     loadUserFile,
-//     saveUserFile,
-//     getAvatarUrl,
-//     fetchEmailTemplate,
-//     renderTemplate
-// };
