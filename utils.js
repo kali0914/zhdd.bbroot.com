@@ -79,9 +79,9 @@ async function gitcodeGetFile(path) {
     }
 }
 
-// ---------- GitCode 文件写入（强制包含 sha） ----------
+// ---------- GitCode 文件写入（最终修复） ----------
 async function gitcodePutFile(path, content, message) {
-    // 检查文件是否存在并获取 sha
+    // 先检查文件是否存在，获取 sha
     let existingSha = null;
     let exists = false;
     const getUrl = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}`;
@@ -98,20 +98,23 @@ async function gitcodePutFile(path, content, message) {
         console.warn('检查文件异常:', e);
     }
 
-    // 构建请求体，始终包含 sha（新建时设为 null）
+    // 构建请求体，仅当文件存在时才添加 sha 字段
     const payload = {
         message: message || '更新文件',
         content: content,
-        branch: 'main',
-        sha: exists ? existingSha : null
+        branch: 'main'
     };
+    if (exists && existingSha) {
+        payload.sha = existingSha;
+    }
+    // 新建文件时不包含 sha 字段
 
-    const method = exists ? 'PUT' : 'POST';
+    // 统一使用 PUT 方法（GitCode API 支持 PUT 创建）
     const url = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}`;
 
     try {
         const res = await fetch(url, {
-            method: method,
+            method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
