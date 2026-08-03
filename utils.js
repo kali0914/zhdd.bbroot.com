@@ -79,9 +79,10 @@ async function gitcodeGetFile(path) {
     }
 }
 
-// ---------- GitCode 文件写入（通过 Worker 代理，已修复） ----------
+// ---------- GitCode 文件写入（已修复 400 错误） ----------
 async function gitcodePutFile(path, content, message) {
-    const url = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}`;
+    // 将 branch 作为 URL 查询参数，符合 GitCode API 规范
+    const url = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}?branch=main`;
     let sha = null;
     try {
         const getRes = await fetch(url);
@@ -92,12 +93,12 @@ async function gitcodePutFile(path, content, message) {
     } catch (e) {
         console.warn('获取文件 SHA 失败:', e);
     }
+    // 关键修复：始终包含 sha 字段（新建文件传 null）
     const payload = {
         message: message || '更新文件',
         content: content,
-        branch: 'main'  // 明确指定分支
+        sha: sha || null
     };
-    if (sha) payload.sha = sha;
     try {
         const res = await fetch(url, {
             method: 'PUT',
