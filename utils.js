@@ -67,7 +67,7 @@ async function loadSiteConfig() {
 // ---------- GitCode 文件读取 ----------
 async function gitcodeGetFile(path) {
     try {
-        const url = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}`;
+        const url = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}?branch=main`;
         const res = await fetch(url);
         if (res.status === 404) return null;
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -79,14 +79,13 @@ async function gitcodeGetFile(path) {
     }
 }
 
-// ---------- GitCode 文件写入（最终修复） ----------
+// ---------- GitCode 文件写入（已修复：创建用 POST，更新用 PUT） ----------
 async function gitcodePutFile(path, content, message) {
-    // 先检查文件是否存在，获取 sha
     let existingSha = null;
     let exists = false;
-    const getUrl = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}`;
+    const url = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}?branch=main`;
     try {
-        const getRes = await fetch(getUrl);
+        const getRes = await fetch(url);
         if (getRes.ok) {
             const data = await getRes.json();
             existingSha = data.sha;
@@ -98,23 +97,24 @@ async function gitcodePutFile(path, content, message) {
         console.warn('检查文件异常:', e);
     }
 
-    // 构建请求体，仅当文件存在时才添加 sha 字段
     const payload = {
         message: message || '更新文件',
         content: content,
         branch: 'main'
     };
-    if (exists && existingSha) {
-        payload.sha = existingSha;
-    }
-    // 新建文件时不包含 sha 字段
 
-    // 统一使用 PUT 方法（GitCode API 支持 PUT 创建）
-    const url = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}`;
+    let method;
+    if (exists) {
+        method = 'PUT';
+        payload.sha = existingSha;
+    } else {
+        method = 'POST';
+        // 创建文件时，不包含 sha 字段
+    }
 
     try {
         const res = await fetch(url, {
-            method: 'PUT',
+            method: method,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
