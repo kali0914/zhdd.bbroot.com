@@ -79,7 +79,7 @@ async function gitcodeGetFile(path) {
     }
 }
 
-// ---------- GitCode 文件写入（最终修复：始终包含 sha） ----------
+// ---------- GitCode 文件写入（按官方规范） ----------
 async function gitcodePutFile(path, content, message) {
     const url = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}?branch=main`;
 
@@ -100,11 +100,13 @@ async function gitcodePutFile(path, content, message) {
 
     const payload = {
         message: message || '更新文件',
-        content: content,
-        sha: exists ? existingSha : null
+        content: content
     };
 
     const method = exists ? 'PUT' : 'POST';
+    if (exists) {
+        payload.sha = existingSha;
+    }
 
     try {
         const res = await fetch(url, {
