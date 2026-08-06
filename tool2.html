@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZHDD · .zhdd 解密工具</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI','PingFang SC',Roboto,'Helvetica Neue',sans-serif;
+            background:#0b0e14; color:#e8edf5;
+            min-height:100vh; display:flex; align-items:center; justify-content:center;
+            padding:2rem;
+        }
+        .container {
+            max-width:720px;
+            width:100%;
+            background:rgba(255,255,255,0.03);
+            border:1px solid rgba(255,255,255,0.06);
+            border-radius:24px;
+            padding:2.5rem 2rem;
+            backdrop-filter:blur(8px);
+            box-shadow:0 20px 60px rgba(0,0,0,0.5);
+        }
+        .logo { font-size:1.8rem; font-weight:700; color:#00f5d4; text-align:center; margin-bottom:.2rem; letter-spacing:2px; }
+        .sub { color:#8aa3bc; text-align:center; margin-bottom:2rem; font-size:.9rem; }
+        .file-area {
+            border:2px dashed rgba(255,255,255,0.08);
+            border-radius:16px;
+            padding:2.5rem 1rem;
+            text-align:center;
+            transition:border-color .3s;
+            cursor:pointer;
+            position:relative;
+        }
+        .file-area:hover { border-color:rgba(0,245,212,0.2); }
+        .file-area .icon { font-size:3rem; margin-bottom:.5rem; }
+        .file-area .hint { color:#8aa3bc; font-size:.9rem; }
+        .file-area .hint strong { color:#00f5d4; }
+        .file-area input[type="file"] {
+            position:absolute;
+            inset:0;
+            opacity:0;
+            cursor:pointer;
+        }
+        .file-info {
+            margin-top:1rem;
+            display:none;
+            background:rgba(255,255,255,0.03);
+            border-radius:12px;
+            padding:.8rem 1.2rem;
+            align-items:center;
+            justify-content:space-between;
+            flex-wrap:wrap;
+            gap:.5rem;
+        }
+        .file-info .name { font-weight:600; color:#e8edf5; word-break:break-all; }
+        .file-info .size { color:#8aa3bc; font-size:.85rem; }
+        .file-info .remove {
+            background:rgba(255,107,107,0.15);
+            border:none;
+            color:#ff6b6b;
+            padding:4px 12px;
+            border-radius:20px;
+            cursor:pointer;
+            font-size:.8rem;
+            transition:.3s;
+            font-family:inherit;
+        }
+        .file-info .remove:hover { background:rgba(255,107,107,0.25); }
+        .btn {
+            display:inline-block;
+            width:100%;
+            padding:12px;
+            margin-top:1.2rem;
+            background:linear-gradient(135deg,#00f5d4,#0077b6);
+            border:none;
+            border-radius:30px;
+            color:#0b0e14;
+            font-weight:700;
+            font-size:1rem;
+            cursor:pointer;
+            transition:.3s;
+            font-family:inherit;
+            box-shadow:0 4px 20px rgba(0,245,212,0.15);
+        }
+        .btn:hover { transform:scale(1.02); box-shadow:0 8px 30px rgba(0,245,212,0.25); }
+        .btn:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+        .result-area {
+            margin-top:1.5rem;
+            background:rgba(0,0,0,0.3);
+            border-radius:12px;
+            padding:1.2rem;
+            max-height:400px;
+            overflow-y:auto;
+            font-family:'Courier New',monospace;
+            font-size:.85rem;
+            color:#b8ccdd;
+            white-space:pre-wrap;
+            word-break:break-all;
+            display:none;
+            border:1px solid rgba(255,255,255,0.04);
+        }
+        .result-area .label {
+            color:#8aa3bc;
+            font-size:.75rem;
+            margin-bottom:4px;
+            font-family:'Segoe UI',sans-serif;
+        }
+        .status {
+            margin-top:.8rem;
+            text-align:center;
+            font-size:.9rem;
+            min-height:1.5rem;
+        }
+        .status.error { color:#ff6b6b; }
+        .status.success { color:#00f5d4; }
+        .footer {
+            margin-top:2rem;
+            text-align:center;
+            color:#5a738a;
+            font-size:.8rem;
+        }
+        .footer span { color:#00f5d4; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🔓 .zhdd 解密</div>
+        <div class="sub">上传加密的 .zhdd 文件，解密查看原始内容</div>
+
+        <div class="file-area" id="dropArea">
+            <div class="icon">📂</div>
+            <div class="hint">点击选择文件 或 拖拽到这里<br/><strong>.zhdd</strong> 格式</div>
+            <input type="file" id="fileInput" accept=".zhdd" />
+        </div>
+
+        <div class="file-info" id="fileInfo">
+            <span class="name" id="fileName">文件名</span>
+            <span class="size" id="fileSize">0 KB</span>
+            <button class="remove" id="removeFileBtn">✕ 移除</button>
+        </div>
+
+        <button class="btn" id="decryptBtn" disabled>🔐 解密</button>
+        <div class="status" id="status"></div>
+
+        <div class="result-area" id="resultArea">
+            <div class="label">📄 解密结果 (JSON)</div>
+            <pre id="resultContent"></pre>
+        </div>
+
+        <div class="footer">Powered by <span>ZHDD</span> · 固定密钥派生</div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ---------- 固定盐值（与 utils.js 一致） ----------
+            const ENC_KEY_SALT = 'AgiRvAjgzGvMZn1jYEXH8N2sZHDD-SALT';
+
+            // DOM 引用
+            const fileInput = document.getElementById('fileInput');
+            const dropArea = document.getElementById('dropArea');
+            const fileInfo = document.getElementById('fileInfo');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const removeFileBtn = document.getElementById('removeFileBtn');
+            const decryptBtn = document.getElementById('decryptBtn');
+            const status = document.getElementById('status');
+            const resultArea = document.getElementById('resultArea');
+            const resultContent = document.getElementById('resultContent');
+
+            let selectedFile = null;
+
+            // ---------- 更新 UI ----------
+            function updateFileUI(file) {
+                if (file) {
+                    fileName.textContent = file.name;
+                    fileSize.textContent = (file.size / 1024).toFixed(1) + ' KB';
+                    fileInfo.style.display = 'flex';
+                    decryptBtn.disabled = false;
+                    status.textContent = '';
+                    status.className = 'status';
+                    resultArea.style.display = 'none';
+                } else {
+                    fileInfo.style.display = 'none';
+                    decryptBtn.disabled = true;
+                    selectedFile = null;
+                    fileInput.value = '';
+                }
+            }
+
+            // ---------- 处理文件选择 ----------
+            function handleFile(file) {
+                if (!file) return;
+                if (!file.name.toLowerCase().endsWith('.zhdd')) {
+                    status.textContent = '⚠️ 请选择 .zhdd 文件';
+                    status.className = 'status error';
+                    return;
+                }
+                selectedFile = file;
+                updateFileUI(file);
+                status.textContent = '✅ 文件已加载，点击解密';
+                status.className = 'status success';
+            }
+
+            fileInput.addEventListener('change', function(e) {
+                if (this.files && this.files.length > 0) {
+                    handleFile(this.files[0]);
+                } else {
+                    updateFileUI(null);
+                }
+            });
+
+            // ---------- 拖拽支持 ----------
+            dropArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.borderColor = 'rgba(0,245,212,0.4)';
+            });
+            dropArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '';
+            });
+            dropArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '';
+                const files = e.dataTransfer.files;
+                if (files && files.length > 0) {
+                    handleFile(files[0]);
+                }
+            });
+
+            // ---------- 移除文件 ----------
+            removeFileBtn.addEventListener('click', function() {
+                updateFileUI(null);
+                status.textContent = '';
+                status.className = 'status';
+                resultArea.style.display = 'none';
+            });
+
+            // ---------- 加密工具（与 utils.js 一致） ----------
+            async function getEncryptionKey() {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(ENC_KEY_SALT);
+                const hash = await crypto.subtle.digest('SHA-256', data);
+                return hash;
+            }
+
+            async function decryptData(encryptedData) {
+                if (!encryptedData || encryptedData.length < 12) return null;
+                const keyBuffer = await getEncryptionKey();
+                const key = await crypto.subtle.importKey(
+                    'raw', keyBuffer, { name: 'AES-GCM', length: 256 }, false, ['decrypt']
+                );
+                const iv = encryptedData.slice(0, 12);
+                const ciphertext = encryptedData.slice(12);
+                const decrypted = await crypto.subtle.decrypt(
+                    { name: 'AES-GCM', iv: iv },
+                    key,
+                    ciphertext
+                );
+                return JSON.parse(new TextDecoder().decode(decrypted));
+            }
+
+            // ---------- 解密按钮 ----------
+            decryptBtn.addEventListener('click', async function() {
+                if (!selectedFile) return;
+                this.disabled = true;
+                this.textContent = '⏳ 解密中...';
+                status.textContent = '⏳ 正在解密...';
+                status.className = 'status';
+
+                try {
+                    const arrayBuffer = await selectedFile.arrayBuffer();
+                    const data = new Uint8Array(arrayBuffer);
+                    const result = await decryptData(data);
+
+                    if (result === null) {
+                        throw new Error('解密失败，数据格式无效');
+                    }
+
+                    // 显示结果
+                    resultContent.textContent = JSON.stringify(result, null, 2);
+                    resultArea.style.display = 'block';
+                    status.textContent = '✅ 解密成功！';
+                    status.className = 'status success';
+                } catch (err) {
+                    console.error(err);
+                    status.textContent = '❌ 解密失败: ' + err.message;
+                    status.className = 'status error';
+                    resultArea.style.display = 'none';
+                } finally {
+                    this.disabled = false;
+                    this.textContent = '🔐 解密';
+                }
+            });
+
+            // ---------- 初始化 ----------
+            updateFileUI(null);
+        })();
+    </script>
+</body>
+</html>
