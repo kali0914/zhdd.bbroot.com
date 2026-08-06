@@ -79,13 +79,13 @@ async function gitcodeGetFile(path) {
     }
 }
 
-// ---------- GitCode 文件写入（已修复：创建用 POST，更新用 PUT） ----------
+// ---------- GitCode 文件写入（已修复） ----------
 async function gitcodePutFile(path, content, message) {
     let existingSha = null;
     let exists = false;
-    const url = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}?branch=main`;
+    const getUrl = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}?branch=main`;
     try {
-        const getRes = await fetch(url);
+        const getRes = await fetch(getUrl);
         if (getRes.ok) {
             const data = await getRes.json();
             existingSha = data.sha;
@@ -100,21 +100,15 @@ async function gitcodePutFile(path, content, message) {
     const payload = {
         message: message || '更新文件',
         content: content,
-        branch: 'main'
+        branch: 'main',
+        sha: exists ? existingSha : null
     };
 
-    let method;
-    if (exists) {
-        method = 'PUT';
-        payload.sha = existingSha;
-    } else {
-        method = 'POST';
-        // 创建文件时，不包含 sha 字段
-    }
+    const url = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}?branch=main`;
 
     try {
         const res = await fetch(url, {
-            method: method,
+            method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
