@@ -64,7 +64,7 @@ async function loadSiteConfig() {
     }
 }
 
-// ---------- GitCode 文件读取 ----------
+// ---------- GitCode 文件读取（已修复：.zhdd 返回原始 Base64） ----------
 async function gitcodeGetFile(path) {
     try {
         const url = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}?branch=main`;
@@ -72,6 +72,10 @@ async function gitcodeGetFile(path) {
         if (res.status === 404) return null;
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
+        // .zhdd 文件返回原始 Base64，其他文件解码为 UTF-8
+        if (path.endsWith('.zhdd')) {
+            return data.content;
+        }
         return base64ToUtf8(data.content);
     } catch (e) {
         console.warn('读取文件失败:', path, e);
@@ -79,7 +83,7 @@ async function gitcodeGetFile(path) {
     }
 }
 
-// ---------- GitCode 文件写入（按官方规范） ----------
+// ---------- GitCode 文件写入 ----------
 async function gitcodePutFile(path, content, message) {
     const url = `${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}?branch=main`;
 
