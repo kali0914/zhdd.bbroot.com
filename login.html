@@ -199,7 +199,7 @@ bottom:1.5rem; letter-spacing:1px; }
             color: #ff6b6b;
         }
 
-        /* 二次验证触发按钮 */
+        /* 二次验证触发按钮 - 默认隐藏，验证失败后显示 */
         .btn-secondary-verify {
             background: transparent;
             border: 1px solid rgba(255,255,255,0.12);
@@ -323,8 +323,8 @@ expired-callback="onTurnstileExpired">
 chl-widget-1dc2z_response"></div></div>
                 <div class="verify-status" id="verifyStatus">等待验证...</div>
 
-                <!-- 二次验证触发按钮 -->
-                <button class="btn-secondary-verify" id="btnSecondaryVerify">验证不了？点这里</button>
+                <!-- 二次验证触发按钮（默认隐藏，验证失败后出现） -->
+                <button class="btn-secondary-verify hidden" id="btnSecondaryVerify">验证不了？点这里</button>
 
                 <!-- 二次验证：滑块 -->
                 <div class="slider-container" id="sliderContainer">
@@ -430,13 +430,25 @@ chl-widget-1dc2z_response"></div></div>
             document.getElementById('verifyArea').style.display = 'none';
             document.getElementById('formArea').style.display = 'block';
             sessionStorage.setItem('turnstile_verified', 'true');
+            // 验证成功时隐藏二次验证按钮和滑块
+            document.getElementById('btnSecondaryVerify').classList.add('hidden');
+            document.getElementById('sliderContainer').style.display = 'none';
+            // 重置滑块状态（如果有）
+            if (window.resetSlider) window.resetSlider();
         }
 
         function onTurnstileExpired() {
-            document.getElementById('verifyStatus').textContent = '⏳ 验证已过期，请重新验证';
+            document.getElementById('verifyStatus').textContent = '⏳ 验证已过期，请重新验证或使用备用方式';
             document.getElementById('verifyArea').style.display = 'block';
             document.getElementById('formArea').style.display = 'none';
             sessionStorage.removeItem('turnstile_verified');
+            // 显示二次验证按钮（失败后出现）
+            document.getElementById('btnSecondaryVerify').classList.remove('hidden');
+            // 隐藏滑块（如果之前显示）
+            document.getElementById('sliderContainer').style.display = 'none';
+            // 重置滑块状态
+            if (window.resetSlider) window.resetSlider();
+            // 重置 Turnstile 小部件
             if (window.turnstile) {
                 const widgetId = window.turnstile.render(document.querySelector('.cf-turnstile'));
                 window.turnstile.reset(widgetId);
@@ -449,6 +461,13 @@ chl-widget-1dc2z_response"></div></div>
                 document.getElementById('verifyArea').style.display = 'none';
                 document.getElementById('formArea').style.display = 'block';
                 document.getElementById('verifyStatus').textContent = '✅ 已通过验证';
+                // 隐藏按钮
+                document.getElementById('btnSecondaryVerify').classList.add('hidden');
+                document.getElementById('sliderContainer').style.display = 'none';
+            } else {
+                // 初始状态：按钮隐藏，滑块隐藏
+                document.getElementById('btnSecondaryVerify').classList.add('hidden');
+                document.getElementById('sliderContainer').style.display = 'none';
             }
         });
 
@@ -480,7 +499,7 @@ chl-widget-1dc2z_response"></div></div>
                 resetSlider();
                 sliderStatus.textContent = '请拖动滑块完成验证';
                 sliderStatus.className = 'slider-status';
-                // 隐藏触发按钮
+                // 隐藏触发按钮（点击后按钮暂时消失，完成或取消后再显示）
                 btnSecondary.classList.add('hidden');
             }
 
@@ -542,6 +561,8 @@ chl-widget-1dc2z_response"></div></div>
                         sliderContainer.style.display = 'block';
                         sliderStatus.textContent = '请拖动滑块完成验证（曲线轨迹）';
                         sliderStatus.className = 'slider-status';
+                        // 重新显示按钮（如果滑块被关闭则显示）
+                        btnSecondary.classList.remove('hidden');
                     }, 1200);
                     return;
                 }
@@ -553,8 +574,11 @@ chl-widget-1dc2z_response"></div></div>
                 sliderLabel.classList.add('done');
                 sliderContainer.classList.remove('active');
 
+                // 隐藏滑块和按钮
+                sliderContainer.style.display = 'none';
+                btnSecondary.classList.add('hidden');
+
                 // 模拟 Turnstile 验证成功
-                // 这里直接触发表单显示
                 document.getElementById('verifyStatus').textContent = '✅ 验证通过，正在加载表单...';
                 document.getElementById('verifyArea').style.display = 'none';
                 document.getElementById('formArea').style.display = 'block';
@@ -643,6 +667,8 @@ chl-widget-1dc2z_response"></div></div>
                         sliderContainer.style.display = 'block';
                         sliderStatus.textContent = '请拖动滑块完成验证（曲线轨迹）';
                         sliderStatus.className = 'slider-status';
+                        // 重新显示按钮
+                        btnSecondary.classList.remove('hidden');
                     }, 800);
                 }
             }
@@ -659,7 +685,7 @@ chl-widget-1dc2z_response"></div></div>
 
             // ---- 点击“验证不了？点这里”按钮 ----
             btnSecondary.addEventListener('click', function() {
-                // 如果已经通过 Turnstile 验证，则忽略
+                // 如果已经通过 Turnstile 验证，则忽略（但按钮已隐藏，不会触发）
                 if (sessionStorage.getItem('turnstile_verified') === 'true') return;
                 showSlider();
             });
